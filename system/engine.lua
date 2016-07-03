@@ -161,31 +161,35 @@ end
 
 local function castSanityCheck(spell)
 	if type(spell) == 'string' then
+		
 		-- Turn string to number
 		if string.match(spell, '%d') then
 			spell = tonumber(spell)
 		end
+
 		-- SOME SPELLS DO NOT CAST BY IDs! (make them names...)
 		local spell = GetSpellInfo(spell)
-		NeP.Core.Debug('Engine', 'castSanityCheck_Spell:'..spell)
+		if spell then
+			NeP.Core.Debug('Engine', 'castSanityCheck_Spell:'..tostring(spell))
+			
+			-- Make sure we have the spell
+			local skillType, spellId = GetSpellBookItemInfo(tostring(spell))
+			if skillType == 'FUTURESPELL' then 
+				NeP.Core.Debug('Engine', 'castSanityCheck hit FUTURESPELL')
+				return false
+			end
+
+			-- Set Var (Gonna be needed for checking target)
+			HarmfulSpell = IsHarmfulSpell(spell)
+
+			-- Spell Sanity Checks
+			if IsUsableSpell(spell) and GetSpellCooldown(spell) == 0 then
+				NeP.Core.Debug('Engine', 'castSanityCheck passed')
+				NeP.Engine.Current_Spell = spell
+				return true, spell
+			end
+		end
 		
-		-- Make sure we have the spell
-		local skillType, spellId = GetSpellBookItemInfo(spell)
-		if skillType == 'FUTURESPELL' then 
-			NeP.Core.Debug('Engine', 'castSanityCheck hit FUTURESPELL')
-			return false
-		end
-
-		-- Set Var (Gonna be needed for checking target)
-		HarmfulSpell = IsHarmfulSpell(spell)
-
-		-- Spell Sanity Checks
-		if IsUsableSpell(spell) and GetSpellCooldown(spell) == 0 then
-			NeP.Core.Debug('Engine', 'castSanityCheck passed')
-			NeP.Engine.Current_Spell = spell
-			return true, spell
-		end
-
 	end
 	return false, nil
 end
