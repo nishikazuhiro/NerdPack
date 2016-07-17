@@ -79,6 +79,10 @@ local ListClassSpec = {
 		[103] = 'Feral Combat',
 		[104] = 'Guardian',
 		[105] = 'Restoration',
+	},
+	[12] = { -- Demon Hunter
+		[577] = 'Havoc',
+		[581] = 'Vengeance',
 	}
 }
 
@@ -181,7 +185,6 @@ local function castSanityCheck(spell)
 				return true, spell
 			end
 		end
-		
 	end
 	return false
 end
@@ -237,7 +240,7 @@ local function Rgl_Cast(spell, conditions, target)
 	local canCast, spell = castSanityCheck(spell)
 	if canCast then
 		NeP.Core.Debug('Engine', 'Iterate: Can Cast')
-		local conditions = NeP.DSL.parse(line[2], spell)
+		local conditions = NeP.DSL.parse(conditions, spell)
 		if conditions then
 			NeP.Core.Debug('Engine', 'Iterate: passed cast conditions')
 			local hasTarget, target, ground = checkTarget(spell, target)
