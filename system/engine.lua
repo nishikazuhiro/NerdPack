@@ -124,7 +124,7 @@ local function insertToLog(whatIs, spell, target)
 		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
 	end
 	NeP.MFrame.usedButtons['MasterToggle'].texture:SetTexture(icon)
-	NeP.ActionLog.insert(whatIs, name, icon, targetName)
+	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
 local function Cast(spell, target, ground)
@@ -393,18 +393,13 @@ end
 -- Engine Ticker
 local LastTimeOut = 0
 C_Timer.NewTicker(0.1, (function()
-	
 	local Running = NeP.Config.Read('bStates_MasterToggle', false)
 	if Running and not NeP.Engine.forcePause then
-		
 		local CurrentTime = GetTime();
 		if CurrentTime >= LastTimeOut then
-			
 			local TimeOut = EngineTimeOut()
-
 			-- Hide FaceRoll.
 			NeP.FaceRoll:Hide()
-
 			-- Run the engine.
 			if NeP.Engine.SelectedCR then
 				local InCombatCheck = UnitAffectingCombat('player')
@@ -413,7 +408,6 @@ C_Timer.NewTicker(0.1, (function()
 			else
 				NeP.Core.Message(TA('Engine', 'NoCR'))
 			end
-
 			LastTimeOut = CurrentTime + TimeOut
 		end
 	end
