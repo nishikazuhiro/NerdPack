@@ -155,8 +155,9 @@ local function checkTarget(spell, target)
 		target = Engine.FakeUnits[target]()
 	end
 	-- Sanity Checks
-	if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then return false end
-	if UnitExists(target) and NeP.Engine.LineOfSight('player', target) then
+	if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
+		return false
+	elseif UnitExists(target) and NeP.Engine.LineOfSight('player', target) then
 		return true, target, ground
 	end
 	return false
@@ -168,7 +169,7 @@ local function castSanityCheck(spell)
 		if string.match(spell, '%d') then
 			spell = tonumber(spell)
 			-- SOME SPELLS DO NOT CAST BY IDs! (make them names...)
-			local spell = GetSpellInfo(spell)
+			spell = GetSpellInfo(spell)
 		end
 		if spell then
 			NeP.Core.Debug('Engine', 'castSanityCheck_Spell:'..tostring(spell))
@@ -177,9 +178,8 @@ local function castSanityCheck(spell)
 			if skillType == 'FUTURESPELL' then 
 				NeP.Core.Debug('Engine', 'castSanityCheck hit FUTURESPELL')
 				return false
-			end
 			-- Spell Sanity Checks
-			if IsUsableSpell(spell) and GetSpellCooldown(spell) == 0 then
+			elseif IsUsableSpell(spell) and GetSpellCooldown(spell) == 0 then
 				NeP.Core.Debug('Engine', 'castSanityCheck passed')
 				NeP.Engine.Current_Spell = spell
 				return true, spell
@@ -189,11 +189,15 @@ local function castSanityCheck(spell)
 	return false
 end
 
-local function canIterate()
-	if UnitCastingInfo('player') == nil
-	and UnitChannelInfo('player') == nil
-	and not UnitIsDeadOrGhost('player') then
-		return true
+local function canIterate(prefix)
+	if not UnitIsDeadOrGhost('player') then
+		-- Bypass so we can interrupt a spell
+		if prefix == '!'
+		-- Regular stuff
+		or UnitCastingInfo('player') == nil
+		and UnitChannelInfo('player') == nil then
+			return true
+		end
 	end
 	return false
 end
@@ -365,7 +369,7 @@ function Engine.Iterate(table)
 				-- Regular sanity checks
 				else
 					NeP.Core.Debug('Engine', 'Iterate: Hit Normal')
-					local shouldBreak = Rgl_Cast(spell, conditions, target)
+					local shouldBreak = Rgl_Cast(spell, line[2], target)
 					if shouldBreak then break end
 				end
 			end
