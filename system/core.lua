@@ -12,7 +12,9 @@ NeP = {
 		printColor = '|cffFFFFFF',
 		mediaDir = 'Interface\\AddOns\\NerdPack\\media\\',
 	},
-	Core = {},
+	Core = {
+		DebugMode = false
+	},
 	Locale = {}
 }
 
@@ -95,9 +97,8 @@ function NeP.Core.Message(txt)
 	end
 end
 
-local debug = false
 function NeP.Core.Debug(prefix, txt)
-	if debug then
+	if NeP.Core.DebugMode then
 		local prefix, text = tostring(prefix), tostring(txt)
 		print(printPrefix..'(DEBUG): ('..prefix..') '..text)
 	end

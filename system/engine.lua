@@ -264,19 +264,25 @@ local SpecialTrigers = {
 		local spell = string.sub(spell, 2);
 		return Rgl_Cast(spell, conditions, target) 
 	end,
-	-- Item (FIXME)
+	-- Item
 	['#'] = function(spell, conditons, target)
+		NeP.Core.Debug('Engine', 'Hit Item trigger')
 		local item = string.sub(spell, 2);
 		local conditions = NeP.DSL.parse(conditons, spell)
 		if conditions then
+			NeP.Core.Debug('Engine', 'Passed Item Conditions')
 			if invItems[tostring(item)] then
-				local item = GetInventoryItemID('player', invItems[tostring(item)])
-				local isUsable, notEnoughMana = IsUsableItem(item)
+				local item = invItems[tostring(item)]
+				local item_X = GetInventoryItemID("player", GetInventorySlotInfo(item))
+				NeP.Core.Debug('Engine', 'Inventory Item: '..item)
+				local isUsable, notEnoughMana = IsUsableItem(item_X)
 				if isUsable then
-					local itemStart, itemDuration, itemEnable = GetInventoryItemCooldown('player', item)
+					NeP.Core.Debug('Engine', 'Is Usable')
+					local itemStart, itemDuration, itemEnable = GetItemCooldown(item_X)
 					if itemStart == 0 then
-						insertToLog('InvItem', item, target)
-						NeP.Engine.UseInvItem(item)
+						NeP.Core.Debug('Engine', 'Used item')
+						insertToLog('InvItem', item_X, target)
+						NeP.Engine.UseInvItem(GetInventorySlotInfo(item))
 						return true
 					end
 				end
