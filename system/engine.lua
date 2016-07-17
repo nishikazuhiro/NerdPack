@@ -92,7 +92,8 @@ function Engine.registerRotation(SpecID, CrName, InCombat, outCombat, initFunc)
 	local Spec = GetSpecialization() or 0
 	local SpecInfo = GetSpecializationInfo(Spec)
 	local localizedClass, englishClass, classIndex = UnitClass('player')
-	if ListClassSpec[tonumber(classIndex)][tonumber(SpecID)] ~= nil then
+	if ListClassSpec[tonumber(classIndex)][tonumber(SpecID)] ~= nil
+	or ListClassSpec[tonumber(SpecID)] ~= nil then
 		-- If SpecID Table is not created yet, create one.
 		if NeP.Engine.Rotations[SpecID] == nil then NeP.Engine.Rotations[SpecID] = {} end
 		-- In case someone tries to load a cr with the same name of a existing one
@@ -320,7 +321,7 @@ local SpecialTrigers = {
 	end
 }
 
--- This allows for nesting a nest inside 1k nests and more...
+-- This allows for nesting a nest
 local function IterateNest(table)
 	local tempTable = {}
 	for i=1, #table do tempTable[#tempTable+1] = table[i] end

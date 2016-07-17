@@ -79,6 +79,7 @@ end
 
 local function LoadCrs(info)
 	local Spec = GetSpecialization()
+	local localizedClass, englishClass, classIndex = UnitClass('player')
 	if Spec then
 		local SpecInfo = GetSpecializationInfo(Spec)
 		local routinesTable = NeP.Engine.Rotations[SpecInfo]
@@ -100,18 +101,36 @@ local function LoadCrs(info)
 				end
 				UIDropDownMenu_AddButton(info)
 			end
-		else
-			info = UIDropDownMenu_CreateInfo()
-			info.notCheckable = 1
-			info.text = TA('mainframe', 'NoCR')
-			UIDropDownMenu_AddButton(info)
+			return
 		end
-	else
-		info = UIDropDownMenu_CreateInfo()
-		info.notCheckable = 1
-		info.text = TA('mainframe', 'NoSpec')
-		UIDropDownMenu_AddButton(info)
+	elseif classIndex then
+		local routinesTable = NeP.Engine.Rotations[classIndex]
+		if routinesTable then
+			local lastCR = Config.Read('NeP_SlctdCR_'..(classIndex))
+			for k,v in pairs(routinesTable) do
+				local rState = (lastCR == k) or false
+				info = UIDropDownMenu_CreateInfo()
+				info.text = v['Name']
+				info.value = k
+				info.checked = rState
+				info.func = function(self)
+					self.checked = not self.checked
+					NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
+					Intf.ResetToggles()
+					Intf.ResetSettings()
+					Config.Write('NeP_SlctdCR_'..(classIndex), k)
+					NeP.Core.updateSpec()
+				end
+				UIDropDownMenu_AddButton(info)
+			end
+			return
+		end
 	end
+	-- No CR
+	info = UIDropDownMenu_CreateInfo()
+	info.notCheckable = 1
+	info.text = TA('mainframe', 'NoCR')
+	UIDropDownMenu_AddButton(info)
 end
 
 local function createButtons(key, icon, name, tooltip, func)
