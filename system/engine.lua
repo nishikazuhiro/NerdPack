@@ -100,7 +100,7 @@ function Engine.registerRotation(SpecID, CrName, InCombat, outCombat, initFunc)
 		local TableName = CrName
 		if NeP.Engine.Rotations[SpecID][CrName] ~= nil then TableName = CrName..'_'..math.random(0,1000) end
 		-- Create CR table
-		NeP.Engine.Rotations[SpecID][TableName] = {
+		NeP.Engine.Rotations[SpecID][TableName] = { 
 			[true] = InCombat,
 			[false] = outCombat,
 			['InitFunc'] = initFunc or (function() return end),
@@ -143,7 +143,7 @@ local function checkTarget(spell, target)
 	local ground = false
 	-- Allow functions/conditions to force a target
 	if NeP.Engine.ForceTarget then
-		target = NeP.Engine.ForceTarget
+		target = NeP.Engine.ForceTarget	
 		NeP.Engine.ForceTarget = nil
 	end
 	-- Ground target
@@ -175,8 +175,8 @@ local function castSanityCheck(spell)
 		if spell then
 			NeP.Core.Debug('Engine', 'castSanityCheck_Spell:'..tostring(spell))
 			-- Make sure we have the spell
-			local skillType, spellId = GetSpellBookItemInfo(spell)
-			if skillType == 'FUTURESPELL' then
+			local skillType, spellId = GetSpellBookItemInfo(tostring(spell))
+			if skillType == 'FUTURESPELL' then 
 				NeP.Core.Debug('Engine', 'castSanityCheck hit FUTURESPELL')
 				return false
 			-- Spell Sanity Checks
