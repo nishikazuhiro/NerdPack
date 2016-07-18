@@ -12,7 +12,9 @@ NeP = {
 		printColor = '|cffFFFFFF',
 		mediaDir = 'Interface\\AddOns\\NerdPack\\media\\',
 	},
-	Core = {},
+	Core = {
+		DebugMode = false
+	},
 	Locale = {}
 }
 
@@ -95,9 +97,8 @@ function NeP.Core.Message(txt)
 	end
 end
 
-local debug = false
 function NeP.Core.Debug(prefix, txt)
-	if debug then
+	if NeP.Core.DebugMode then
 		local prefix, text = tostring(prefix), tostring(txt)
 		print(printPrefix..'(DEBUG): ('..prefix..') '..text)
 	end
@@ -207,16 +208,26 @@ end
 
 function NeP.Core.updateSpec()
 	local Spec = GetSpecialization()
+	local localizedClass, englishClass, classIndex = UnitClass('player')
 	if Spec then
 		local SpecInfo = GetSpecializationInfo(Spec)
-		local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
 		if NeP.Engine.Rotations[SpecInfo] then
+			local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
 			if NeP.Engine.Rotations[SpecInfo][SlctdCR] then
 				NeP.Interface.ResetToggles()
 				NeP.Interface.ResetSettings()
 				NeP.Engine.SelectedCR = NeP.Engine.Rotations[SpecInfo][SlctdCR]
 				NeP.Engine.Rotations[SpecInfo][SlctdCR]['InitFunc']()
 			end
+		end
+	-- Basic CRs (When no spec available)
+	elseif NeP.Engine.Rotations[classIndex] then
+		local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..classIndex)
+		if NeP.Engine.Rotations[classIndex][SlctdCR] then
+			NeP.Interface.ResetToggles()
+			NeP.Interface.ResetSettings()
+			NeP.Engine.SelectedCR = NeP.Engine.Rotations[classIndex][SlctdCR]
+			NeP.Engine.Rotations[classIndex][SlctdCR]['InitFunc']()
 		end
 	end
 end
