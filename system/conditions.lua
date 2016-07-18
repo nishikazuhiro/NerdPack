@@ -184,6 +184,13 @@ NeP.DSL.RegisterConditon("pain", function(target, spell)
 	return UnitPower(target, SPELL_POWER_PAIN)
 end)
 
+-- Returns the number of fury you have left till max (e.g. you have a max of 100 fury and 80 fury now, so it will return 20)
+NeP.DSL.RegisterConditon("furydiff", function(target, spell)
+    local max = UnitPowerMax(target, SPELL_POWER_FURY)
+    local curr = UnitPower(target, SPELL_POWER_FURY)
+    return (max - curr)
+end)
+
 -- Returns the number of chi you have left till max (e.g. you have a max of 5 chi and 3 chi now, so it will return 2)
 NeP.DSL.RegisterConditon("chidiff", function(target, spell)
     local max = UnitPowerMax(target, SPELL_POWER_CHI)

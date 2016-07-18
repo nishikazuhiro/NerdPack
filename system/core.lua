@@ -118,7 +118,7 @@ local _rangeTable = {
 }
 
 function NeP.Core.UnitAttackRange(unitA, unitB, _type)
-	if IsHackEnabled then 
+	if IsHackEnabled then
 		return _rangeTable[_type] + UnitCombatReach(unitA) + UnitCombatReach(unitB)
 	else
 		-- Unlockers wich dont have UnitCombatReach like functions...
@@ -233,6 +233,8 @@ local _classColors = {
 	['WARRIOR'] = 		{ r = 0.78, g = 0.61, 	b = 0.43, 	Hex = 'c79c6e' },
 	['DEATHKNIGHT'] = 	{ r = 0.77, g = 0.12 , 	b = 0.23, 	Hex = 'c41f3b' },
 	['MONK'] = 			{ r = 0.0, 	g = 1.00 , 	b = 0.59, 	Hex = '00ff96' },
+	['DEMONHUNTER'] = 			{ r = 0.64, 	g = 0.19 , 	b = 0.79, 	Hex = 'A330C9' },
+
 }
 
 function NeP.Core.classColor(unit, _type, alpha)
