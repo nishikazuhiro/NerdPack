@@ -8,19 +8,21 @@ NeP.Engine = {
 	Rotations = {},
 	------------------------------------ Fake Units ------------------------------------
 	FakeUnits = {
-		['lowest'] 		= function() return 	 NeP.Healing['lowest']() 					end,
-		['!lowest'] 	= function() return '!'..NeP.Healing['lowest']() 					end,
-		['tank'] 		= function() return 	 NeP.Healing['tank']() 						end,
-		['!tank'] 		= function() return '!'..NeP.Healing['tank']() 						end,
-		['tanktarget'] 	= function() return 	 NeP.Healing['tank']()..'target' 			end,
-		['!tanktarget'] = function() return '!'..NeP.Healing['tank']()..'target' 			end,
-		['nil'] 		= function() return UnitExists('target') and 'target' or 'player' 	end
+		['lowest']		= function() return	 NeP.Healing['lowest']()					end,
+		['!lowest']	= function() return '!'..NeP.Healing['lowest']()					end,
+		['tank']		= function() return	 NeP.Healing['tank']()						end,
+		['!tank']		= function() return '!'..NeP.Healing['tank']()						end,
+		['tanktarget']	= function() return	 NeP.Healing['tank']()..'target'			end,
+		['!tanktarget'] = function() return '!'..NeP.Healing['tank']()..'target'			end,
+		['nil']		= function() return UnitExists('target') and 'target' or 'player'	end
 	}
 }
 
 local Engine = NeP.Engine
-local fetchKey = NeP.Interface.fetchKey
-local TA = NeP.Core.TA
+local Core = NeP.Core
+local Debug = Core.Debug
+local TA = Core.TA
+local fK = NeP.Interface.fK
 
 local ListClassSpec = {
 	[0] = {}, -- None
@@ -173,15 +175,15 @@ local function castSanityCheck(spell)
 			spell = GetSpellInfo(spell)
 		end
 		if spell then
-			NeP.Core.Debug('Engine', 'castSanityCheck_Spell:'..tostring(spell))
+			Debug('Engine', 'castSanityCheck_Spell:'..tostring(spell))
 			-- Make sure we have the spell
 			local skillType, spellId = GetSpellBookItemInfo(tostring(spell))
 			if skillType == 'FUTURESPELL' then 
-				NeP.Core.Debug('Engine', 'castSanityCheck hit FUTURESPELL')
+				Debug('Engine', 'castSanityCheck hit FUTURESPELL')
 				return false
 			-- Spell Sanity Checks
 			elseif IsUsableSpell(spell) and GetSpellCooldown(spell) == 0 then
-				NeP.Core.Debug('Engine', 'castSanityCheck passed')
+				Debug('Engine', 'castSanityCheck passed')
 				NeP.Engine.Current_Spell = spell
 				return true, spell
 			end
@@ -224,69 +226,62 @@ local invItems = {
 	['boots']		= 'FeetSlot',
 	['wrist']		= 'WristSlot',
 	['bracers']		= 'WristSlot',
-	['gloves']	 	= 'HandsSlot',
+	['gloves']		= 'HandsSlot',
 	['hands']		= 'HandsSlot',
 	['finger1']		= 'Finger0Slot',
 	['finger2']		= 'Finger1Slot',
-	['trinket1'] 	= 'Trinket0Slot',
-	['trinket2'] 	= 'Trinket1Slot',
+	['trinket1']	= 'Trinket0Slot',
+	['trinket2']	= 'Trinket1Slot',
 	['back']		= 'BackSlot',
 	['cloak']		= 'BackSlot',
-	['mainhand'] 	= 'MainHandSlot',
+	['mainhand']	= 'MainHandSlot',
 	['offhand']		= 'SecondaryHandSlot',
 	['weapon']		= 'MainHandSlot',
 	['weapon1']		= 'MainHandSlot',
 	['weapon2']		= 'SecondaryHandSlot',
-	['ranged'] 		= 'RangedSlot'
+	['ranged']		= 'RangedSlot'
 }
 
--- Dont duplicate code
-local function Rgl_Cast(spell, conditions, target)
-	local canCast, spell = castSanityCheck(spell)
-	if canCast then
-		NeP.Core.Debug('Engine', 'Iterate: Can Cast')
-		local conditions = NeP.DSL.parse(conditions, spell)
-		if conditions then
-			NeP.Core.Debug('Engine', 'Iterate: passed cast conditions')
-			local hasTarget, target, ground = checkTarget(spell, target)
-			if hasTarget then
-				NeP.Core.Debug('Engine', 'Iterate: Has Target: '..target..' Ground: '..tostring(ground))
-				Cast(spell, target, ground)
-				return true
-			end
-		end
-	end
-	return false
-end
-
-local SpecialTrigers = {
+local sTrigger = {
 	-- Cancel cast
 	['!'] = function(spell, conditons, target)
 		local spell = string.sub(spell, 2);
-		return Rgl_Cast(spell, conditions, target) 
+		local canCast, spell = castSanityCheck(spell)
+		if canCast then
+			if NeP.DSL.parse(conditons, spell) then
+				local castingTime = castingTime('player')
+				if not castingTime or castingTime > 1 then
+					local hasTarget, target, ground = checkTarget(target)
+					if hasTarget then
+						SpellStopCasting()
+						Cast(spell, target, ground)
+					end		
+				end		
+			end		
+		end
 	end,
 	-- Item
 	['#'] = function(spell, conditons, target)
-		NeP.Core.Debug('Engine', 'Hit Item trigger')
+		Debug('Engine', 'Hit Item trigger')
 		local item = string.sub(spell, 2);
-		local conditions = NeP.DSL.parse(conditons, spell)
-		if conditions then
-			NeP.Core.Debug('Engine', 'Passed Item Conditions')
+		if NeP.DSL.parse(conditons, spell) then
+			Debug('Engine', 'Passed Item Conditions')
+			-- Inventory (Gear)
 			if invItems[tostring(item)] then
 				local item = invItems[tostring(item)]
 				local item_X = GetInventoryItemID("player", GetInventorySlotInfo(item))
-				NeP.Core.Debug('Engine', 'Inventory Item: '..item)
+				Debug('Engine', 'Inventory Item: '..item)
 				local isUsable, notEnoughMana = IsUsableItem(item_X)
 				if isUsable then
-					NeP.Core.Debug('Engine', 'Is Usable')
+					Debug('Engine', 'Is Usable')
 					local itemStart, itemDuration, itemEnable = GetItemCooldown(item_X)
 					if itemStart == 0 then
-						NeP.Core.Debug('Engine', 'Used item')
+						Debug('Engine', 'Used item')
 						insertToLog('InvItem', item_X, target)
 						NeP.Engine.UseInvItem(GetInventorySlotInfo(item))
-						return true
 					end
 				end
+			-- Normal
 			else
 				local isUsable, notEnoughMana = IsUsableItem(item)
 				if isUsable then
@@ -294,105 +289,100 @@ local SpecialTrigers = {
 					if itemStart == 0 and GetItemCount(item) > 0 then
 						insertToLog('Item', item, target)
 						NeP.Engine.UseItem(item, target)
-						return true
 					end
 				end
 			end
 		end
-		return false
 	end,
 	-- Lib
 	['@'] = function(spell, conditons, target)
-		local conditions = NeP.DSL.parse(conditons, '')
-		if conditions then
+		if NeP.DSL.parse(conditons, spell) then
 			NeP.library.parse(false, spell, target)
 			return true
 		end
-		return false
 	end,
 	-- Macro
 	['/'] = function(spell, conditons, target)
-		local conditions = NeP.DSL.parse(conditons, spell)
-		if conditions then
+		if NeP.DSL.parse(conditons, spell) then
 			NeP.Engine.Macro(spell)
 			return true
 		end
-		return false
 	end
 }
 
--- This allows for nesting a nest
-local function IterateNest(table)
-	local tempTable = {}
-	for i=1, #table do tempTable[#tempTable+1] = table[i] end
-	Engine.Iterate(tempTable)
-end
+local pTypes = {
+	['table'] = function(spell, cond, tar)
+		Debug('Engine', 'Iterate: Hit Table')
+		if NeP.DSL.parse(cond, '') then
+			Debug('Engine', 'Iterate: passed Table conditions')
+			local tempTable = {}
+			for i=1, #table do tempTable[#tempTable+1] = table[i] end
+			Engine.Iterate(tempTable)
+			IterateNest(spell)
+		end
+	end,
+	['function'] = function(spell, cond, tar)
+		Debug('Engine', 'Iterate: Hit Func')
+		if canIterate() then
+			if NeP.DSL.parse(cond, '') then
+				Debug('Engine', 'Iterate: passed func conditions')
+				spell()
+			end
+		end
+	end,
+	['string'] = function(spell, cond, tar)
+		Debug('Engine', 'Iterate: Hit String')
+		-- Pause
+		if spell == 'pause' then
+			Debug('Engine', 'Iterate: Hit Pause')
+			if NeP.DSL.parse(cond, spell) then
+				Debug('Engine', 'Iterate: passed pause conditions')
+			end
+		-- Special trigers
+		elseif sTrigger[prefix] then
+			Debug('Engine', 'Iterate: Hit Special Trigers')
+			sTrigger[prefix](spell, cond, tar)
+		-- Regular sanity checks
+		else
+			Debug('Engine', 'Iterate: Hit Normal')
+			local canCast, spell = castSanityCheck(spell)
+			if canCast then
+				Debug('Engine', 'Iterate: Can Cast')
+				if NeP.DSL.parse(cond, spell) then
+					Debug('Engine', 'Iterate: passed cast conditions')
+					local hasTarget, target, ground = checkTarget(spell, tar)
+					if hasTarget then
+						Debug('Engine', 'Iterate: Has Target: '..tar..' Ground: '..tostring(ground))
+						Cast(spell, target, ground)
+					end
+				end
+			end
+		end
+	end
+}
 
 -- This iterates the routine table itself.
 function Engine.Iterate(table)
 	for i=1, #table do
-		local line = table[i]
-		local spell = line[1]
-		local target = line[3]
-		local _type = type(spell)
-		NeP.Core.Debug('Engine', 'Iterate: TYPE_'.._type..' -- '..tostring(spell))
-		-- Nested
-		if _type == 'table' then
-			NeP.Core.Debug('Engine', 'Iterate: Hit Table')
-			local conditions = NeP.DSL.parse(line[2], '')
-			if conditions then
-				NeP.Core.Debug('Engine', 'Iterate: passed Table conditions')
-				IterateNest(spell)
-			end
-		-- Function
-		elseif _type == 'function' then
-			NeP.Core.Debug('Engine', 'Iterate: Hit Func')
-			if canIterate() then
-				local conditions = NeP.DSL.parse(line[2], '')
-				if conditions then
-					NeP.Core.Debug('Engine', 'Iterate: passed func conditions')
-					spell()
-					break
-				end
-			end
-		-- Normal cast
-		elseif _type == 'string' then
-			local prefix = string.sub(spell, 1, 1)
-			if canIterate(prefix) then
-				NeP.Core.Debug('Engine', 'Iterate: Hit String')
-				-- Pause
-				if spell == 'pause' then
-					NeP.Core.Debug('Engine', 'Iterate: Hit Pause')
-					local conditions = NeP.DSL.parse(line[2], spell)
-					if conditions then
-						NeP.Core.Debug('Engine', 'Iterate: passed pause conditions')
-						break
-					end
-				-- Special trigers
-				elseif SpecialTrigers[prefix] then
-					NeP.Core.Debug('Engine', 'Iterate: Hit Special Trigers')
-					local shouldBreak = SpecialTrigers[prefix](spell, line[2], target)
-					if shouldBreak then break end
-				-- Regular sanity checks
-				else
-					NeP.Core.Debug('Engine', 'Iterate: Hit Normal')
-					local shouldBreak = Rgl_Cast(spell, line[2], target)
-					if shouldBreak then break end
-				end
-			end
+		local aR = table[i]
+		local tP = type(aR[1])
+		local pX = string.sub(aR[1], 1, 1)
+		print(tP..', '..pX)
+		if pTypes[tP] and canIterate(pX) then
+			pTypes[tP](aR[1], aR][2], aR[3])
 		end
 	end
 end
 
 local function EngineTimeOut()
-	local Setting = fetchKey('NePSettings', 'NeP_Cycle', 'Standard')
+	local Setting = fK('NePSettings', 'NeP_Cycle', 'Standard')
 	if Setting == 'Standard' then
 		return 0.5
 	elseif Setting == 'Random' then
 		local RND = math.random(3, 7)/10
 		return tonumber(RND)
 	else
-		local MTC = fetchKey('NePSettings', 'MCT', 0.5)
+		local MTC = fK('NePSettings', 'MCT', 0.5)
 		return tonumber(MTC)
 	end
 end
@@ -413,7 +403,7 @@ C_Timer.NewTicker(0.1, (function()
 				local table = NeP.Engine.SelectedCR[InCombatCheck]
 				Engine.Iterate(table)
 			else
-				NeP.Core.Message(TA('Engine', 'NoCR'))
+				Core.Message(TA('Engine', 'NoCR'))
 			end
 			LastTimeOut = CurrentTime + TimeOut
 		end
