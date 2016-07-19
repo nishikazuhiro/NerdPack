@@ -94,7 +94,7 @@ local Buffs = {
 	['critical'] = 6,
 	['mastery'] = 7,
 	['multistrike'] = 8,
-	['versatility'] = 9 
+	['versatility'] = 9
 }
 NeP.DSL.RegisterConditon('aura', function(unit, buff)
 	return (GetRaidBuffTrayAuraInfo(Buffs[buff]) ~= nil)
@@ -174,6 +174,28 @@ end)
 
 NeP.DSL.RegisterConditon("chi", function(target, spell)
 	return UnitPower(target, SPELL_POWER_CHI)
+end)
+
+NeP.DSL.RegisterConditon("fury", function(target, spell)
+	return UnitPower(target, SPELL_POWER_FURY)
+end)
+
+NeP.DSL.RegisterConditon("pain", function(target, spell)
+	return UnitPower(target, SPELL_POWER_PAIN)
+end)
+
+-- Returns the number of fury you have left till max (e.g. you have a max of 100 fury and 80 fury now, so it will return 20)
+NeP.DSL.RegisterConditon("furydiff", function(target, spell)
+    local max = UnitPowerMax(target, SPELL_POWER_FURY)
+    local curr = UnitPower(target, SPELL_POWER_FURY)
+    return (max - curr)
+end)
+
+-- Returns the number of chi you have left till max (e.g. you have a max of 5 chi and 3 chi now, so it will return 2)
+NeP.DSL.RegisterConditon("chidiff", function(target, spell)
+    local max = UnitPowerMax(target, SPELL_POWER_CHI)
+    local curr = UnitPower(target, SPELL_POWER_CHI)
+    return (max - curr)
 end)
 
 NeP.DSL.RegisterConditon("demonicfury", function(target, spell)
@@ -1013,8 +1035,9 @@ NeP.DSL.RegisterConditon("vengeance", function(unit, spell)
 	return vengeance / UnitHealthMax("player") * 100
 end)
 
+-- Blizz Removed UnitIsTappedByPlayer is Legion!
 NeP.DSL.RegisterConditon('modifier.taunt', function()
-	for i=1,#NeP.OM.unitEnemie do
+	--[[for i=1,#NeP.OM.unitEnemie do
 		local Obj = NeP.OM.unitEnemie[i]
 		if NeP.Engine.Infront('player', Obj.key) then
 			if UnitIsTappedByPlayer(Obj.key)
@@ -1023,11 +1046,11 @@ NeP.DSL.RegisterConditon('modifier.taunt', function()
 				if UnitThreatSituation('player', Obj.key)
 				and UnitThreatSituation('player', Obj.key) <= 2 then
 					NeP.Engine.ForceTarget = Obj.key
-					return true 
+					return true
 				end
 			end
 		end
-	end
+	end]]
 	return false
 end)
 
@@ -1043,6 +1066,10 @@ NeP.DSL.RegisterConditon("area.enemies", function(unit, distance)
 		end
 	end
 	return total
+end)
+
+NeP.DSL.RegisterConditon("modifier.enemies", function()
+	return #NeP.OM.unitEnemie
 end)
 
 NeP.DSL.RegisterConditon("area.friendly", function(unit, distance)

@@ -77,6 +77,13 @@ Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
 	Intf.RefreshToggles()
 end
 
+Intf.toggleToggle = function(key)
+	button = _G[key]
+	button.actv = not button.actv
+	button:SetChecked(button.actv)
+	Config.Write('bStates_'..key, button.actv)	Intf.RefreshToggles()
+end
+
 local function LoadCrs(info)
 	local Spec = GetSpecialization()
 	local localizedClass, englishClass, classIndex = UnitClass('player')
@@ -223,7 +230,7 @@ function Config.CreateMainFrame()
 	if NeP_Size < 25 then NeP_Size = 40 end
 	NeP.MFrame.buttonSize = NeP_Size
 
-	--parent frame 
+	--parent frame
 	NePFrame = CreateFrame("Frame", "NePFrame", UIParent)
 	NePFrame:SetPoint(POS_1, POS_2, POS_3)
 	NePFrame:SetMovable(true)
@@ -254,9 +261,9 @@ function Config.CreateMainFrame()
 		NePFrame.TF:SetSize(NePFrame.TF.TT:GetStringWidth()+33, NePFrame.TF.TT:GetStringHeight())
 	else
 		NePFrame.TF:SetBackdrop({
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-			tile = true, tileSize = 16, edgeSize = 16, 
+			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+			tile = true, tileSize = 16, edgeSize = 16,
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }});
 		NePFrame.TF:SetBackdropColor(0,0,0,1);
 		NePFrame.TF:SetSize(NePFrame.TF.TT:GetStringWidth()+33, NePFrame.TF.TT:GetStringHeight()+4)
@@ -316,13 +323,13 @@ function Config.CreateMainFrame()
 	if ElvSkin then
 		local texture = ST_DB:CreateTexture()
 		texture:SetTexture(0, 0, 0, 0.75)
-		texture:SetAllPoints() 
+		texture:SetAllPoints()
 		ST_DB:SetSize(25, NePFrame.TF.TT:GetStringHeight())
 	else
 		ST_DB:SetBackdrop({
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-			tile = true, tileSize = 16, edgeSize = 16, 
+			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+			tile = true, tileSize = 16, edgeSize = 16,
 			insets = { left = 4, right = 4, top = 4, bottom = 4 }});
 		ST_DB:SetBackdropColor(0,0,0,1);
 		ST_DB:SetSize(25, NePFrame.TF.TT:GetStringHeight()+4)
@@ -331,7 +338,7 @@ function Config.CreateMainFrame()
 	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
 	htex:SetTexCoord(0, 0.625, 0, 0.6875)
 	htex:SetAllPoints()
-	ST_DB:SetNormalTexture(ntex) 
+	ST_DB:SetNormalTexture(ntex)
 	ST_DB:SetHighlightTexture(htex)
 	ST_DB:SetPushedTexture(htex)
 	ST_DB:RegisterForClicks('anyUp')

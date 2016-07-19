@@ -14,7 +14,7 @@ function Commands.Register(name, func, ...)
 end
 
 NeP_CMDTable = {
-	
+
 	-- Master Toggle
 	['mastertoggle'] = function(rest)
 		if rest == 'on' then
@@ -28,6 +28,16 @@ NeP_CMDTable = {
 	['mt'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
 	['toggle'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
 	['tg'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
+
+  -- AoE
+  ['aoe'] = function(rest) NeP.Interface.toggleToggle('AoE') end,
+
+  -- CDs
+  ['cooldowns'] = function(rest) NeP.Interface.toggleToggle('Cooldowns') end,
+
+  -- Interrupts
+  ['interrupts'] = function(rest) NeP.Interface.toggleToggle('Interrupts') end,
+
 
 	-- Hide
 	['hide'] = function(rest) NePFrame:Hide(); NeP.Core.Print('To Display NerdPack Execute: \n/nep show') end,
