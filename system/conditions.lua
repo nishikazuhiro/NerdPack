@@ -968,58 +968,6 @@ NeP.DSL.RegisterConditon("hashero", function(unit, spell)
 	return false
 end)
 
-NeP.DSL.RegisterConditon("buffs.stats", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(1) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.stamina", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(2) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.attackpower", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(3) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.attackspeed", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(4) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.haste", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(4) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.spellpower", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(5) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.crit", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(6) ~= nil)
-end)
-NeP.DSL.RegisterConditon("buffs.critical", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(6) ~= nil)
-end)
-NeP.DSL.RegisterConditon("buffs.criticalstrike", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(6) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.mastery", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(7) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.multistrike", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(8) ~= nil)
-end)
-NeP.DSL.RegisterConditon("buffs.multi", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(8) ~= nil)
-end)
-
-NeP.DSL.RegisterConditon("buffs.vers", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(9) ~= nil)
-end)
-NeP.DSL.RegisterConditon("buffs.versatility", function(unit, _)
-	return (GetRaidBuffTrayAuraInfo(9) ~= nil)
-end)
-
 NeP.DSL.RegisterConditon("charmed", function(unit, _)
 	return (UnitIsCharmed(unit) == true)
 end)
