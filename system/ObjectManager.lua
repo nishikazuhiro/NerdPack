@@ -118,7 +118,7 @@ local function BlacklistedDebuffs(Obj)
 	local isBadDebuff = false
 	for i = 1, 40 do
 		local spellID = select(11, UnitDebuff(Obj, i))
-		if spellID ~= nil then
+		if spellID then
 			if BlacklistedAuras[tonumber(spellID)] ~= nil then
 				isBadDebuff = true
 			end

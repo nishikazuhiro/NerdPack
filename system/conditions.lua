@@ -97,20 +97,29 @@ NeP.DSL.RegisterConditon("seal", function(target, spell)
 	return GetShapeshiftForm()
 end)
 
+
+NeP.DSL.RegisterConditon("energy", function(target, spell)
+	return UnitPower(target, UnitPowerType(target))
+end)
+
 NeP.DSL.RegisterConditon("focus", function(target, spell)
-	return UnitPower(target, SPELL_POWER_FOCUS)
+	return NeP.DSL.Conditions["energy"](target)
 end)
 
 NeP.DSL.RegisterConditon("holypower", function(target, spell)
-	return UnitPower(target, SPELL_POWER_HOLY_POWER)
+	return NeP.DSL.Conditions["energy"](target)
 end)
 
 NeP.DSL.RegisterConditon("shadoworbs", function(target, spell)
-	return UnitPower(target, SPELL_POWER_SHADOW_ORBS)
+	return NeP.DSL.Conditions["energy"](target)
 end)
 
-NeP.DSL.RegisterConditon("energy", function(target, spell)
-	return UnitPower(target, SPELL_POWER_ENERGY)
+NeP.DSL.RegisterConditon("eclipse", function(target, spell)
+	return math.abs(NeP.DSL.Conditions["energy"](target))
+end)
+
+NeP.DSL.RegisterConditon("eclipseRaw", function(target, spell)
+	return NeP.DSL.Conditions["energy"](target)
 end)
 
 NeP.DSL.RegisterConditon("solar", function(target, spell)
@@ -119,14 +128,6 @@ end)
 
 NeP.DSL.RegisterConditon("lunar", function(target, spell)
 	return GetEclipseDirection() == 'moon'
-end)
-
-NeP.DSL.RegisterConditon("eclipse", function(target, spell)
-	return math.abs(UnitPower(target, SPELL_POWER_ECLIPSE))
-end)
-
-NeP.DSL.RegisterConditon("eclipseRaw", function(target, spell)
-	return UnitPower(target, SPELL_POWER_ECLIPSE)
 end)
 
 NeP.DSL.RegisterConditon("timetomax", function(target, spell)
@@ -875,14 +876,6 @@ end)
 
 NeP.DSL.RegisterConditon("ilevel", function(unit, _)
 	return math.floor(select(1,GetAverageItemLevel()))
-end)
-
-NeP.DSL.RegisterConditon("firehack", function(unit, _)
-	return FireHack or false
-end)
-
-NeP.DSL.RegisterConditon("offspring", function(unit, _)
-	return type(opos) == 'function' or false
 end)
 
 NeP.DSL.RegisterConditon('dispellAll', function(target, spell)
