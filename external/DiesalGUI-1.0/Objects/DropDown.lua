@@ -1,4 +1,4 @@
--- $Id: DropDown.lua 52 2014-04-08 11:52:40Z diesal@reece-tech.com $
+-- $Id: DropDown.lua 53 2016-07-12 21:56:30Z diesal2010 $
 
 local DiesalGUI = LibStub('DiesalGUI-1.0')
 -- ~~| Libraries |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -17,7 +17,9 @@ local styleSheet = {
 	['frame-color'] = {			
 		type			= 'texture',
 		layer			= 'BACKGROUND',								
-		color			= '2f353b',			
+		gradient	= 'VERTICAL',				
+		color			= '263037',
+		colorEnd	= '2d3b45',	
 		offset		= 0,	
 	},
 	['frame-outline'] = {			
@@ -25,16 +27,7 @@ local styleSheet = {
 		layer			= 'BORDER',								
 		color			= '000000',		
 		offset		= 0,		
-	},
-	['frame-highlight'] = {			
-		type			= 'texture',
-		layer			= 'BORDER',
-		gradient	= 'VERTICAL',							
-		color			= 'FFFFFF',			
-		alpha 		= 0,
-		alphaEnd	= .1,
-		offset		= -1,		
-	},
+	},	
 	['frame-inline'] = {		
 		type			= 'outline',
 		layer			= 'BORDER',

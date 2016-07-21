@@ -19,7 +19,7 @@ activeFrame:SetWidth(32)
 activeFrame:SetHeight(32)
 activeFrame:SetPoint("CENTER", UIParent, "CENTER")
 activeFrame.glow = activeFrame:CreateTexture()
-activeFrame.glow:SetTexture(0,1,1,1)
+activeFrame.glow:SetColorTexture(0,1,1,1)
 activeFrame.glow:SetAllPoints(activeFrame)
 activeFrame.glow.texture = activeFrame:CreateTexture()
 activeFrame.glow.texture:SetTexture("Interface/TARGETINGFRAME/UI-RaidTargetingIcon_8")
@@ -59,21 +59,35 @@ end)
 
 -- cast on ground
 function Engine.CastGround(spell, target)
+	local stickyValue = GetCVar("deselectOnClick")
+	SetCVar("deselectOnClick", "0")
+	CameraOrSelectOrMoveStart(1)
+	NeP.Engine.Cast(spell)
+	CameraOrSelectOrMoveStop(1)
+	SetCVar("deselectOnClick", "1")
+	SetCVar("deselectOnClick", stickyValue)
 end
 
 -- Cast
 function Engine.Cast(spell, target)
-	showActiveSpell(spell)
+	if type(spell) == "number" then
+		CastSpellByID(spell, target)
+	else
+		CastSpellByName(spell, target)
+	end
 end
 
 -- Macro
 function Engine.Macro(text)
+	RunMacroText(text)
 end
 
 function Engine.UseItem(name, target)
+	UseItemByName(name, target)
 end
 
 function Engine.UseInvItem(slot)
+	UseInventoryItem(slot)
 end
 
 function Engine.LineOfSight(a, b)

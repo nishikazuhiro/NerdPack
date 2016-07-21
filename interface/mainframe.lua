@@ -322,7 +322,7 @@ function Config.CreateMainFrame()
 	ST_DB:SetScript("OnClick", func)
 	if ElvSkin then
 		local texture = ST_DB:CreateTexture()
-		texture:SetTexture(0, 0, 0, 0.75)
+		texture:SetColorTexture(0, 0, 0, 0.75)
 		texture:SetAllPoints()
 		ST_DB:SetSize(25, NePFrame.TF.TT:GetStringHeight())
 	else

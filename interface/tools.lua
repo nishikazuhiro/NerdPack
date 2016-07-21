@@ -29,7 +29,7 @@ DiesalGUI:RegisterObjectConstructor("Rule", function()
 	self.frame		= frame
 	frame:SetHeight(1)
 	frame.texture = frame:CreateTexture()
-	frame.texture:SetTexture(0,0,0,0.5)
+	frame.texture:SetColorTexture(0,0,0,0.5)
 	frame.texture:SetAllPoints(frame)
 	self.SetParent = function(self, parent)
 		self.frame:SetParent(parent)
