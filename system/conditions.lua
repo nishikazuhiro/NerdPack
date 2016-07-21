@@ -85,21 +85,6 @@ NeP.DSL.RegisterConditon("debuff.duration", function(target, spell)
 	return 0
 end)
 
-local Buffs = {
-	['stats'] = 1,
-	['stamina'] = 2,
-	['attackpower'] = 3,
-	['haste'] = 4,
-	['spellpower'] = 5,
-	['critical'] = 6,
-	['mastery'] = 7,
-	['multistrike'] = 8,
-	['versatility'] = 9
-}
-NeP.DSL.RegisterConditon('aura', function(unit, buff)
-	return (GetRaidBuffTrayAuraInfo(Buffs[buff]) ~= nil)
-end)
-
 NeP.DSL.RegisterConditon("stance", function(target, spell)
 	return GetShapeshiftForm()
 end)
@@ -448,171 +433,25 @@ NeP.DSL.RegisterConditon("runicpower", function(target, spell)
 	return UnitPower(target, SPELL_POWER_RUNIC_POWER)
 end)
 
-local runes_t = {
-	[1] = 0,
-	[2] = 0,
-	[3] = 0,
-	[4] = 0
-}
-local runes_c = {
-	[1] = 0,
-	[2] = 0,
-	[3] = 0,
-	[4] = 0
-}
 
-NeP.DSL.RegisterConditon("runes.count", function(target, rune)
-	-- 12 b, 34 f, 56 u
-	runes_t[1], runes_t[2], runes_t[3], runes_t[4], runes_c[1], runes_c[2], runes_c[3], runes_c[4] = 0,0,0,0,0,0,0,0
+NeP.DSL.RegisterConditon("runes.count", function(target)
+	local count = 0
 	for i=1, 6 do
-		local _, _, c = GetRuneCooldown(i)
-		local t = GetRuneType(i)
-		runes_t[t] = runes_t[t] + 1
-		if c then
-			runes_c[t] = runes_c[t] + 1
-		end
-	end
-	if rune == 'frost' then
-		return runes_c[3]
-	elseif rune == 'blood' then
-		return runes_c[1]
-	elseif rune == 'unholy' then
-		return runes_c[2]
-	elseif rune == 'death' then
-		return runes_c[4]
-	elseif rune == 'Frost' then
-		return runes_c[3] + runes_c[4]
-	elseif rune == 'Blood' then
-		return runes_c[1] + runes_c[4]
-	elseif rune == 'Unholy' then
-		return runes_c[2] + runes_c[4]
-	end
-	return 0
-end)
-
-NeP.DSL.RegisterConditon("runes.frac", function(target, rune)
-	-- 12 b, 34 f, 56 u
-	runes_t[1], runes_t[2], runes_t[3], runes_t[4], runes_c[1], runes_c[2], runes_c[3], runes_c[4] = 0,0,0,0,0,0,0,0
-	for i=1, 6 do
-		local r, d, c = GetRuneCooldown(i)
-		local frac = 1-(r/d)
-		local t = GetRuneType(i)
-		runes_t[t] = runes_t[t] + 1
-		if c then
-			runes_c[t] = runes_c[t] + frac
-		end
-	end
-	if rune == 'frost' then
-		return runes_c[3]
-	elseif rune == 'blood' then
-		return runes_c[1]
-	elseif rune == 'unholy' then
-		return runes_c[2]
-	elseif rune == 'death' then
-		return runes_c[4]
-	elseif rune == 'Frost' then
-		return runes_c[3] + runes_c[4]
-	elseif rune == 'Blood' then
-		return runes_c[1] + runes_c[4]
-	elseif rune == 'Unholy' then
-		return runes_c[2] + runes_c[4]
-	end
-	return 0
-end)
-
-NeP.DSL.RegisterConditon("runes.cooldown_min", function(target, rune)
-	-- 12 b, 34 f, 56 u
-	runes_t[1], runes_t[2], runes_t[3], runes_t[4], runes_c[1], runes_c[2], runes_c[3], runes_c[4] = 0,0,0,0,0,0,0,0
-	for i=1, 6 do
-		local r, d, c = GetRuneCooldown(i)
-		local cd = (r + d) - GetTime()
-		local t = GetRuneType(i)
-		runes_t[t] = runes_t[t] + 1
-		if cd > 0 and runes_c[t] > cd then
-			runes_c[t] = cd
-		else
-			runes_c[t] = 8675309
-		end
-	end
-	if rune == 'frost' then
-		return runes_c[3]
-	elseif rune == 'blood' then
-		return runes_c[1]
-	elseif rune == 'unholy' then
-		return runes_c[2]
-	elseif rune == 'death' then
-		return runes_c[4]
-	elseif rune == 'Frost' then
-		if runes_c[3] < runes_c[4] then
-			return runes_c[3]
-		end
-		return runes_c[4]
-	elseif rune == 'Blood' then
-		if runes_c[1] < runes_c[4] then
-			return runes_c[1]
-		end
-		return runes_c[4]
-	elseif rune == 'Unholy' then
-		if runes_c[2] < runes_c[4] then
-			return runes_c[2]
-		end
-		return runes_c[4]
-	end
-	return 0
-end)
-
-NeP.DSL.RegisterConditon("runes.cooldown_max", function(target, rune)
-	-- 12 b, 34 f, 56 u
-	runes_t[1], runes_t[2], runes_t[3], runes_t[4], runes_c[1], runes_c[2], runes_c[3], runes_c[4] = 0,0,0,0,0,0,0,0
-	for i=1, 6 do
-		local r, d, c = GetRuneCooldown(i)
-		local cd = (r + d) - GetTime()
-		local t = GetRuneType(i)
-		runes_t[t] = runes_t[t] + 1
-		if cd > 0 and runes_c[t] < cd then
-			runes_c[t] = cd
-		end
-	end
-	if rune == 'frost' then
-		return runes_c[3]
-	elseif rune == 'blood' then
-		return runes_c[1]
-	elseif rune == 'unholy' then
-		return runes_c[2]
-	elseif rune == 'death' then
-		return runes_c[4]
-	elseif rune == 'Frost' then
-		if runes_c[3] > runes_c[4] then
-			return runes_c[3]
-		end
-		return runes_c[4]
-	elseif rune == 'Blood' then
-		if runes_c[1] > runes_c[4] then
-			return runes_c[1]
-		end
-		return runes_c[4]
-	elseif rune == 'Unholy' then
-		if runes_c[2] > runes_c[4] then
-			return runes_c[2]
-		end
-		return runes_c[4]
-	end
-	return 0
-end)
-
-
-NeP.DSL.RegisterConditon("runes.depleted", function(target, spell)
-	local regeneration_threshold = 1
-	for i=1,6,2 do
 		local start, duration, runeReady = GetRuneCooldown(i)
-		local start2, duration2, runeReady2 = GetRuneCooldown(i+1)
-		if not runeReady and not runeReady2 and duration > 0 and duration2 > 0 and start > 0 and start2 > 0 then
-			if (start-GetTime()+duration)>=regeneration_threshold and (start2-GetTime()+duration2)>=regeneration_threshold then
-				return true
-			end
-		end
+		if runeReady then count = count+1 end
 	end
-	return false
+	return count
+end)
+
+NeP.DSL.RegisterConditon("runes.cooldown", function(target, runes)
+	local rT = {}
+	for i=1, 6 do
+		local r, d, c = GetRuneCooldown(i)
+		local cd = (r + d) - GetTime()
+		rT[#rT+1] = cd
+	end
+	table.sort(rT, function(a,b) return a < b end)
+	return rT[runes] or 0
 end)
 
 NeP.DSL.RegisterConditon("runes", function(target, rune)
