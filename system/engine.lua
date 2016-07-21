@@ -356,7 +356,7 @@ local pTypes = {
 function Engine.Iterate(table)
 	for i=1, #table do
 		local aR, tP = table[i], type(table[i][1])
-		if pTypes[tP]and canIterate(aR[1]) then
+		if pTypes[tP] and canIterate(aR[1]) then
 			if Parse(aR[2], aR[1]) then
 				local sB = pTypes[tP](aR[1], aR[3])
 				if sB then break end
