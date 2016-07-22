@@ -5,6 +5,8 @@ NeP.OM = {
 	GameObjects = {}
 }
 
+local Round =NeP.Core.Round
+
 -- Refresh OM & add to Final Table
 
 local function RefreshOM()
@@ -305,7 +307,7 @@ local function RefreshGUI()
 
 		statusBar.frame:SetPoint('TOP', ListWindow.content, 'TOP', 2, offset )
 		statusBar.frame.Left:SetText('|cff'..classColor..Name)
-		statusBar.frame.Right:SetText('( |cffff0000ID|r: '..ID..' / |cffff0000Health|r: '..Health..' / |cffff0000Distance|r: '..Distance..' )')
+		statusBar.frame.Right:SetText('( |cffff0000ID|r: '..ID..' / |cffff0000Health|r: '..Health..' / |cffff0000Dist|r: '..Round(Distance)..' )')
 
 		statusBar.frame:SetScript('OnMouseDown', function(self) TargetUnit(Obj.key) end)
 		statusBar:SetValue(Health)

@@ -52,10 +52,14 @@ Intf.ResetSettings = function()
 end
 
 Intf.CreatePlugin = function(name, func)
-	NeP.MFrame.Plugins[#NeP.MFrame.Plugins+1] = {
+	NeP.MFrame.Plugins[tostring(name)] = {
 		name = tostring(name),
 		func = func
 	}
+end
+
+Intf.RemovePlugin = function(name, func)
+	NeP.MFrame.Plugins[tostring(name)] = nil
 end
 
 Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
@@ -161,7 +165,7 @@ local function createButtons(key, icon, name, tooltip, func)
 			ElvSkin:StyleButton(temp)
 			temp:CreateBackdrop('Default')
 			local htex = temp:CreateTexture()
-			htex:SetTexture(NeP.Core.classColor('player', 'RBG', 0.65))
+			htex:SetColorTexture(NeP.Core.classColor('player', 'RBG', 0.65))
 			htex:SetAllPoints()
 			temp:SetCheckedTexture(htex)
 		else

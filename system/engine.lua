@@ -5,6 +5,7 @@ NeP.Engine = {
 	lastCast = nil,
 	forcePause = false,
 	Current_Spell = nil,
+	isGroundSpell = false,
 	Rotations = {},
 	------------------------------------ Fake Units ------------------------------------
 	FakeUnits = {
@@ -142,33 +143,48 @@ local function Cast(spell, target, ground)
 end
 
 local function checkTarget(spell, target)
-	local target = tostring(target)
-	local ground = false
-	-- Allow functions/conditions to force a target
-	if Engine.ForceTarget then
-		target = Engine.ForceTarget	
-		Engine.ForceTarget = nil
-	end
-	-- Ground target
-	if string.sub(target, -7) == '.ground' then
-		ground = true
-		target = string.sub(target, 0, -8)
-	end
-	-- Fake Target
-	if Engine.FakeUnits[target] then
-		target = Engine.FakeUnits[target]()
-	end
-	-- Sanity Checks
-	if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
+	if target and type(target) == 'string' then
+		local target = tostring(target)
+		local ground = false
+		-- Allow functions/conditions to force a target
+		if Engine.ForceTarget then
+			target = Engine.ForceTarget	
+		end
+		-- Ground target
+		if string.sub(target, -7) == '.ground' then
+			ground = true
+			target = string.sub(target, 0, -8)
+		end
+		-- Fake Target
+		if Engine.FakeUnits[target] then
+			target = Engine.FakeUnits[target]()
+		end
+		-- Sanity Checks
+		if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
+			return false
+		elseif UnitExists(target) and Engine.LineOfSight('player', target) then
+			return true, target, ground
+		end
 		return false
-	elseif UnitExists(target) and Engine.LineOfSight('player', target) then
-		return true, target, ground
 	end
-	return false
+	return true
+end
+
+local function InterruptCast(spell)
+	local pX = string.sub(spell, 1, 1)
+	if pX == '!' then
+		spell = string.sub(spell, 2);
+		local castingTime = castingTime('player')
+		if not castingTime or castingTime > 1 then
+			return spell, true
+		end
+	end
+	return spell, false
 end
 
 local function castSanityCheck(spell)
 	if type(spell) == 'string' then
+		local spell, sI = InterruptCast(spell)
 		-- Turn string to number (If they'r IDs)
 		if string.match(spell, '%d') then
 			spell = tonumber(spell)
@@ -176,23 +192,21 @@ local function castSanityCheck(spell)
 			spell = GetSpellInfo(spell)
 		end
 		if spell then
-			Debug('Engine', 'castSanityCheck_Spell:'..tostring(spell))
 			-- Make sure we have the spell
 			local skillType, spellId = GetSpellBookItemInfo(tostring(spell))
 			if skillType == 'FUTURESPELL' then 
-				Debug('Engine', 'castSanityCheck hit FUTURESPELL')
 				return false
 			-- Spell Sanity Checks
 			elseif IsUsableSpell(spell) then
 				if GetSpellCooldown(spell) < 1 then
-					Debug('Engine', 'castSanityCheck passed')
 					Engine.Current_Spell = spell
-					return true, spell
+					return true, spell, sI
 				end 
 			end
 		end
+		return false
 	end
-	return false
+	return true, spell, sI
 end
 
 local function canIterate(pX)
@@ -246,41 +260,18 @@ local invItems = {
 }
 
 local sTrigger = {
-	-- Cancel cast
-	['!'] = function(spell, target)
-	print(1)
-		local spell = string.sub(spell, 2);
-		local canCast, spell = castSanityCheck(spell)
-		if canCast then
-			print(2)
-			local castingTime = castingTime('player')
-			if not castingTime or castingTime > 1 then
-				print(3)
-				local hasTarget, target, ground = checkTarget(target)
-				if hasTarget then
-					print(4)
-					SpellStopCasting()
-					Cast(spell, target, ground)
-					return true
-				end
-			end
-		end
-	end,
 	-- Item
-	['#'] = function(spell, target)
-		Debug('Engine', 'Hit Item trigger')
+	['#'] = function(spell, target, sI)
 		local item = string.sub(spell, 2);
 		-- Inventory (Gear)
 		if invItems[tostring(item)] then
 			local item = invItems[tostring(item)]
 			local item_X = GetInventoryItemID("player", GetInventorySlotInfo(item))
-			Debug('Engine', 'Inventory Item: '..item)
 			local isUsable, notEnoughMana = IsUsableItem(item_X)
 			if isUsable then
-				Debug('Engine', 'Is Usable')
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item_X)
 				if itemStart == 0 then
-					Debug('Engine', 'Used item')
+					if sI then SpellStopCasting() end
 					insertToLog('InvItem', item_X, target)
 					Engine.UseInvItem(GetInventorySlotInfo(item))
 					return true
@@ -292,6 +283,7 @@ local sTrigger = {
 			if isUsable then
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 				if itemStart == 0 and GetItemCount(item) > 0 then
+					if sI then SpellStopCasting() end
 					insertToLog('Item', item, target)
 					Engine.UseItem(item, target)
 					return true
@@ -301,11 +293,13 @@ local sTrigger = {
 	end,
 	-- Lib
 	['@'] = function(spell, target)
-		NeP.library.parse(false, spell, target)
+		local lib = string.sub(spell, 2);
+		NeP.library.parse(false, spell, lib)
 		return true
 	end,
 	-- Macro
-	['/'] = function(spell, target)
+	['/'] = function(spell, target, sI)
+		if sI then SpellStopCasting() end
 		Engine.Macro(spell)
 		return true
 	end
@@ -313,41 +307,26 @@ local sTrigger = {
 
 local pTypes = {
 	['table'] = function(spell, tar)
-		Debug('Engine', 'Iterate: Hit Table')
 		Engine.Iterate(spell)
 	end,
 	['function'] = function(spell, tar)
-		Debug('Engine', 'Iterate: Hit Func')
-		if canIterate() then
-			spell()
-			return true
-		end
+		spell()
+		return true
 	end,
-	['string'] = function(spell, tar)
-		Debug('Engine', 'Iterate: Hit String')
+	['string'] = function(spell, tar, sI)
 		local pX = string.sub(spell, 1, 1)
 		-- Pause
 		if spell == 'pause' then
-			Debug('Engine', 'Iterate: Hit Pause')
-				return true
+			return true
 		-- Special trigers
 		elseif sTrigger[pX] then
-			Debug('Engine', 'Iterate: Hit Special Trigers')
-			local sb = sTrigger[pX](spell, tar)
+			local sb = sTrigger[pX](spell, tar, sI)
 			return sb
 		-- Regular sanity checks
 		else
-			Debug('Engine', 'Iterate: Hit Normal')
-			local canCast, spell = castSanityCheck(spell)
-			if canCast then
-				Debug('Engine', 'Iterate: Can Cast')
-				local hasTarget, target, ground = checkTarget(spell, tar)
-				if hasTarget then
-					Debug('Engine', 'Iterate: Has Target: '..target..' Ground: '..tostring(ground))
-					Cast(spell, target, ground)
-					return true
-				end
-			end
+			if sI then SpellStopCasting() end
+			Cast(spell, target, Engine.isGroundSpell)
+			return true
 		end
 	end
 }
@@ -357,12 +336,21 @@ function Engine.Iterate(table)
 	for i=1, #table do
 		local aR, tP = table[i], type(table[i][1])
 		if pTypes[tP] and canIterate(aR[1]) then
-			if Parse(aR[2], aR[1]) then
-				local sB = pTypes[tP](aR[1], aR[3])
-				if sB then break end
+			local canCast, spell, sI = castSanityCheck(aR[1])
+			if canCast and Parse(aR[2], spell) then
+				local hasTarget, target, ground = checkTarget(spell, aR[3])
+				Engine.isGroundSpell = ground 
+				if hasTarget then
+					local sB = pTypes[tP](spell, target, sI)
+					if sB then break end
+				end
 			end
 		end
 	end
+	-- Reset States
+	Engine.isGroundSpell = false
+	Engine.Current_Spell = nil
+	Engine.ForceTarget = nil
 end
 
 -- Engine Ticker
