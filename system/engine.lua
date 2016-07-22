@@ -182,33 +182,6 @@ local function InterruptCast(spell)
 	return spell, false
 end
 
-local function castSanityCheck(spell)
-	if type(spell) == 'string' then
-		local spell, sI = InterruptCast(spell)
-		-- Turn string to number (If they'r IDs)
-		if string.match(spell, '%d') then
-			spell = tonumber(spell)
-			-- SOME SPELLS DO NOT CAST BY IDs! (make them names...)
-			spell = GetSpellInfo(spell)
-		end
-		if spell then
-			-- Make sure we have the spell
-			local skillType, spellId = GetSpellBookItemInfo(tostring(spell))
-			if skillType == 'FUTURESPELL' then 
-				return false
-			-- Spell Sanity Checks
-			elseif IsUsableSpell(spell) then
-				if GetSpellCooldown(spell) < 1 then
-					Engine.Current_Spell = spell
-					return true, spell, sI
-				end 
-			end
-		end
-		return false
-	end
-	return true, spell, sI
-end
-
 local function canIterate(pX)
 	if not UnitIsDeadOrGhost('player') then
 		local tP, pX = type(px), nil
@@ -262,6 +235,7 @@ local invItems = {
 local sTrigger = {
 	-- Item
 	['#'] = function(spell, target, sI)
+		Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
 		-- Inventory (Gear)
 		if invItems[tostring(item)] then
@@ -305,18 +279,52 @@ local sTrigger = {
 	end
 }
 
+local function castSanityCheck(spell)
+	if type(spell) == 'string' then
+		local pX = string.sub(spell, 1, 1)
+		if not sTrigger[pX] then
+			local spell, sI = InterruptCast(spell)
+			-- Turn string to number (If they'r IDs)
+			if string.match(spell, '%d') then
+				spell = tonumber(spell)
+				-- SOME SPELLS DO NOT CAST BY IDs! (make them names...)
+				spell = GetSpellInfo(spell)
+			end
+			if spell then
+				-- Make sure we have the spell
+				local skillType, spellId = GetSpellBookItemInfo(tostring(spell))
+				if skillType == 'FUTURESPELL' then 
+					return false
+				-- Spell Sanity Checks
+				elseif IsUsableSpell(spell) then
+					if GetSpellCooldown(spell) < 1 then
+						Engine.Current_Spell = spell
+						return true, spell, sI
+					end 
+				end
+			end
+			return false
+		end
+	end
+	return true, spell, false
+end
+
 local pTypes = {
 	['table'] = function(spell, tar)
+		Debug('Engine', 'Hit Table')
 		Engine.Iterate(spell)
 	end,
 	['function'] = function(spell, tar)
+		Debug('Engine', 'Hit Function')
 		spell()
 		return true
 	end,
 	['string'] = function(spell, tar, sI)
+		Debug('Engine', 'Hit String')
 		local pX = string.sub(spell, 1, 1)
 		-- Pause
 		if spell == 'pause' then
+			Debug('Engine', 'Hit Pause')
 			return true
 		-- Special trigers
 		elseif sTrigger[pX] then
@@ -325,6 +333,7 @@ local pTypes = {
 		-- Regular sanity checks
 		else
 			if sI then SpellStopCasting() end
+			Debug('Engine', 'Hit Regular')
 			Cast(spell, target, Engine.isGroundSpell)
 			return true
 		end
@@ -338,9 +347,11 @@ function Engine.Iterate(table)
 		if pTypes[tP] and canIterate(aR[1]) then
 			local canCast, spell, sI = castSanityCheck(aR[1])
 			if canCast and Parse(aR[2], spell) then
+				Debug('Engine', 'Iterate: '..tP..'_'..tostring(spell))
 				local hasTarget, target, ground = checkTarget(spell, aR[3])
 				Engine.isGroundSpell = ground 
 				if hasTarget then
+					Debug('Engine', 'Passed Target')
 					local sB = pTypes[tP](spell, target, sI)
 					if sB then break end
 				end
