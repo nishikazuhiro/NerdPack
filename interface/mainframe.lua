@@ -98,10 +98,10 @@ end
 
 local function LoadCrs(info)
 	local Spec = GetSpecialization()
-	local SpecInfo = GetSpecializationInfo(Spec)
 	local localizedClass, englishClass, classIndex = UnitClass('player')
 	local pLvL = UnitLevel('player')
-	if SpecInfo and pLvL >= 10 then
+	if Spec and pLvL >= 10 then
+		local SpecInfo = GetSpecializationInfo(Spec)
 		local routinesTable = NeP.Engine.Rotations[SpecInfo]
 		if routinesTable then
 			local lastCR = Config.Read('NeP_SlctdCR_'..(SpecInfo))
@@ -112,7 +112,6 @@ local function LoadCrs(info)
 				info.value = k
 				info.checked = rState
 				info.func = function(self)
-					self.checked = not self.checked
 					NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
 					Intf.ResetToggles()
 					Intf.ResetSettings()
@@ -134,7 +133,6 @@ local function LoadCrs(info)
 				info.value = k
 				info.checked = rState
 				info.func = function(self)
-					self.checked = not self.checked
 					NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
 					Intf.ResetToggles()
 					Intf.ResetSettings()

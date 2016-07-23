@@ -367,9 +367,9 @@ end
 function NeP.Core.updateSpec()
 	local Spec = GetSpecialization()
 	local localizedClass, englishClass, classIndex = UnitClass('player')
-	local SpecInfo = GetSpecializationInfo(Spec)
 	local pLvL = UnitLevel('player')
-	if SpecInfo and pLvL >= 10 then
+	if Spec and pLvL >= 10 then
+		local SpecInfo = GetSpecializationInfo(Spec)
 		if NeP.Engine.Rotations[SpecInfo] then
 			local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
 			if NeP.Engine.Rotations[SpecInfo][SlctdCR] then
