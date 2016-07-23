@@ -938,3 +938,10 @@ NeP.DSL.RegisterConditon("IsNear", function(targetID, distance)
 		end
 	return false
 end)
+
+NeP.DSL.RegisterConditon("petrange", function(target)
+	if target then
+		return NeP.Engine.Distance('pet', target)
+	end
+	return 0
+end)
