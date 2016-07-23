@@ -34,8 +34,8 @@ C_Timer.NewTicker(1, (function()
 			if UnitIsVisible(Obj.key)
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
-				local missingHealth = UnitHealthMax(Obj.key) - UnitHealth(Obj.key)
-				local healthPercent =  UnitHealth(Obj.key) / UnitHealthMax(Obj.key) * 100
+				local Health = (UnitHealthMax(Obj.key) - UnitHealth(Obj.key)) + UnitGetIncomingHeals(Obj.key)
+				local healthPercent =  Health / UnitHealthMax(Obj.key) * 100
 				local prio = Roles[tostring(Role)] * healthPercent
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
