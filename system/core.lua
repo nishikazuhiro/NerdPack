@@ -206,32 +206,6 @@ function UnitID(target)
 	return false
 end
 
-function NeP.Core.updateSpec()
-	local Spec = GetSpecialization()
-	local localizedClass, englishClass, classIndex = UnitClass('player')
-	if Spec then
-		local SpecInfo = GetSpecializationInfo(Spec)
-		if NeP.Engine.Rotations[SpecInfo] then
-			local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
-			if NeP.Engine.Rotations[SpecInfo][SlctdCR] then
-				NeP.Interface.ResetToggles()
-				NeP.Interface.ResetSettings()
-				NeP.Engine.SelectedCR = NeP.Engine.Rotations[SpecInfo][SlctdCR]
-				NeP.Engine.Rotations[SpecInfo][SlctdCR]['InitFunc']()
-			end
-		end
-	-- Basic CRs (When no spec available)
-	elseif NeP.Engine.Rotations[classIndex] then
-		local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..classIndex)
-		if NeP.Engine.Rotations[classIndex][SlctdCR] then
-			NeP.Interface.ResetToggles()
-			NeP.Interface.ResetSettings()
-			NeP.Engine.SelectedCR = NeP.Engine.Rotations[classIndex][SlctdCR]
-			NeP.Engine.Rotations[classIndex][SlctdCR]['InitFunc']()
-		end
-	end
-end
-
 local _classColors = {
 	['HUNTER'] = 		{ r = 0.67, g = 0.83, 	b = 0.45, 	Hex = 'abd473' },
 	['WARLOCK'] = 		{ r = 0.58, g = 0.51, 	b = 0.79, 	Hex = '9482c9' },

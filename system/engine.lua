@@ -364,6 +364,33 @@ function Engine.Iterate(table)
 	Engine.ForceTarget = nil
 end
 
+function NeP.Core.updateSpec()
+	local Spec = GetSpecialization()
+	local localizedClass, englishClass, classIndex = UnitClass('player')
+	local SpecInfo = GetSpecializationInfo(Spec)
+	local pLvL = UnitLevel('player')
+	if SpecInfo and pLvL >= 10 then
+		if NeP.Engine.Rotations[SpecInfo] then
+			local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
+			if NeP.Engine.Rotations[SpecInfo][SlctdCR] then
+				NeP.Interface.ResetToggles()
+				NeP.Interface.ResetSettings()
+				NeP.Engine.SelectedCR = NeP.Engine.Rotations[SpecInfo][SlctdCR]
+				NeP.Engine.Rotations[SpecInfo][SlctdCR]['InitFunc']()
+			end
+		end
+	-- Basic CRs (When no spec available)
+	elseif NeP.Engine.Rotations[classIndex] then
+		local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..classIndex)
+		if NeP.Engine.Rotations[classIndex][SlctdCR] then
+			NeP.Interface.ResetToggles()
+			NeP.Interface.ResetSettings()
+			NeP.Engine.SelectedCR = NeP.Engine.Rotations[classIndex][SlctdCR]
+			NeP.Engine.Rotations[classIndex][SlctdCR]['InitFunc']()
+		end
+	end
+end
+
 -- Engine Ticker
 local LastTimeOut = 0
 C_Timer.NewTicker(0.1, (function()

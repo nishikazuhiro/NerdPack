@@ -98,9 +98,10 @@ end
 
 local function LoadCrs(info)
 	local Spec = GetSpecialization()
+	local SpecInfo = GetSpecializationInfo(Spec)
 	local localizedClass, englishClass, classIndex = UnitClass('player')
-	if Spec then
-		local SpecInfo = GetSpecializationInfo(Spec)
+	local pLvL = UnitLevel('player')
+	if SpecInfo and pLvL >= 10 then
 		local routinesTable = NeP.Engine.Rotations[SpecInfo]
 		if routinesTable then
 			local lastCR = Config.Read('NeP_SlctdCR_'..(SpecInfo))
