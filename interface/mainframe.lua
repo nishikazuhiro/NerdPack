@@ -37,6 +37,14 @@ local function defaultSettings()
 	Intf.CreateSetting(TA('mainframe', 'AL'), function() PE_ActionLog:Show() end)
 	Intf.CreateSetting(TA('mainframe', 'Settings'), function() NeP.Interface.ShowGUI('NePSettings') end)
 	Intf.CreateSetting(TA('mainframe', 'HideNeP'), function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end)
+	Intf.CreateSetting('|cff'..Intf.addonColor..TA('mainframe', 'Donate'), function()
+		if OpenURL then 
+			OpenURL('http://goo.gl/yrctPO')
+		else
+			NeP.Core.Message('Please Visit:\nhttp://goo.gl/yrctPO')
+		end
+
+	end)
 end
 
 Intf.CreateSetting = function(name, func)

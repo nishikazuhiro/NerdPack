@@ -15,7 +15,8 @@ NeP.Locale['enUS'] = {
 		['AL'] = 'Action Log',
 		['ChangeCR'] = 'Changed Combat Routine To:',
 		['NoCR'] = 'No Combat Routines Available',
-		['NoSepc'] = 'Cant Find User Specialization.'
+		['NoSepc'] = 'Cant Find User Specialization.',
+		['Donate'] = 'Donate To The Project'
 	},
 	['Engine'] = {
 		['NoCR'] = 'Failed, No Combat Routine Selected.'
