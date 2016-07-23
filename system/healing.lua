@@ -6,8 +6,8 @@ local Healing = NeP.Healing
 local LibDispellable = LibStub("LibDispellable-1.0")
 
 local Roles = {
-	['TANK'] = 3,
-	['HEALER'] = 2,
+	['TANK'] = 2,
+	['HEALER'] = 1.5,
 	['DAMAGER'] = 1,
 	['NONE'] = 1	 
 }
@@ -35,7 +35,8 @@ C_Timer.NewTicker(1, (function()
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
 				local missingHealth = UnitHealthMax(Obj.key) - UnitHealth(Obj.key)
-				local prio = Roles[tostring(Role)] * missingHealth
+				local healthPercent =  UnitHealth(Obj.key) / UnitHealthMax(Obj.key) * 100
+				local prio = Roles[tostring(Role)] * healthPercent
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
 					prio = prio,
