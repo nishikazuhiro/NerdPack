@@ -160,6 +160,7 @@ local function checkTarget(spell, target)
 		if string.sub(target, -7) == '.ground' then
 			ground = true
 			target = string.sub(target, 0, -8)
+			print(target)
 		end
 		-- Fake Target
 		if Engine.FakeUnits[target] then
@@ -168,7 +169,7 @@ local function checkTarget(spell, target)
 		-- Sanity Checks
 		if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 			return false
-		elseif UnitExists(target) and Engine.LineOfSight('player', target) then
+		elseif (UnitExists(target) and Engine.LineOfSight('player', target)) or ground then
 			return true, target, ground
 		end
 		return false
@@ -363,14 +364,18 @@ local pTypes = {
 -- This iterates the routine table itself.
 function Engine.Iterate(table)
 	for i=1, #table do
+		print(0)
 		local aR, tP = table[i], type(table[i][1])
 		if pTypes[tP] and canIterate(aR[1]) then
+			print(1)
 			local canCast, spell, sI = castSanityCheck(aR[1])
 			if canCast and Parse(aR[2], spell) then
+				print(2)
 				Debug('Engine', 'Iterate: '..tP..'_'..tostring(spell))
 				local hasTarget, target, ground = checkTarget(spell, aR[3])
 				Engine.isGroundSpell = ground 
 				if hasTarget then
+					print(3)
 					Debug('Engine', 'Passed Target')
 					local sB = pTypes[tP](spell, target, sI)
 					if sB then break end
