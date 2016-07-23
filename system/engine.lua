@@ -26,6 +26,12 @@ local TA = Core.TA
 local Parse = NeP.DSL.parse
 local fK = NeP.Interface.fetchKey
 
+-- Engine will bypass IsMounted() if unit has any of this mount buff
+local ByPassMounts = {
+	[165803] = '',
+	[164222] = ''
+}
+
 local ListClassSpec = {
 	[0] = {}, -- None
 	[1] = { -- Warrior
@@ -182,12 +188,26 @@ local function InterruptCast(spell)
 	return spell, false
 end
 
+local function IsMountedCheck()
+	for i = 1, 40 do
+		local mountID = select(11, UnitDebuff('player', i))
+		if mountID then
+			if ByPassMounts[tonumber(mountID)] then
+				return true
+			end
+		end
+	end
+	return not IsMounted()
+end
+
 local function canIterate(pX)
-	if not UnitIsDeadOrGhost('player') then
+	-- If not Dead and not mounted
+	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
 		local tP, pX = type(px), nil
 		if tP == 'string' then pX = string.sub(pX, 1, 1) end
 		local nCasting = UnitCastingInfo('player') == nil
 		local nChanneling = UnitChannelInfo('player') == nil
+		-- If not Casting, channeling or should interrupt
 		if nCasting and nChanneling or pX == '!' then
 			return true
 		end
