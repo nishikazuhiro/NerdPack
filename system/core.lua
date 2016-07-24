@@ -219,7 +219,7 @@ local _classColors = {
 	['WARRIOR'] = 		{ r = 0.78, g = 0.61, 	b = 0.43, 	Hex = 'c79c6e' },
 	['DEATHKNIGHT'] = 	{ r = 0.77, g = 0.12 , 	b = 0.23, 	Hex = 'c41f3b' },
 	['MONK'] = 			{ r = 0.0, 	g = 1.00 , 	b = 0.59, 	Hex = '00ff96' },
-	['DEMONHUNTER'] = 			{ r = 0.64, 	g = 0.19 , 	b = 0.79, 	Hex = 'A330C9' },
+	['DEMONHUNTER'] = 	{ r = 0.64, g = 0.19 , 	b = 0.79, 	Hex = 'A330C9' },
 
 }
 
