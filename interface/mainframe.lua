@@ -332,7 +332,7 @@ function Config.CreateMainFrame()
 		-- About
 		info.isTitle = 1
 		info.notCheckable = 1
-		info.text = Logo..Tittle..' |rv:'..NeP.Info.Version
+		info.text = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
 		UIDropDownMenu_AddButton(info)
 		local aboutTable = NeP.MFrame.About or { ['Cant find any...'] = '' }
 		for k,v in pairs(aboutTable) do
