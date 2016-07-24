@@ -44,7 +44,8 @@ function NeP.Core.TA(gui, index)
 			end
 		end
 	end
-	return NeP.Locale['enUS'][gui][index]
+	local string = NeP.Locale['enUS'][gui][index] or 'INVALID STRING'
+	return string
 end
 
 local TrackedDummys = {

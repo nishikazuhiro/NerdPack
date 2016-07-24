@@ -22,7 +22,8 @@ NeP.Locale['ptBR'] = {
 		['ChangeCR'] = 'Mudou a rotina de combate a:',
 		['NoCR'] = 'Não há Rotinas combate disponíveis',
 		['NoSepc'] = 'Não é possível localizar Especialização Usuário.',
-		['Donate'] = 'Doar Para o Projecto'
+		['Donate'] = 'Doar Para o Projecto',
+		['Forum'] = 'Visite o nosso forum'
 	},
 	['Engine'] = {
 		['NoCR'] = 'Falhou, nenhuma rotina de combate selecionada.'

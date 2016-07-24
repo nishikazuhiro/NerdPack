@@ -6,13 +6,32 @@ local Round = NeP.Core.Round
 local fetchKey = NeP.Interface.fetchKey
 local TA = NeP.Core.TA
 
+local function OpenPage(URL)
+	local URL = tostring(URL)
+	if OpenURL then 
+		OpenURL(URL)
+	else
+		NeP.Core.Message('Please Visit:\n'..URL)
+	end
+end
+
 NeP.MFrame = {
 	buttonPadding = 2,
 	buttonSize = 40,
 	Buttons = {},
 	usedButtons = {},
 	Settings = {},
-	Plugins = {}
+	Plugins = {},
+	About = {
+		['Forum'] = {
+			name = TA('mainframe', 'Forum'),
+			func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end
+		},
+		['Donate'] = {
+			name = TA('mainframe', 'Donate'),
+			func = function() OpenPage('http://goo.gl/yrctPO') end
+		}
+	}
 }
 
 local E, _L, V, P, G
@@ -37,14 +56,6 @@ local function defaultSettings()
 	Intf.CreateSetting(TA('mainframe', 'AL'), function() PE_ActionLog:Show() end)
 	Intf.CreateSetting(TA('mainframe', 'Settings'), function() NeP.Interface.ShowGUI('NePSettings') end)
 	Intf.CreateSetting(TA('mainframe', 'HideNeP'), function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end)
-	Intf.CreateSetting('|cff'..Intf.addonColor..TA('mainframe', 'Donate'), function()
-		if OpenURL then 
-			OpenURL('http://goo.gl/yrctPO')
-		else
-			NeP.Core.Message('Please Visit:\nhttp://goo.gl/yrctPO')
-		end
-
-	end)
 end
 
 Intf.CreateSetting = function(name, func)
@@ -318,7 +329,20 @@ function Config.CreateMainFrame()
 			info.notCheckable = 1
 			UIDropDownMenu_AddButton(info)
 		end
-
+		-- About
+		info.isTitle = 1
+		info.notCheckable = 1
+		info.text = Logo..Tittle..' |rv:'..NeP.Info.Version
+		UIDropDownMenu_AddButton(info)
+		local aboutTable = NeP.MFrame.About or { ['Cant find any...'] = '' }
+		for k,v in pairs(aboutTable) do
+			info = UIDropDownMenu_CreateInfo()
+			info.text = v.name
+			info.value = v.name
+			info.func = v.func
+			info.notCheckable = 1
+			UIDropDownMenu_AddButton(info)
+		end
 	end
 	local function STDR_onClick(self, button)
 		local ST_Dropdown = CreateFrame("Frame", "ST_Dropdown", self, "UIDropDownMenuTemplate");
