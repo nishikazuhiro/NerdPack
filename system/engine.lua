@@ -9,13 +9,13 @@ NeP.Engine = {
 	Rotations = {},
 	------------------------------------ Fake Units ------------------------------------
 	FakeUnits = {
-		['lowest']		= function() return	 NeP.Healing['lowest']()					end,
-		['!lowest']	= function() return '!'..NeP.Healing['lowest']()					end,
-		['tank']		= function() return	 NeP.Healing['tank']()						end,
+		['lowest']		= function() return	 NeP.Healing['lowest']()						end,
+		['!lowest']		= function() return '!'..NeP.Healing['lowest']()					end,
+		['tank']		= function() return	 NeP.Healing['tank']()							end,
 		['!tank']		= function() return '!'..NeP.Healing['tank']()						end,
-		['tanktarget']	= function() return	 NeP.Healing['tank']()..'target'			end,
+		['tanktarget']	= function() return	 NeP.Healing['tank']()..'target'				end,
 		['!tanktarget'] = function() return '!'..NeP.Healing['tank']()..'target'			end,
-		['nil']		= function() return UnitExists('target') and 'target' or 'player'	end
+		['nil']			= function() return UnitExists('target') and 'target' or 'player'	end
 	}
 }
 
@@ -121,7 +121,7 @@ end
 
 
 local function insertToLog(whatIs, spell, target)
-	local targetName = UnitName(target or 'player')
+	local targetName = UnitName(target or 'none')
 	local name, icon
 	if whatIs == 'Spell' then
 		local spellIndex, spellBook = GetSpellBookIndex(spell)
@@ -149,7 +149,8 @@ local function Cast(spell, target, ground)
 end
 
 local function checkTarget(spell, target)
-	if target and type(target) == 'string' then
+	if not target then target = Engine.FakeUnits['nil']() end
+	if type(spell) == 'string' then
 		local ground = false
 		-- Allow functions/conditions to force a target
 		if Engine.ForceTarget then
@@ -170,9 +171,9 @@ local function checkTarget(spell, target)
 		elseif (UnitExists(target) and Engine.LineOfSight('player', target)) or (ground and target == 'mouseover') then
 			return true, target, ground
 		end
-		return false, 'player', false
+		return false, target, false
 	end
-	return true, 'player', false
+	return true, target, false
 end
 
 local function InterruptCast(spell)
