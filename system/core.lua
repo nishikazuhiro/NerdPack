@@ -3,7 +3,7 @@ NeP = {
 		Name = 'NerdPack',
 		Nick = 'NeP',
 		Author = 'MrTheSoulz',
-		Version = '7.0.3.3',
+		Version = '7.0.3.4',
 		Branch = 'LIVE',
 	},
 	Interface = {
