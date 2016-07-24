@@ -168,7 +168,7 @@ local function checkTarget(spell, target)
 		-- Sanity Checks
 		if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 			return false
-		elseif (UnitExists(target) and Engine.LineOfSight('player', target)) or ground then
+		elseif (UnitExists(target) and Engine.LineOfSight('player', target)) or (ground and target == 'mouseover') then
 			return true, target, ground
 		end
 		return false
