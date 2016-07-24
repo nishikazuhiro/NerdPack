@@ -150,7 +150,6 @@ end
 
 local function checkTarget(spell, target)
 	if target and type(target) == 'string' then
-		local target = tostring(target)
 		local ground = false
 		-- Allow functions/conditions to force a target
 		if Engine.ForceTarget then
@@ -171,9 +170,9 @@ local function checkTarget(spell, target)
 		elseif (UnitExists(target) and Engine.LineOfSight('player', target)) or (ground and target == 'mouseover') then
 			return true, target, ground
 		end
-		return false
+		return false, 'player', false
 	end
-	return true
+	return true, 'player', false
 end
 
 local function InterruptCast(spell)
@@ -330,16 +329,16 @@ local function castSanityCheck(spell)
 end
 
 local pTypes = {
-	['table'] = function(spell, tar)
+	['table'] = function(spell, target)
 		Debug('Engine', 'Hit Table')
 		Engine.Iterate(spell)
 	end,
-	['function'] = function(spell, tar)
+	['function'] = function(spell, target)
 		Debug('Engine', 'Hit Function')
 		spell()
 		return true
 	end,
-	['string'] = function(spell, tar, sI)
+	['string'] = function(spell, target, sI)
 		Debug('Engine', 'Hit String')
 		local pX = string.sub(spell, 1, 1)
 		-- Pause
@@ -348,7 +347,7 @@ local pTypes = {
 			return true
 		-- Special trigers
 		elseif sTrigger[pX] then
-			local sb = sTrigger[pX](spell, tar, sI)
+			local sb = sTrigger[pX](spell, target, sI)
 			return sb
 		-- Regular sanity checks
 		else
@@ -371,7 +370,7 @@ function Engine.Iterate(table)
 				local hasTarget, target, ground = checkTarget(spell, aR[3])
 				Engine.isGroundSpell = ground 
 				if hasTarget then
-					Debug('Engine', 'Passed Target')
+					Debug('Engine', 'Passed Target: '..UnitName(target))
 					local sB = pTypes[tP](spell, target, sI)
 					if sB then break end
 				end
