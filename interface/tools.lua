@@ -282,10 +282,10 @@ function buildElements(table, parent)
 			tmp:SetPoint("TOPLEFT", parent.content, "TOPLEFT", 5, offset)
 
 			tmp:SetEventListener('OnValueChanged', function(this, event, checked)
-				NeP.Config.Write(table.key .. '_' .. element.key, checked)
+				NeP.Config.Write(table.key..'_'..element.key, checked)
 			end)
 
-			tmp:SetChecked(NeP.Config.Read(table.key .. '_' .. element.key, element.default or false))
+			tmp:SetChecked(NeP.Config.Read(table.key..'_'..element.key, element.default or false))
 
 			local tmp_text = DiesalGUI:Create("FontString")
 			tmp_text:SetParent(parent.content)
@@ -321,7 +321,7 @@ function buildElements(table, parent)
 			tmp_spin:SetParent(parent.content)
 			tmp_spin:SetPoint("TOPRIGHT", parent.content, "TOPRIGHT", -5, offset)
 			tmp_spin:SetNumber(
-				NeP.Config.Read(table.key .. '_' .. element.key, element.default)
+				NeP.Config.Read(table.key..'_'..element.key, element.default)
 			)
 
 			if element.width then
@@ -345,7 +345,7 @@ function buildElements(table, parent)
 
 			tmp_spin:SetEventListener('OnValueChanged', function(this, event, userInput, number)
 				if not userInput then return end
-				NeP.Config.Write(table.key .. '_' .. element.key, number)
+				NeP.Config.Write(table.key..'_'..element.key, number)
 			end)
 
 			local tmp_text = DiesalGUI:Create("FontString")
@@ -401,14 +401,14 @@ function buildElements(table, parent)
 			end
 
 			tmp_spin:SetNumber(
-				NeP.Config.Read(table.key .. '_' .. element.key .. '_spin', element.default_spin or 0)
+				NeP.Config.Read(table.key..'_'..element.key..'_spin', element.default_spin or 0)
 			)
 			tmp_spin:AddStyleSheet(spinnerStyleSheet)
 			tmp_spin:ApplySettings()
 
 			tmp_spin:SetEventListener('OnValueChanged', function(this, event, userInput, number)
 				if not userInput then return end
-				NeP.Config.Write(table.key .. '_' .. element.key .. '_spin', number)
+				NeP.Config.Write(table.key..'_'..element.key..'_spin', number)
 			end)
 
 			local tmp_check = DiesalGUI:Create('CheckBox')
@@ -417,10 +417,10 @@ function buildElements(table, parent)
 			tmp_check:SetPoint("TOPLEFT", parent.content, "TOPLEFT", 5, offset-2)
 
 			tmp_check:SetEventListener('OnValueChanged', function(this, event, checked)
-				NeP.Config.Write(table.key .. '_' .. element.key .. '_check', checked)
+				NeP.Config.Write(table.key..'_'..element.key..'_check', checked)
 			end)
 
-			tmp_check:SetChecked(NeP.Config.Read(table.key .. '_' .. element.key .. '_check', element.default_check or false))
+			tmp_check:SetChecked(NeP.Config.Read(table.key..'_'..element.key..'_check', element.default_check or false))
 
 			local tmp_text = DiesalGUI:Create("FontString")
 			tmp_text:SetParent(parent.content)
@@ -467,10 +467,10 @@ function buildElements(table, parent)
 			tmp_list:SetList(list, orderdKeys)
 
 			tmp_list:SetEventListener('OnValueChanged', function(this, event, value)
-				NeP.Config.Write(table.key .. '_' .. element.key, value)
+				NeP.Config.Write(table.key..'_'..element.key, value)
 			end)
 
-			tmp_list:SetValue(NeP.Config.Read(table.key .. '_' .. element.key, element.default))
+			tmp_list:SetValue(NeP.Config.Read(table.key..'_'..element.key, element.default))
 
 			local tmp_text = DiesalGUI:Create("FontString")
 			tmp_text:SetParent(parent.content)
@@ -549,10 +549,10 @@ function buildElements(table, parent)
 				tmp_input:SetWidth(element.width)
 			end
 
-			tmp_input:SetText(NeP.Config.Read(table.key .. '_' .. element.key, element.default or ''))
+			tmp_input:SetText(NeP.Config.Read(table.key..'_'..element.key, element.default or ''))
 
 			tmp_input:SetEventListener('OnEditFocusLost', function(this)
-				NeP.Config.Write(table.key .. '_' .. element.key, this:GetText())
+				NeP.Config.Write(table.key..'_'..element.key, this:GetText())
 			end)
 
 
@@ -647,32 +647,32 @@ function buildElements(table, parent)
 end
 
 function NeP.Interface.fetchKey(keyA, keyB, default)
-	local selectedProfile = NeP.Config.Read(keyA .. '_profile', 'Default Profile')
+	local selectedProfile = NeP.Config.Read(keyA..'_profile', 'Default Profile')
 	if selectedProfile then
-		return NeP.Config.Read(keyA .. selectedProfile .. '_' .. keyB, default)
+		return NeP.Config.Read(keyA..selectedProfile..'_'..keyB, default)
 	else
-		return NeP.Config.Read(keyA .. '_' .. keyB, default)
+		return NeP.Config.Read(keyA..'_'..keyB, default)
 	end
 end
 
 function NeP.Interface.writeKey(keyA, keyB, value)
-	local selectedProfile = NeP.Config.Read(keyA .. '_profile', 'Default Profile')
+	local selectedProfile = NeP.Config.Read(keyA..'_profile', 'Default Profile')
 	if selectedProfile then
-		return NeP.Config.Write(keyA .. selectedProfile .. '_' .. keyB, value)
+		return NeP.Config.Write(keyA..selectedProfile..'_'..keyB, value)
 	else
-		return NeP.Config.Write(keyA .. '_' .. keyB, value)
+		return NeP.Config.Write(keyA..'_'..keyB, value)
 	end
 end
 
 local usedGUIS = {}
 function NeP.Interface.getGUI(key)
-	if usedGUIS[key] ~= nil then
+	if usedGUIS[key] then
 		return usedGUIS[key]
 	end
 end
 
 function NeP.Interface.ShowGUI(key)
-	if usedGUIS[key] ~= nil then
+	if usedGUIS[key] then
 		return usedGUIS[key].parent:Show()
 	end
 end
@@ -733,7 +733,7 @@ function NeP.Interface.buildGUI(config)
 			profileButton:SetText("Create New Profile")
 			profileButton:SetEventListener('OnClick', function()
 
-				local profiles = NeP.Config.Read(config.key_orig .. '_profiles', {{key='default',text='Default'}})
+				local profiles = NeP.Config.Read(config.key_orig..'_profiles', {{key='default',text='Default'}})
 				local profileName = profileInput:GetText()
 				local pkey = string.gsub(profileName, "%s+", "")
 				if profileName ~= '' then
@@ -747,8 +747,8 @@ function NeP.Interface.buildGUI(config)
 						end
 					end
 					table.insert(profiles, { key = pkey, text = profileName })
-					NeP.Config.Write(config.key_orig .. '_profiles', profiles)
-					NeP.Config.Write(config.key_orig .. '_profile', pkey)
+					NeP.Config.Write(config.key_orig..'_profiles', profiles)
+					NeP.Config.Write(config.key_orig..'_profile', pkey)
 					newWindow:Hide()
 					parent:Hide()
 					parent:Release()
@@ -794,14 +794,14 @@ function NeP.Interface.buildGUI(config)
 			deleteButton:SetStyle('frame', ButtonOver)
 		end)
 		deleteButton:SetEventListener('OnClick', function()
-			local selectedProfile = NeP.Config.Read(config.key_orig .. '_profile', 'Default Profile')
-			local profiles = NeP.Config.Read(config.key_orig .. '_profiles', {{key='default',text='Default'}})
+			local selectedProfile = NeP.Config.Read(config.key_orig..'_profile', 'Default Profile')
+			local profiles = NeP.Config.Read(config.key_orig..'_profiles', {{key='default',text='Default'}})
 			if selectedProfile ~= 'default' then
 				for i,p in ipairs(profiles) do
 					if p.key == selectedProfile then
 						profiles[i] = nil
-						NeP.Config.Write(config.key_orig .. '_profiles', profiles)
-						NeP.Config.Write(config.key_orig .. '_profile', 'default')
+						NeP.Config.Write(config.key_orig..'_profiles', profiles)
+						NeP.Config.Write(config.key_orig..'_profile', 'default')
 						parent:Hide()
 						parent:Release()
 						NeP.Interface.buildGUI(config)
@@ -810,8 +810,8 @@ function NeP.Interface.buildGUI(config)
 			end
 		end)
 
-		local profiles = NeP.Config.Read(config.key_orig .. '_profiles', {{key='default',text='Default'}})
-		local selectedProfile = NeP.Config.Read(config.key_orig .. '_profile', 'default')
+		local profiles = NeP.Config.Read(config.key_orig..'_profiles', {{key='default',text='Default'}})
+		local selectedProfile = NeP.Config.Read(config.key_orig..'_profile', 'default')
 		local profile_dropdown = DiesalGUI:Create('Dropdown')
 		parent:AddChild(profile_dropdown)
 		profile_dropdown:SetParent(parent.footer)
@@ -830,28 +830,28 @@ function NeP.Interface.buildGUI(config)
 
 		profile_dropdown:SetEventListener('OnValueChanged', function(this, event, value)
 			if selectedProfile ~= value then
-				NeP.Config.Write(config.key_orig .. '_profile', value)
+				NeP.Config.Write(config.key_orig..'_profile', value)
 				parent:Hide()
 				parent:Release()
 				NeP.Interface.buildGUI(config)
 			end
 		end)
 
-		profile_dropdown:SetValue(NeP.Config.Read(config.key_orig .. '_profile', 'Default Profile'))
+		profile_dropdown:SetValue(NeP.Config.Read(config.key_orig..'_profile', 'Default Profile'))
 
 		if selectedProfile then
-			config.key = config.key_orig .. selectedProfile
+			config.key = config.key_orig..selectedProfile
 		end
 
 	else
-		NeP.Config.Write(config.key_orig .. '_profile', false)
+		NeP.Config.Write(config.key_orig..'_profile', false)
 	end
 
 	if config.key_orig then
 		parent:SetEventListener('OnDragStop', function(self, event, left, top)
-			NeP.Config.Write(config.key_orig .. '_window', {left, top})
+			NeP.Config.Write(config.key_orig..'_window', {left, top})
 		end)
-		local left, top = unpack(NeP.Config.Read(config.key_orig .. '_window', {false, false}))
+		local left, top = unpack(NeP.Config.Read(config.key_orig..'_window', {false, false}))
 		if left and top then
 			parent.settings.left = left
 			parent.settings.top = top
