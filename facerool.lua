@@ -169,7 +169,39 @@ function NeP.Engine.FaceRoll()
 				end
 			end
 		end
+
+		-- TODO: This is untested!
+		-- LibNameplateRegistry
+		local lnr = LibStub("LibNameplateRegistry-1.0")
+		function lnr:OnEnable()
+			-- Subscribe to callbacks
+			self:LNR_RegisterCallback("LNR_ON_NEW_PLATE"); -- registering this event will enable the library else it'll remain idle
+			self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
+			self:LNR_RegisterCallback("LNR_ON_GUID_FOUND");
+			self:LNR_RegisterCallback("LNR_ON_TARGET_PLATE_ON_SCREEN");
+			self:LNR_RegisterCallback("LNR_ERROR_FATAL_INCOMPATIBILITY");
+			self:LNR_RegisterCallback("LNR_DEBUG");
+		end
+
+		function lnr:OnDisable()
+			-- unregister all LibNameplateRegistry callbacks, which will disable it if
+			-- your add-on was the only one to use it
+			self:LNR_UnregisterAllCallbacks();
+		end
+
+		function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
+			local target = plateData.unitToken
+			local ObjDistance = Engine.Distance('player', target)
+			if GenericFilter(target, ObjDistance) then
+				if ObjDistance <= 100 then
+					NeP.OM.addToOM(target)
+				end
+			end
+		end
+
+		-- Do not think that we need to manually 'remove' an item from the OM table (via LNR_ON_RECYCLE_PLATE) because the engine seems to wipe and recreate it every iteration of the timer.
 	end
+
 end
 
 NeP.Engine.FaceRoll()

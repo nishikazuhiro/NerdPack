@@ -8,6 +8,7 @@
   <Script file="external\dkjson.lua" />
   <Include file="external\CallbackHandler-1.0\CallbackHandler-1.0.xml" />
   <Script file="external\LibRangeCheck-2.0\LibRangeCheck-2.0.lua" />
+  <Script file="external\LibNameplateRegistry-1.0\LibNameplateRegistry-1.0.lua" />
   <Script file="external\LibDispellable-1.0\LibDispellable-1.0.lua" />
   <Script file="external\LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
   <Script file="external\DiesalTools-1.0\DiesalTools-1.0.lua" />
