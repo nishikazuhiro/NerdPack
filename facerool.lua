@@ -12,6 +12,7 @@ local faceroll = {
 	}
 }
 
+
 NeP.FaceRoll = CreateFrame('Frame', 'activeCastFrame', UIParent)
 local activeFrame = NeP.FaceRoll
 activeFrame:SetWidth(32)
@@ -124,6 +125,40 @@ function NeP.Engine.FaceRoll()
 		return false
 	end
 
+	-- LibNameplateRegistry setup
+	local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
+	function lnr:OnEnable()
+		-- Subscribe to callbacks
+		self:LNR_RegisterCallback("LNR_ON_NEW_PLATE"); -- registering this event will enable the library else it'll remain idle
+		self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
+	end
+
+	function lnr:OnDisable()
+		-- unregister all LibNameplateRegistry callbacks, which will disable it if
+		-- your add-on was the only one to use it
+		self:LNR_UnregisterAllCallbacks();
+	end
+
+	function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
+		--local R = "|cFFFF0000";
+		--local G = "|cFF00FF00";
+		--local W = "|r";
+		--print("LNR: ID:", plateData.unitToken, " ", plateData.name, "'s nameplate appeared!");
+		--print("LNR: ", "It's a", R, plateData.type, W, "and", R, plateData.reaction, W, plateData.GUID and ("we know its GUID: " .. plateData.GUID) or "GUID not yet known");
+		NeP.OM.nameplates[#NeP.OM.nameplates+1] = plateData.unitToken
+	end
+
+	function lnr:LNR_ON_RECYCLE_PLATE(eventname, plateFrame, plateData)
+    --print("LNR: ", plateData.unitToken, " ", plateData.name, "'s nameplate disappeared!");
+		for k,_ in pairs(NeP.OM.nameplates) do
+			local kObj = NeP.OM.nameplates[k]
+			if (kObj == plateData.unitToken) then
+				NeP.OM.nameplates[k] = nil
+			end
+		end
+	end
+
+
 	function NeP.OM.Maker()
 		-- Self
 		NeP.OM.addToOM('player', 5)
@@ -169,37 +204,16 @@ function NeP.Engine.FaceRoll()
 				end
 			end
 		end
-
-		-- TODO: This is untested!
-		-- LibNameplateRegistry
-		local lnr = LibStub("LibNameplateRegistry-1.0")
-		function lnr:OnEnable()
-			-- Subscribe to callbacks
-			self:LNR_RegisterCallback("LNR_ON_NEW_PLATE"); -- registering this event will enable the library else it'll remain idle
-			self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
-			self:LNR_RegisterCallback("LNR_ON_GUID_FOUND");
-			self:LNR_RegisterCallback("LNR_ON_TARGET_PLATE_ON_SCREEN");
-			self:LNR_RegisterCallback("LNR_ERROR_FATAL_INCOMPATIBILITY");
-			self:LNR_RegisterCallback("LNR_DEBUG");
-		end
-
-		function lnr:OnDisable()
-			-- unregister all LibNameplateRegistry callbacks, which will disable it if
-			-- your add-on was the only one to use it
-			self:LNR_UnregisterAllCallbacks();
-		end
-
-		function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
-			local target = plateData.unitToken
-			local ObjDistance = Engine.Distance('player', target)
-			if GenericFilter(target, ObjDistance) then
+		-- Nameplate cache
+		for k,_ in pairs(NeP.OM.nameplates) do
+			local plate = NeP.OM.nameplates[k]
+			local ObjDistance = Engine.Distance('player', plate)
+			if GenericFilter(plate, ObjDistance) then
 				if ObjDistance <= 100 then
-					NeP.OM.addToOM(target)
+					NeP.OM.addToOM(plate)
 				end
 			end
 		end
-
-		-- Do not think that we need to manually 'remove' an item from the OM table (via LNR_ON_RECYCLE_PLATE) because the engine seems to wipe and recreate it every iteration of the timer.
 	end
 
 end
