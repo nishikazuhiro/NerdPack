@@ -100,7 +100,7 @@ function NeP.Engine.FaceRoll()
 	---------------------------------------------------]]
 	local function GenericFilter(unit)
 		if UnitExists(unit) then
-			local objectType, _, _, _, _, _id, _ = strsplit('-', UnitGUID(Obj))
+			local objectType, _, _, _, _, _id, _ = strsplit('-', UnitGUID(unit))
 			local GUID = tonumber(_id) or '0'
 			local alreadyExists = false
 			-- Enemie Filter
