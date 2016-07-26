@@ -100,14 +100,13 @@ function NeP.Engine.FaceRoll()
 	---------------------------------------------------]]
 	local function GenericFilter(unit)
 		if UnitExists(unit) then
-			local objectType, _, _, _, _, _id, _ = strsplit('-', UnitGUID(unit))
-			local GUID = tonumber(_id) or '0'
+			local GUID = UnitGUID(unit)
 			local alreadyExists = false
 			-- Enemie Filter
 			if UnitCanAttack('player', unit) then
 				for i=1, #NeP.TempOM.unitEnemie do
 					local object = NeP.TempOM.unitEnemie[i]
-					if object.ID == GUID then
+					if object.guid == GUID then
 						alreadyExists = true
 					end
 				end
@@ -115,7 +114,7 @@ function NeP.Engine.FaceRoll()
 			elseif UnitIsFriend('player', unit) then
 				for i=1, #NeP.TempOM.unitFriend do
 					local object = NeP.TempOM.unitFriend[i]
-					if object.ID == GUID then
+					if object.guid == GUID then
 						alreadyExists = true
 					end
 				end
