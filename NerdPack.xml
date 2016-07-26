@@ -8,6 +8,7 @@
   <Script file="external\dkjson.lua" />
   <Include file="external\CallbackHandler-1.0\CallbackHandler-1.0.xml" />
   <Script file="external\LibRangeCheck-2.0\LibRangeCheck-2.0.lua" />
+  <Script file="external\AceAddon-3.0\AceAddon-3.0.lua" />  
   <Script file="external\LibNameplateRegistry-1.0\LibNameplateRegistry-1.0.lua" />
   <Script file="external\LibDispellable-1.0\LibDispellable-1.0.lua" />
   <Script file="external\LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
@@ -49,8 +50,8 @@
   <Script file="system\dsl.lua" />
   <script file="system\ttd.lua" />
   <Script file="system\conditions.lua" />
-  <Script file="system\engine.lua" /> 
-  <Script file="system\healing.lua" /> 
+  <Script file="system\engine.lua" />
+  <Script file="system\healing.lua" />
   <Script file="system\ObjectManager.lua" />
   <Script file="system\commands.lua" />
   <Script file="facerool.lua" />
