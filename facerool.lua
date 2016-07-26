@@ -98,23 +98,24 @@ function NeP.Engine.FaceRoll()
 
 	--[[				Generic OM
 	---------------------------------------------------]]
-	local function GenericFilter(unit, objectDis)
+	local function GenericFilter(unit)
 		if UnitExists(unit) then
-			local objectName = UnitName(unit)
+			local objectType, _, _, _, _, _id, _ = strsplit('-', UnitGUID(unit))
+			local GUID = tonumber(_id) or '0'
 			local alreadyExists = false
-			-- Friendly Filter
+			-- Enemie Filter
 			if UnitCanAttack('player', unit) then
 				for i=1, #NeP.TempOM.unitEnemie do
 					local object = NeP.TempOM.unitEnemie[i]
-					if object.distance == objectDis and object.name == objectName then
+					if object.ID == GUID then
 						alreadyExists = true
 					end
 				end
-				-- Enemie Filter
+				-- Friendly Filter
 			elseif UnitIsFriend('player', unit) then
 				for i=1, #NeP.TempOM.unitFriend do
 					local object = NeP.TempOM.unitFriend[i]
-					if object.distance == objectDis and object.name == objectName then
+					if object.ID == GUID then
 						alreadyExists = true
 					end
 				end
@@ -131,7 +132,7 @@ function NeP.Engine.FaceRoll()
 		if UnitExists('mouseover') then
 			local object = 'mouseover'
 			local ObjDistance = Engine.Distance('player', object)
-			if GenericFilter(object, ObjDistance) then
+			if GenericFilter(object) then
 				if ObjDistance <= 100 then
 					NeP.OM.addToOM(object)
 				end
@@ -141,7 +142,7 @@ function NeP.Engine.FaceRoll()
 		if UnitExists('target') then
 			local object = 'target'
 			local ObjDistance = Engine.Distance('player', object)
-			if GenericFilter(object, ObjDistance) then
+			if GenericFilter(object) then
 				if ObjDistance <= 100 then
 					NeP.OM.addToOM(object)
 				end
@@ -154,7 +155,7 @@ function NeP.Engine.FaceRoll()
 				-- Enemie
 				local target = prefix..i..'target'
 				local ObjDistance = Engine.Distance('player', target)
-				if GenericFilter(target, ObjDistance) then
+				if GenericFilter(target) then
 					if ObjDistance <= 100 then
 						NeP.OM.addToOM(target)
 					end
@@ -162,7 +163,7 @@ function NeP.Engine.FaceRoll()
 				-- Friendly
 				local friendly = prefix..i
 				local ObjDistance = Engine.Distance('player', friendly)
-				if GenericFilter(friendly, ObjDistance) then
+				if GenericFilter(friendly) then
 					if ObjDistance <= 100 then
 						NeP.OM.addToOM(friendly)
 					end
