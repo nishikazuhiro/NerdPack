@@ -176,7 +176,8 @@ NeP.TempOM = {
 function NeP.OM.addToOM(Obj)
 	if not BlacklistedObject(Obj) then
 		if not BlacklistedDebuffs(Obj) then
-			local objectType, _, _, _, _, _id, _ = strsplit('-', UnitGUID(Obj))
+			local GUID = UnitGUID(Obj)
+			local objectType, _, _, _, _, _id, _ = strsplit('-', GUID)
 			local ID = tonumber(_id) or '0'
 			-- Friendly
 			if UnitIsFriend('player', Obj) and UnitHealth(Obj) > 0 then
@@ -186,7 +187,8 @@ function NeP.OM.addToOM(Obj)
 					class = Classifications[tostring(UnitClassification(Obj))],
 					distance = NeP.Engine.Distance('player', Obj),
 					is = 'friendly',
-					id = ID
+					id = ID,
+					guid = GUID
 				}
 			-- Enemie
 			elseif UnitCanAttack('player', Obj) and UnitHealth(Obj) > 0 then
@@ -196,7 +198,8 @@ function NeP.OM.addToOM(Obj)
 					class = Classifications[tostring(UnitClassification(Obj))],
 					distance = NeP.Engine.Distance('player', Obj),
 					is = isDummy(Obj) and 'dummy' or 'enemie',
-					id = ID
+					id = ID,
+					guid = GUID
 				}
 			-- Object
 			elseif FireHack and ObjectIsType(Obj, ObjectTypes.GameObject) then
@@ -205,7 +208,8 @@ function NeP.OM.addToOM(Obj)
 					name = UnitName(Obj) or '',
 					distance = NeP.Engine.Distance('player', Obj),
 					is = 'object',
-					id = ID
+					id = ID,
+					guid = GUID
 				}
 			end
 		end
