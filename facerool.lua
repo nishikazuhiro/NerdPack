@@ -126,7 +126,6 @@ function NeP.Engine.FaceRoll()
 	end
 
 	-- LibNameplateRegistry setup
-	-- Only run this if we're not using an advanced unlocker? (e.g. if not FireHack)
 	local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 	local nameplates = {}
 
@@ -165,6 +164,48 @@ function NeP.Engine.FaceRoll()
 	function NeP.OM.Maker()
 		-- Self
 		NeP.OM.addToOM('player')
+		-- Mouseover
+		if UnitExists('mouseover') then
+			local object = 'mouseover'
+			local ObjDistance = Engine.Distance('player', object)
+			if GenericFilter(object) then
+				if ObjDistance <= 100 then
+					NeP.OM.addToOM(object)
+				end
+			end
+		end
+		-- Target Cache
+		if UnitExists('target') then
+			local object = 'target'
+			local ObjDistance = Engine.Distance('player', object)
+			if GenericFilter(object) then
+				if ObjDistance <= 100 then
+					NeP.OM.addToOM(object)
+				end
+			end
+		end
+		-- If in Group scan frames...
+		if IsInGroup() or IsInRaid() then
+			local prefix = (IsInRaid() and 'raid') or 'party'
+			for i = 1, GetNumGroupMembers() do
+				-- Enemie
+				local target = prefix..i..'target'
+				local ObjDistance = Engine.Distance('player', target)
+				if GenericFilter(target) then
+					if ObjDistance <= 100 then
+						NeP.OM.addToOM(target)
+					end
+				end
+				-- Friendly
+				local friendly = prefix..i
+				local ObjDistance = Engine.Distance('player', friendly)
+				if GenericFilter(friendly) then
+					if ObjDistance <= 100 then
+						NeP.OM.addToOM(friendly)
+					end
+				end
+			end
+		end
 		-- Nameplate cache
 		for k,_ in pairs(nameplates) do
 			local plate = nameplates[k]
