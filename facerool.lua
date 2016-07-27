@@ -126,7 +126,10 @@ function NeP.Engine.FaceRoll()
 	end
 
 	-- LibNameplateRegistry setup
+	-- Only run this if we're not using an advanced unlocker? (e.g. if not FireHack)
 	local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
+	local nameplates = {}
+
 	function lnr:OnEnable()
 		-- Subscribe to callbacks
 		self:LNR_RegisterCallback("LNR_ON_NEW_PLATE"); -- registering this event will enable the library else it'll remain idle
@@ -145,15 +148,15 @@ function NeP.Engine.FaceRoll()
 		--local W = "|r";
 		--print("LNR: ID:", plateData.unitToken, " ", plateData.name, "'s nameplate appeared!");
 		--print("LNR: ", "It's a", R, plateData.type, W, "and", R, plateData.reaction, W, plateData.GUID and ("we know its GUID: " .. plateData.GUID) or "GUID not yet known");
-		NeP.OM.nameplates[#NeP.OM.nameplates+1] = plateData.unitToken
+		nameplates[#nameplates+1] = plateData.unitToken
 	end
 
 	function lnr:LNR_ON_RECYCLE_PLATE(eventname, plateFrame, plateData)
     --print("LNR: ", plateData.unitToken, " ", plateData.name, "'s nameplate disappeared!");
-		for k,_ in pairs(NeP.OM.nameplates) do
-			local kObj = NeP.OM.nameplates[k]
+		for k,_ in pairs(nameplates) do
+			local kObj = nameplates[k]
 			if (kObj == plateData.unitToken) then
-				NeP.OM.nameplates[k] = nil
+				nameplates[k] = nil
 			end
 		end
 	end
@@ -161,57 +164,15 @@ function NeP.Engine.FaceRoll()
 
 	function NeP.OM.Maker()
 		-- Self
-		NeP.OM.addToOM('player', 5)
-		-- Mouseover
-		if UnitExists('mouseover') then
-			local object = 'mouseover'
-			local ObjDistance = Engine.Distance('player', object)
-			if GenericFilter(object) then
-				if ObjDistance <= 100 then
-					NeP.OM.addToOM(object)
-				end
-			end
-		end
-		-- Target Cache
-		if UnitExists('target') then
-			local object = 'target'
-			local ObjDistance = Engine.Distance('player', object)
-			if GenericFilter(object) then
-				if ObjDistance <= 100 then
-					NeP.OM.addToOM(object)
-				end
-			end
-		end
-		-- If in Group scan frames...
-		if IsInGroup() or IsInRaid() then
-			local prefix = (IsInRaid() and 'raid') or 'party'
-			for i = 1, GetNumGroupMembers() do
-				-- Enemie
-				local target = prefix..i..'target'
-				local ObjDistance = Engine.Distance('player', target)
-				if GenericFilter(target) then
-					if ObjDistance <= 100 then
-						NeP.OM.addToOM(target)
-					end
-				end
-				-- Friendly
-				local friendly = prefix..i
-				local ObjDistance = Engine.Distance('player', friendly)
-				if GenericFilter(friendly) then
-					if ObjDistance <= 100 then
-						NeP.OM.addToOM(friendly)
-					end
-				end
-			end
-		end
+		NeP.OM.addToOM('player')
 		-- Nameplate cache
-		for k,_ in pairs(NeP.OM.nameplates) do
-			local plate = NeP.OM.nameplates[k]
-			local ObjDistance = Engine.Distance('player', plate)
-			if GenericFilter(plate, ObjDistance) then
-				if ObjDistance <= 100 then
+		for k,_ in pairs(nameplates) do
+			local plate = nameplates[k]
+			--local ObjDistance = Engine.Distance('player', plate)
+			if GenericFilter(plate) then
+				--if ObjDistance <= 100 then
 					NeP.OM.addToOM(plate)
-				end
+				--end
 			end
 		end
 	end

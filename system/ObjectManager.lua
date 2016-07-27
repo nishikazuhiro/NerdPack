@@ -3,7 +3,6 @@ NeP.OM = {
 	unitEnemie = {},
 	unitFriend = {},
 	GameObjects = {},
-	nameplates = {}
 }
 
 local Round =NeP.Core.Round
@@ -165,7 +164,6 @@ NeP.TempOM = {
 	unitEnemie = {},
 	unitFriend = {},
 	GameObjects = {},
-	nameplates = {}
 }
 
 --[[
@@ -217,7 +215,7 @@ function NeP.OM.addToOM(Obj)
 end
 
 -- Create a Temp OM contating all Objects
-C_Timer.NewTicker(0.25, (function()
+C_Timer.NewTicker(0.5, (function()
 
 	-- wait until added from unlocker.
 	if NeP.OM.Maker ~= nil then
