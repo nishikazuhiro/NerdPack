@@ -146,7 +146,7 @@ function NeP.Engine.FaceRoll()
 		--local R = "|cFFFF0000";
 		--local G = "|cFF00FF00";
 		--local W = "|r";
-		--print("LNR: ID:", plateData.unitToken, " ", plateData.name, "'s nameplate appeared!");
+		--print("LNR: (", plateData.unitToken, ") ", plateData.name, "'s nameplate appeared!");
 		--print("LNR: ", "It's a", R, plateData.type, W, "and", R, plateData.reaction, W, plateData.GUID and ("we know its GUID: " .. plateData.GUID) or "GUID not yet known");
 		nameplates[#nameplates+1] = plateData.unitToken
 	end
