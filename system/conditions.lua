@@ -97,6 +97,9 @@ NeP.DSL.RegisterConditon("seal", function(target, spell)
 	return GetShapeshiftForm()
 end)
 
+NeP.DSL.RegisterConditon("insanity", function(target, spell)
+return UnitPower(target, SPELL_POWER_INSANITY)
+end)
 
 NeP.DSL.RegisterConditon("energy", function(target, spell)
 	return UnitPower(target, UnitPowerType(target))
