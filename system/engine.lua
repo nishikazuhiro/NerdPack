@@ -176,6 +176,12 @@ local function checkTarget(spell, target)
 	return true, target, false
 end
 
+local function castingTime(target)
+    local _,_,_,_,_, endTime= UnitCastingInfo(target)
+    if endTime then return endTime end
+    return false
+end
+
 local function InterruptCast(spell)
 	local pX = string.sub(spell, 1, 1)
 	if pX == '!' then
@@ -213,12 +219,6 @@ local function canIterate(pX)
 		end
 	end
 	return false
-end
-
-local function castingTime(target)
-    local _,_,_,_,_, endTime= UnitCastingInfo(target)
-    if endTime then return endTime end
-    return false
 end
 
 local invItems = {
