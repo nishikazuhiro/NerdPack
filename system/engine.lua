@@ -30,6 +30,7 @@ local fK = NeP.Interface.fetchKey
 local ByPassMounts = {
 	[165803] = '', -- Telaari Talbuk
 	[164222] = '', -- Frostwolf War Wolf
+	[221883] = '', -- Divine Steed (pally cd)
 }
 
 local ListClassSpec = {
