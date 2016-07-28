@@ -427,12 +427,13 @@ NeP.DSL.RegisterConditon("movingfor", function(target)
 	end
 end)
 
--- DK Power
+NeP.DSL.RegisterConditon("maelstrom", function(target, spell)
+    return UnitPower(target, SPELL_POWER_MAELSTROM)
+end)
 
 NeP.DSL.RegisterConditon("runicpower", function(target, spell)
 	return UnitPower(target, SPELL_POWER_RUNIC_POWER)
 end)
-
 
 NeP.DSL.RegisterConditon("runes.count", function(target)
 	local count = 0
