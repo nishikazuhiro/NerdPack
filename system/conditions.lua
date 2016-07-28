@@ -113,10 +113,6 @@ NeP.DSL.RegisterConditon("holypower", function(target, spell)
 	return UnitPower(target, SPELL_POWER_HOLY_POWER)
 end)
 
-NeP.DSL.RegisterConditon("shadoworbs", function(target, spell)
-	return UnitPower(target, SPELL_POWER_SHADOW_ORBS)
-end)
-
 NeP.DSL.RegisterConditon("eclipse", function(target, spell)
 	return math.abs(UnitPower(target, SPELL_POWER_ECLIPSE))
 end)
