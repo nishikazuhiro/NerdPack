@@ -136,28 +136,18 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function lnr:OnDisable()
-		-- unregister all LibNameplateRegistry callbacks, which will disable it if
-		-- your add-on was the only one to use it
+		-- unregister all LibNameplateRegistry callbacks, which will disable it if your add-on was the only one to use it
 		self:LNR_UnregisterAllCallbacks();
 	end
 
 	function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
-		--local R = "|cFFFF0000";
-		--local G = "|cFF00FF00";
-		--local W = "|r";
-		--print("LNR: (", plateData.unitToken, ") ", plateData.name, "'s nameplate appeared!");
-		--print("LNR: ", "It's a", R, plateData.type, W, "and", R, plateData.reaction, W, plateData.GUID and ("we know its GUID: " .. plateData.GUID) or "GUID not yet known");
-		nameplates[#nameplates+1] = plateData.unitToken
+		local tK = plateData.unitToken
+		nameplates[tK] = tK
 	end
 
 	function lnr:LNR_ON_RECYCLE_PLATE(eventname, plateFrame, plateData)
-    --print("LNR: ", plateData.unitToken, " ", plateData.name, "'s nameplate disappeared!");
-		for k,_ in pairs(nameplates) do
-			local kObj = nameplates[k]
-			if (kObj == plateData.unitToken) then
-				nameplates[k] = nil
-			end
-		end
+		local tK = plateData.unitToken
+		nameplates[tK] = nil
 	end
 
 
