@@ -228,10 +228,12 @@ function NeP.Core.classColor(unit, _type, alpha)
 	if UnitIsPlayer(unit) then
 		local class, className = UnitClass(unit)
 		local color = _classColors[className]
-		if _type == 'HEX' then
-			return color.Hex
-		elseif _type == 'RBG' then
-			return color.r, color.g, color.b, alpha
+		if color then
+			if _type == 'HEX' then
+				return color.Hex
+			elseif _type == 'RBG' then
+				return color.r, color.g, color.b, alpha
+			end
 		end
 	else
 		return 'FFFFFF'
