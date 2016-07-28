@@ -28,8 +28,9 @@ local fK = NeP.Interface.fetchKey
 
 -- Engine will bypass IsMounted() if unit has any of this mount buff
 local ByPassMounts = {
-	[165803] = '',
-	[164222] = ''
+	[165803] = '', -- Telaari Talbuk
+	[164222] = '', -- Frostwolf War Wolf
+	[221883] = '', -- Divine Steed (pally cd)
 }
 
 local ListClassSpec = {
@@ -176,6 +177,12 @@ local function checkTarget(spell, target)
 	return true, target, false
 end
 
+local function castingTime(target)
+    local _,_,_,_,_, endTime= UnitCastingInfo(target)
+    if endTime then return endTime end
+    return false
+end
+
 local function InterruptCast(spell)
 	local pX = string.sub(spell, 1, 1)
 	if pX == '!' then
@@ -213,12 +220,6 @@ local function canIterate(pX)
 		end
 	end
 	return false
-end
-
-local function castingTime(target)
-    local _,_,_,_,_, endTime= UnitCastingInfo(target)
-    if endTime then return endTime end
-    return false
 end
 
 local invItems = {

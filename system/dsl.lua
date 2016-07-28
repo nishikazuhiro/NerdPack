@@ -112,18 +112,22 @@ end
 
 -- FIXME: Does not work for nested OR's
 local function Nested(table, spell)
-	local tempTable = {[1] = ''}
+	local tArray = {[1] = true}
 	for k,v in ipairs(table) do
+		local cD = DSL.parse(v, spell) or false
 		if v == 'or' then
-			tempTable[#tempTable+1] = ''
+			tArray[#tArray+1] = {}
 		else
-			if tempTable[#tempTable] ~= false then
-				tempTable[#tempTable] = DSL.parse(v, spell) or false
+			if tArray[#tArray] then
+				tArray[#tArray] = cD
 			end
 		end
 	end
-	for i=1, #tempTable do
-		if tempTable[i] ~= false then return true end
+	-- search for "true"
+	for i = 1, #tArray do
+		if tArray[i] then
+			return true
+		end
 	end
 	return false
 end
@@ -164,12 +168,12 @@ local parsez = function(dsl, spell)
 end
 
 local typesTable = {
-	['function'] = function(dsl, spell) return dsl() 					end,
-	['table']	 = function(dsl, spell) return Nested(dsl, spell)		end,
-	['string']	 = function(dsl, spell) return parsez(dsl, spell)		end,
+	['function'] = function(dsl, spell) return dsl() 									end,
+	['table']	 = function(dsl, spell) return Nested(dsl, spell)						end,
+	['string']	 = function(dsl, spell) return parsez(dsl, spell)						end,
 	['lib']		 = function(dsl, spell) return NeP.library.parse(false, dsl, 'target')	end,
-	['nil']		 = function(dsl, spell) return true						end,
-	['boolean']	 = function(dsl, spell) return dsl						end,
+	['nil']		 = function(dsl, spell) return true										end,
+	['boolean']	 = function(dsl, spell) return dsl										end,
 }
 
 DSL.parse = function(dsl, spell)

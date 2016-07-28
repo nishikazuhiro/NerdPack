@@ -97,6 +97,9 @@ NeP.DSL.RegisterConditon("seal", function(target, spell)
 	return GetShapeshiftForm()
 end)
 
+NeP.DSL.RegisterConditon("insanity", function(target, spell)
+return UnitPower(target, SPELL_POWER_INSANITY)
+end)
 
 NeP.DSL.RegisterConditon("energy", function(target, spell)
 	return UnitPower(target, UnitPowerType(target))
@@ -108,10 +111,6 @@ end)
 
 NeP.DSL.RegisterConditon("holypower", function(target, spell)
 	return UnitPower(target, SPELL_POWER_HOLY_POWER)
-end)
-
-NeP.DSL.RegisterConditon("shadoworbs", function(target, spell)
-	return UnitPower(target, SPELL_POWER_SHADOW_ORBS)
 end)
 
 NeP.DSL.RegisterConditon("eclipse", function(target, spell)
@@ -428,12 +427,13 @@ NeP.DSL.RegisterConditon("movingfor", function(target)
 	end
 end)
 
--- DK Power
+NeP.DSL.RegisterConditon("maelstrom", function(target, spell)
+    return UnitPower(target, SPELL_POWER_MAELSTROM)
+end)
 
 NeP.DSL.RegisterConditon("runicpower", function(target, spell)
 	return UnitPower(target, SPELL_POWER_RUNIC_POWER)
 end)
-
 
 NeP.DSL.RegisterConditon("runes.count", function(target)
 	local count = 0
