@@ -126,7 +126,10 @@ function NeP.Engine.FaceRoll()
 	end
 
 	-- LibNameplateRegistry setup
-	local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
+	if not FireHack then
+		local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
+	end
+	
 	local nameplates = {}
 
 	function lnr:OnEnable()
