@@ -28,8 +28,8 @@ local fK = NeP.Interface.fetchKey
 
 -- Engine will bypass IsMounted() if unit has any of this mount buff
 local ByPassMounts = {
-	[165803] = '',
-	[164222] = ''
+	[165803] = '', -- Telaari Talbuk
+	[164222] = '', -- Frostwolf War Wolf
 }
 
 local ListClassSpec = {
