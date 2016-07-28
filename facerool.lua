@@ -125,34 +125,35 @@ function NeP.Engine.FaceRoll()
 		return false
 	end
 
-	-- LibNameplateRegistry setup
-	if not FireHack then
-		local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
-	end
-	
+		-- LibNameplateRegistry setup
 	local nameplates = {}
 
-	function lnr:OnEnable()
-		-- Subscribe to callbacks
-		self:LNR_RegisterCallback("LNR_ON_NEW_PLATE"); -- registering this event will enable the library else it'll remain idle
-		self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
-	end
+	if not FireHack then
+		local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 
-	function lnr:OnDisable()
-		-- unregister all LibNameplateRegistry callbacks, which will disable it if your add-on was the only one to use it
-		self:LNR_UnregisterAllCallbacks();
-	end
 
-	function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
-		local tK = plateData.unitToken
-		nameplates[tK] = tK
-	end
 
-	function lnr:LNR_ON_RECYCLE_PLATE(eventname, plateFrame, plateData)
-		local tK = plateData.unitToken
-		nameplates[tK] = nil
-	end
+		function lnr:OnEnable()
+			-- Subscribe to callbacks
+			self:LNR_RegisterCallback("LNR_ON_NEW_PLATE"); -- registering this event will enable the library else it'll remain idle
+			self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
+		end
 
+		function lnr:OnDisable()
+			-- unregister all LibNameplateRegistry callbacks, which will disable it if your add-on was the only one to use it
+			self:LNR_UnregisterAllCallbacks();
+		end
+
+		function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
+			local tK = plateData.unitToken
+			nameplates[tK] = tK
+		end
+
+		function lnr:LNR_ON_RECYCLE_PLATE(eventname, plateFrame, plateData)
+			local tK = plateData.unitToken
+			nameplates[tK] = nil
+		end
+	end
 
 	function NeP.OM.Maker()
 		-- Self
