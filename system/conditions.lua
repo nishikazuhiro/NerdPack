@@ -212,7 +212,7 @@ end)
 
 NeP.DSL.RegisterConditon("alive", function(target, spell)
 	if UnitExists(target) and UnitHealth(target) > 0 then
-	return true
+		return true
 	end
 	return false
 end)

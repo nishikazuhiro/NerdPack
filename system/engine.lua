@@ -301,7 +301,7 @@ local sTrigger = {
 }
 
 local function castSanityCheck(spell)
-	if type(spell) == 'string' then
+	if type(spell) == 'string' and spell ~= 'pause' then
 		local pX = string.sub(spell, 1, 1)
 		if not sTrigger[pX] then
 			local spell, sI = InterruptCast(spell)
