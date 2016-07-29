@@ -15,7 +15,9 @@ local LibDispellable = LibStub("LibDispellable-1.0")
 local LibBoss = LibStub("LibBossIDs")
 
 NeP.DSL.RegisterConditon("dispellable", function(target, spell)
-	if LibDispellable:CanDispelWith(target, GetSpellID(GetSpellName(spell))) then
+	local spell = GetSpellName(spell)
+	local spellID = GetSpellID(spell)
+	if LibDispellable:CanDispelWith(target, spellID) then
 		return true
 	end
 	return false
