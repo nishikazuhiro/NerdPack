@@ -28,16 +28,6 @@ NeP.Listener.register("PLAYER_LOGIN", function(...)
 	end)
 end)
 
-NeP.Listener.register("PLAYER_ENTERING_WORLD", function(...)
-	-- Wipe OM to avoid Crashing
-	wipe(NeP.TempOM.unitEnemie)
-	wipe(NeP.TempOM.unitFriend)
-	wipe(NeP.TempOM.GameObjects)
-	wipe(NeP.OM.unitEnemie)
-	wipe(NeP.OM.unitFriend)
-	wipe(NeP.OM.GameObjects)
-end)
-
 NeP.Listener.register("UNIT_SPELLCAST_SUCCEEDED", function(...)
 	local unitID, spell, rank, lineID, spellID = ...
 	if unitID == "player" then

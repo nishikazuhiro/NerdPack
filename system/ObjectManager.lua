@@ -1,72 +1,24 @@
--- Final Table
 NeP.OM = {
 	unitEnemie = {},
 	unitFriend = {},
 	GameObjects = {},
 }
 
-local Round =NeP.Core.Round
+NeP.Listener.register('OM', "PLAYER_ENTERING_WORLD", function(...)
+	wipe(NeP.OM.unitEnemie)
+	wipe(NeP.OM.unitFriend)
+	wipe(NeP.OM.GameObjects)
+end)
 
--- Refresh OM & add to Final Table
-
-local function RefreshOM()
-
-	-- Make sure we're running
-	--if NeP.Core.CurrentCR and peConfig.read('button_states', 'MasterToggle', false) then
-		-- Wipe Cache
-		wipe(NeP.OM.unitEnemie)
-		wipe(NeP.OM.unitFriend)
-		wipe(NeP.OM.GameObjects)
-		--Refresh Enemine
-		for i=1,#NeP.TempOM.unitEnemie do
-			local Obj = NeP.TempOM.unitEnemie[i]
-			if FireHack and ObjectExists(Obj.key) or not FireHack and UnitExists(Obj.key) then
-				NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
-					key = Obj.key,
-					name = Obj.name,
-					is = Obj.is,
-					id = Obj.id,
-					class = Obj.class,
-					distance = NeP.Engine.Distance('player', Obj.key),
-					health = math.floor((UnitHealth(Obj.key) / UnitHealthMax(Obj.key)) * 100),
-					maxHealth = UnitHealthMax(Obj.key),
-					actualHealth = UnitHealth(Obj.key),
-				}
-			end
-		end
-		--Refresh Friendly
-		for i=1,#NeP.TempOM.unitFriend do
-			local Obj = NeP.TempOM.unitFriend[i]
-			if FireHack and ObjectExists(Obj.key) or not FireHack and UnitExists(Obj.key) then
-				NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
-					key = Obj.key,
-					name = Obj.name,
-					is = Obj.is,
-					id = Obj.id,
-					class = Obj.class,
-					distance = NeP.Engine.Distance('player', Obj.key),
-					health = math.floor((UnitHealth(Obj.key) / UnitHealthMax(Obj.key)) * 100),
-					maxHealth = UnitHealthMax(Obj.key),
-					actualHealth = UnitHealth(Obj.key),
-				}
-			end
-		end
-		--Refresh Objects
-		for i=1,#NeP.TempOM.GameObjects do
-			local Obj = NeP.TempOM.GameObjects[i]
-			if FireHack and ObjectExists(Obj.key) or not FireHack and UnitExists(Obj.key) then
-				NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {
-					key = Obj.key,
-					name = Obj.name,
-					is = Obj.is,
-					id = Obj.id,
-					distance = NeP.Engine.Distance('player', Obj.key),
-				}
-			end
-		end
-
-
-end
+local Round = NeP.Core.Round
+local Classifications = {
+	['minus'] 		= 1,
+	['normal'] 		= 2,
+	['elite' ]		= 3,
+	['rare'] 		= 4,
+	['rareelite' ]	= 5,
+	['worldboss' ]	= 6,
+}
 
 --[[
 	DESC: Checks if unit has a Blacklisted Debuff.
@@ -150,22 +102,6 @@ local function BlacklistedObject(Obj)
 	return BlacklistedObjects[tonumber(ObjID)] ~= nil
 end
 
-local Classifications = {
-	['minus'] 		= 1,
-	['normal'] 		= 2,
-	['elite' ]		= 3,
-	['rare'] 		= 4,
-	['rareelite' ]	= 5,
-	['worldboss' ]	= 6,
-}
-
--- Temp Table
-NeP.TempOM = {
-	unitEnemie = {},
-	unitFriend = {},
-	GameObjects = {},
-}
-
 --[[
 	DESC: Places the object in its correct place.
 	This is done in a seperate function so we dont have
@@ -177,31 +113,40 @@ function NeP.OM.addToOM(Obj)
 			local GUID = UnitGUID(Obj)
 			local objectType, _, _, _, _, _id, _ = strsplit('-', GUID)
 			local ID = tonumber(_id) or '0'
+			local maxHealth = UnitHealthMax(Obj) or 1
+			local rawHealth = UnitHealth(Obj) or 1
+			local health = math.floor((rawHealth / maxHealth) * 100)
 			-- Friendly
 			if UnitIsFriend('player', Obj) and UnitHealth(Obj) > 0 then
-				NeP.TempOM.unitFriend[#NeP.TempOM.unitFriend+1] = {
+				NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
 					key = Obj,
 					name = UnitName(Obj),
 					class = Classifications[tostring(UnitClassification(Obj))],
 					distance = NeP.Engine.Distance('player', Obj),
 					is = 'friendly',
 					id = ID,
-					guid = GUID
+					guid = GUID,
+					health = health,
+					maxHealth = maxHealth,
+					actualHealth = rawHealth
 				}
 			-- Enemie
 			elseif UnitCanAttack('player', Obj) and UnitHealth(Obj) > 0 then
-				NeP.TempOM.unitEnemie[#NeP.TempOM.unitEnemie+1] = {
+				NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
 					key = Obj,
 					name = UnitName(Obj),
 					class = Classifications[tostring(UnitClassification(Obj))],
 					distance = NeP.Engine.Distance('player', Obj),
 					is = isDummy(Obj) and 'dummy' or 'enemie',
 					id = ID,
-					guid = GUID
+					guid = GUID,
+					health = health,
+					maxHealth = maxHealth,
+					actualHealth = rawHealth
 				}
 			-- Object
-			elseif FireHack and ObjectIsType(Obj, ObjectTypes.GameObject) then
-				NeP.TempOM.GameObjects[#NeP.TempOM.GameObjects+1] = {
+			elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
+				NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {
 					key = Obj,
 					name = UnitName(Obj) or '',
 					distance = NeP.Engine.Distance('player', Obj),
@@ -213,29 +158,6 @@ function NeP.OM.addToOM(Obj)
 		end
 	end
 end
-
--- Create a Temp OM contating all Objects
-C_Timer.NewTicker(0.5, (function()
-
-	-- wait until added from unlocker.
-	if NeP.OM.Maker ~= nil then
-
-		-- Wipe Cache
-		wipe(NeP.TempOM.unitEnemie)
-		wipe(NeP.TempOM.unitFriend)
-		wipe(NeP.TempOM.GameObjects)
-
-		-- Run OM depending on unlocker
-		NeP.OM.Maker()
-
-		-- Sort by distance
-		table.sort(NeP.TempOM.unitEnemie, function(a,b) return a.distance < b.distance end)
-		table.sort(NeP.TempOM.unitFriend, function(a,b) return a.distance < b.distance end)
-		table.sort(NeP.TempOM.GameObjects, function(a,b) return a.distance < b.distance end)
-
-	end
-
-end), nil)
 
 local DiesalTools = LibStub('DiesalTools-1.0')
 local DiesalStyle = LibStub('DiesalStyle-1.0')
@@ -281,12 +203,6 @@ local function recycleStatusBars()
 	end
 end
 
-local OMTables = {
-	['Enemie'] = NeP.OM.unitEnemie,
-	['Friendly'] = NeP.OM.unitFriend,
-	['GameObjects'] = NeP.OM.GameObjects
-}
-
 local function RefreshGUI()
 	local tempTable = {}
 
@@ -320,6 +236,19 @@ end
 
 -- Run OM
 C_Timer.NewTicker(0.25, (function()
-	RefreshOM()
+	-- wait until added from unlocker.
+	if NeP.OM.Maker then
+		-- Wipe Cache
+		wipe(NeP.OM.unitEnemie)
+		wipe(NeP.OM.unitFriend)
+		wipe(NeP.OM.GameObjects)
+
+		-- Run OM depending on unlocker
+		NeP.OM.Maker()
+		-- Sort by distance
+		table.sort(NeP.OM.unitEnemie, function(a,b) return a.distance < b.distance end)
+		table.sort(NeP.OM.unitFriend, function(a,b) return a.distance < b.distance end)
+		table.sort(NeP.OM.GameObjects, function(a,b) return a.distance < b.distance end)
+	end
 	if NeP.OM.List:IsShown() then RefreshGUI() end
 end), nil)
