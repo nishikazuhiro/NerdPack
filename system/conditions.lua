@@ -913,7 +913,7 @@ NeP.DSL.RegisterConditon("waitfor", function(args)
 		local time = tonumber(time)
 		local GetTime = GetTime()
 		local currentTime = GetTime % 60
-		if waitTable[name] ~= nil then
+		if waitTable[name] then
 			if waitTable[name] + time < currentTime then
 				waitTable[name] = nil
 				return true

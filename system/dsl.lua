@@ -81,7 +81,7 @@ local comparator = function(condition, target, condition_spell)
 				evaluation = comparator_table[3] == condition_call
 			else
 				local tempComp = comparator_table[2]
-				if tableComparator[tempComp] ~= nil then
+				if tableComparator[tempComp] then
 					evaluation = tableComparator[tempComp](value, compare_value)
 				else
 					evaluation = false

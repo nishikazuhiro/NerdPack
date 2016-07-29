@@ -103,13 +103,13 @@ function Engine.registerRotation(SpecID, CrName, InCombat, outCombat, initFunc)
 	local Spec = GetSpecialization() or 0
 	local SpecInfo = GetSpecializationInfo(Spec)
 	local localizedClass, englishClass, classIndex = UnitClass('player')
-	if ListClassSpec[tonumber(classIndex)][tonumber(SpecID)] ~= nil
-	or ListClassSpec[tonumber(SpecID)] ~= nil then
+	if ListClassSpec[tonumber(classIndex)][tonumber(SpecID)]
+	or ListClassSpec[tonumber(SpecID)] then
 		-- If SpecID Table is not created yet, create one.
 		if Engine.Rotations[SpecID] == nil then Engine.Rotations[SpecID] = {} end
 		-- In case someone tries to load a cr with the same name of a existing one
 		local TableName = CrName
-		if Engine.Rotations[SpecID][CrName] ~= nil then TableName = CrName..'_'..math.random(0,1000) end
+		if Engine.Rotations[SpecID][CrName] then TableName = CrName..'_'..math.random(0,1000) end
 		-- Create CR table
 		Engine.Rotations[SpecID][TableName] = { 
 			[true] = InCombat,

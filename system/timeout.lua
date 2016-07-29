@@ -11,7 +11,7 @@ function timeout.set(name, timeout, callback)
 end
 
 function timeout.check(name)
-	if timeouts[name] ~= nil then
+	if timeouts[name] then
 		return (GetTime() - timeouts[name].start)
 	end
 	return false
