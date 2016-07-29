@@ -372,7 +372,7 @@ function Engine.Iterate(table)
 				local hasTarget, target, ground = checkTarget(spell, aR[3])
 				Engine.isGroundSpell = ground 
 				if hasTarget then
-					Debug('Engine', 'Passed Target: '..UnitName(target))
+					Debug('Engine', 'Passed Target: '..tostring(UnitName(target)))
 					local sB = pTypes[tP](spell, target, sI)
 					if sB then break end
 				end
