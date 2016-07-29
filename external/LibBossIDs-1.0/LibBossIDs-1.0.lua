@@ -10,7 +10,7 @@ Dependencies: LibStub
 License: Public Domain, Absolutely no Warranty.
 ]]
 
-local MAJOR, MINOR = "LibBossIDs", "$Revision: 96 $"
+local MAJOR, MINOR = "LibBossIDs-1.0", "$Revision: 96 $"
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then return end
@@ -534,7 +534,7 @@ local BossIDs = {
 	[95067]	= true,	-- Shadow-Lord Iskar
 	[90296]	= true,	-- Socrethar the Eternal - Soulbound Construct
 	[93439]	= true,	-- Tyrant Velhari
-	-- Destructorâ€™s Rise
+	-- Destructor’s Rise
 	[89890]	= true,	-- Fel Lord Zakuun
 	[93068]	= true,	-- Xhul'horac
 	[91349]	= true,	-- Mannoroth
