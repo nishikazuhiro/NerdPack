@@ -18,12 +18,12 @@ local tinsert, tremove = tinsert, tremove
 
 if LibStub then
 	-- LibStub version control
-	LibDraw = LibStub:NewLibrary("LibDraw-1.0", 2)
+	LibDraw = LibStub:NewLibrary("LibDraw-1.0", 3)
 	if not LibDraw then return end
 else
 	-- Pretty much LibStub
 	LibDraw = {
-		version = 1.2
+		version = 1.3
 	}
 	if _G['LibDraw'] and _G['LibDraw'].version and _G['LibDraw'].version > LibDraw.version then
 		return
@@ -69,7 +69,7 @@ function LibDraw.SetWidth(w)
 end
 
 function LibDraw.Line(sx, sy, sz, ex, ey, ez)
-	if not FireHack then return end
+	if not WorldToScreen then return end
 
 	local sx, sy = WorldToScreen(sx, sy, sz)
 	local ex, ey = WorldToScreen(ex, ey, ez)
@@ -142,7 +142,7 @@ local LINEFACTOR_2 = LINEFACTOR / 2;
 
 function LibDraw.Draw2DLine(sx, sy, ex, ey)
 
-	if not FireHack or not sx or not sy or not ex or not ey then return end
+	if not WorldToScreen or not sx or not sy or not ex or not ey then return end
 	local T = tremove(LibDraw.textures) or false
 	if T == false then
 		T = LibDraw.canvas:CreateTexture(nil, "BACKGROUND")
@@ -252,7 +252,7 @@ function LibDraw.Texture(config, x, y, z, alphaA)
 	local left, right, top, bottom, scale =  config.left, config.right, config.top, config.bottom, config.scale
 	local alpha = config.alpha or alphaA
 
-	if not FireHack or not texture or not width or not height or not x or not y or not z then return end
+	if not WorldToScreen or not texture or not width or not height or not x or not y or not z then return end
 	if not left or not right or not top or not bottom then
 		left = 0
 		right = 1
