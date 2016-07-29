@@ -71,10 +71,8 @@ local BlacklistedAuras = {
 local function BlacklistedDebuffs(Obj)
 	for i = 1, 40 do
 		local spellID = select(11, UnitDebuff(Obj, i))
-		if spellID then
-			if BlacklistedAuras[tonumber(spellID)] then
-				return true
-			end
+		if spellID and BlacklistedAuras[tonumber(spellID)] then
+			return true
 		end
 	end
 	return false
@@ -97,8 +95,7 @@ local BlacklistedObjects = {
 	[234023] = '',
 }
 
-local function BlacklistedObject(Obj)
-	local _,_,_,_,_,ObjID = strsplit('-', UnitGUID(Obj) or '0')
+local function BlacklistedObject(ObjID)
 	return BlacklistedObjects[tonumber(ObjID)] ~= nil
 end
 
@@ -108,53 +105,51 @@ end
 	to repeate code over and over again for all unlockers.
 ---------------------------------------------------]]
 function NeP.OM.addToOM(Obj)
-	if not BlacklistedObject(Obj) then
-		if not BlacklistedDebuffs(Obj) then
-			local GUID = UnitGUID(Obj)
-			local objectType, _, _, _, _, _id, _ = strsplit('-', GUID)
-			local ID = tonumber(_id) or '0'
-			local maxHealth = UnitHealthMax(Obj) or 1
-			local rawHealth = UnitHealth(Obj) or 1
-			local health = math.floor((rawHealth / maxHealth) * 100)
-			-- Friendly
-			if UnitIsFriend('player', Obj) and UnitHealth(Obj) > 0 then
-				NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
-					key = Obj,
-					name = UnitName(Obj),
-					class = Classifications[tostring(UnitClassification(Obj))],
-					distance = NeP.Engine.Distance('player', Obj),
-					is = 'friendly',
-					id = ID,
-					guid = GUID,
-					health = health,
-					maxHealth = maxHealth,
-					actualHealth = rawHealth
-				}
-			-- Enemie
-			elseif UnitCanAttack('player', Obj) and UnitHealth(Obj) > 0 then
-				NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
-					key = Obj,
-					name = UnitName(Obj),
-					class = Classifications[tostring(UnitClassification(Obj))],
-					distance = NeP.Engine.Distance('player', Obj),
-					is = isDummy(Obj) and 'dummy' or 'enemie',
-					id = ID,
-					guid = GUID,
-					health = health,
-					maxHealth = maxHealth,
-					actualHealth = rawHealth
-				}
-			-- Object
-			elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
-				NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {
-					key = Obj,
-					name = UnitName(Obj) or '',
-					distance = NeP.Engine.Distance('player', Obj),
-					is = 'object',
-					id = ID,
-					guid = GUID
-				}
-			end
+	local GUID = UnitGUID(Obj) or '0'
+	local objectType, _, _, _, _, ObjID, _ = strsplit('-', GUID)
+	local ObjID = tonumber(ObjID) or '0'
+	if not BlacklistedObject(ObjID) and not BlacklistedDebuffs(Obj) then
+		local maxHealth = UnitHealthMax(Obj) or 1
+		local rawHealth = UnitHealth(Obj) or 1
+		local health = math.floor((rawHealth / maxHealth) * 100)
+		-- Friendly
+		if UnitIsFriend('player', Obj) and UnitHealth(Obj) > 0 then
+			NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
+				key = Obj,
+				name = UnitName(Obj),
+				class = Classifications[tostring(UnitClassification(Obj))],
+				distance = NeP.Engine.Distance('player', Obj),
+				is = 'friendly',
+				id = ObjID,
+				guid = GUID,
+				health = health,
+				maxHealth = maxHealth,
+				actualHealth = rawHealth
+			}
+		-- Enemie
+		elseif UnitCanAttack('player', Obj) and UnitHealth(Obj) > 0 then
+			NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
+				key = Obj,
+				name = UnitName(Obj),
+				class = Classifications[tostring(UnitClassification(Obj))],
+				distance = NeP.Engine.Distance('player', Obj),
+				is = isDummy(Obj) and 'dummy' or 'enemie',
+				id = ObjID,
+				guid = GUID,
+				health = health,
+				maxHealth = maxHealth,
+				actualHealth = rawHealth
+			}
+		-- Object
+		elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
+			NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {
+				key = Obj,
+				name = UnitName(Obj) or '',
+				distance = NeP.Engine.Distance('player', Obj),
+				is = 'object',
+				id = ObjID,
+				guid = GUID
+			}
 		end
 	end
 end
