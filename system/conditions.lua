@@ -12,7 +12,7 @@ local stringGmatch = string.gmatch
 
 local rangeCheck = LibStub("LibRangeCheck-2.0")
 local LibDispellable = LibStub("LibDispellable-1.0")
-local LibBoss = LibStub("LibBossIDs")
+local LibBoss = LibStub("LibBossIDs-1.0")
 
 NeP.DSL.RegisterConditon("dispellable", function(target, spell)
 	local spell = GetSpellName(spell)
