@@ -12,6 +12,7 @@ local faceroll = {
 	}
 }
 
+local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 
 NeP.FaceRoll = CreateFrame('Frame', 'activeCastFrame', UIParent)
 local activeFrame = NeP.FaceRoll
@@ -125,8 +126,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	local nameplates = {}
-	local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
-
+	
 	function lnr:OnEnable()
 		self:LNR_RegisterCallback("LNR_ON_NEW_PLATE");
 		self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
