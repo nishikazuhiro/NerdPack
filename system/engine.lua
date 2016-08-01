@@ -31,6 +31,7 @@ local ByPassMounts = {
 	[165803] = '', -- Telaari Talbuk
 	[164222] = '', -- Frostwolf War Wolf
 	[221883] = '', -- Divine Steed (pally cd)
+	[221887] = '', -- Divine Steed (pally cd)
 }
 
 local ListClassSpec = {
