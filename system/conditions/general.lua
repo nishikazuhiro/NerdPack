@@ -458,7 +458,7 @@ end)
 
 NeP.DSL.RegisterConditon("enemy", function(target, spell)
 	return UnitCanAttack("player", target)
-end
+end)
 
 NeP.DSL.RegisterConditon("glyph", function(target, spell)
 	local spellId = tonumber(spell)
