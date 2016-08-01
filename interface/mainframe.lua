@@ -3,7 +3,7 @@ local Tittle = '|cff'..Intf.addonColor..NeP.Info.Name
 local Logo = '|T'..Intf.Logo..':15:15|t'
 local Config = NeP.Config
 local Round = NeP.Core.Round
-local F = NeP.Interface.F
+local F = NeP.Interface.fetchKey
 local TA = NeP.Core.TA
 
 local function OpenPage(URL)
