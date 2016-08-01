@@ -197,7 +197,7 @@ end
 
 local function IsMountedCheck()
 	for i = 1, 40 do
-		local mountID = select(11, UnitDebuff('player', i))
+		local mountID = select(11, UnitBuff('player', i))
 		if mountID then
 			if ByPassMounts[tonumber(mountID)] then
 				return true
