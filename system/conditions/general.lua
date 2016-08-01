@@ -14,6 +14,35 @@ local rangeCheck = LibStub("LibRangeCheck-2.0")
 local LibDispellable = LibStub("LibDispellable-1.0")
 local LibBoss = LibStub("LibBossIDs-1.0")
 
+local heroismBuffs = { 32182, 90355, 80353, 2825, 146555 }
+
+local function checkChanneling(target)
+	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
+	if name then return name, startTime, endTime, notInterruptible end
+
+	return false
+end
+
+local function checkCasting(target)
+	local name, startTime, endTime, notInterruptible = checkChanneling(target)
+	if name then return name, startTime, endTime, notInterruptible end
+
+	local name, _, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(target)
+	if name then return name, startTime, endTime, notInterruptible end
+
+	return false
+end
+
+NeP.DSL.RegisterConditon("hashero", function(unit, spell)
+	for i = 1, #heroismBuffs do
+		local SpellName = GetSpellName(heroismBuffs[i])
+		if UnitBuff('player', SpellName) then
+			return true
+		end
+	end
+	return false
+end)
+
 NeP.DSL.RegisterConditon("dispellable", function(target, spell)
 	local spell = GetSpellName(spell)
 	local spellID = GetSpellID(spell)
@@ -87,48 +116,12 @@ NeP.DSL.RegisterConditon("debuff.duration", function(target, spell)
 	return 0
 end)
 
-NeP.DSL.RegisterConditon("stance", function(target, spell)
-	return GetShapeshiftForm()
-end)
-
-NeP.DSL.RegisterConditon("form", function(target, spell)
-	return GetShapeshiftForm()
-end)
-
-NeP.DSL.RegisterConditon("seal", function(target, spell)
-	return GetShapeshiftForm()
-end)
-
-NeP.DSL.RegisterConditon("insanity", function(target, spell)
-return UnitPower(target, SPELL_POWER_INSANITY)
-end)
-
 NeP.DSL.RegisterConditon("energy", function(target, spell)
 	return UnitPower(target, UnitPowerType(target))
 end)
 
 NeP.DSL.RegisterConditon("focus", function(target, spell)
 	return UnitPower(target, SPELL_POWER_FOCUS)
-end)
-
-NeP.DSL.RegisterConditon("holypower", function(target, spell)
-	return UnitPower(target, SPELL_POWER_HOLY_POWER)
-end)
-
-NeP.DSL.RegisterConditon("eclipse", function(target, spell)
-	return math.abs(UnitPower(target, SPELL_POWER_ECLIPSE))
-end)
-
-NeP.DSL.RegisterConditon("eclipseRaw", function(target, spell)
-	return UnitPower(target, SPELL_POWER_ECLIPSE)
-end)
-
-NeP.DSL.RegisterConditon("solar", function(target, spell)
-	return GetEclipseDirection() == 'sun'
-end)
-
-NeP.DSL.RegisterConditon("lunar", function(target, spell)
-	return GetEclipseDirection() == 'moon'
 end)
 
 NeP.DSL.RegisterConditon("timetomax", function(target, spell)
@@ -138,76 +131,12 @@ NeP.DSL.RegisterConditon("timetomax", function(target, spell)
 	return (max - curr) * (1.0 / regen)
 end)
 
-NeP.DSL.RegisterConditon("stealable", function(target, spellCast, spell)
-	for i=1, 40 do
-		local name, _, _, _, _, _, _, _, isStealable, _ = UnitAura(target, i)
-		if isStealable then
-			if spell then
-				if spell == GetSpellName(spell) then
-					return true
-				else
-					return false
-				end
-			end
-			return true
-		end
-	end
-	return false
-end)
-
-NeP.DSL.RegisterConditon("rage", function(target, spell)
-	return UnitPower(target, SPELL_POWER_RAGE)
-end)
-
-NeP.DSL.RegisterConditon("chi", function(target, spell)
-	return UnitPower(target, SPELL_POWER_CHI)
-end)
-
-NeP.DSL.RegisterConditon("fury", function(target, spell)
-	return UnitPower(target, SPELL_POWER_FURY)
-end)
-
-NeP.DSL.RegisterConditon("pain", function(target, spell)
-	return UnitPower(target, SPELL_POWER_PAIN)
-end)
-
--- Returns the number of fury you have left till max (e.g. you have a max of 100 fury and 80 fury now, so it will return 20)
-NeP.DSL.RegisterConditon("furydiff", function(target, spell)
-    local max = UnitPowerMax(target, SPELL_POWER_FURY)
-    local curr = UnitPower(target, SPELL_POWER_FURY)
-    return (max - curr)
-end)
-
--- Returns the number of chi you have left till max (e.g. you have a max of 5 chi and 3 chi now, so it will return 2)
-NeP.DSL.RegisterConditon("chidiff", function(target, spell)
-    local max = UnitPowerMax(target, SPELL_POWER_CHI)
-    local curr = UnitPower(target, SPELL_POWER_CHI)
-    return (max - curr)
-end)
-
-NeP.DSL.RegisterConditon("demonicfury", function(target, spell)
-	return UnitPower(target, SPELL_POWER_DEMONIC_FURY)
-end)
-
-NeP.DSL.RegisterConditon("embers", function(target, spell)
-	return UnitPower(target, SPELL_POWER_BURNING_EMBERS, true)
-end)
-
-NeP.DSL.RegisterConditon("soulshards", function(target, spell)
-	return UnitPower(target, SPELL_POWER_SOUL_SHARDS)
-end)
-
 NeP.DSL.RegisterConditon("behind", function(target, spell)
 	return not NeP.Engine.Infront('player', target)
 end)
 
 NeP.DSL.RegisterConditon("infront", function(target, spell)
 	return NeP.Engine.Infront('player', target)
-end)
-
-
-NeP.DSL.RegisterConditon("combopoints", function()
-	return GetComboPoints('player', 'target')
 end)
 
 NeP.DSL.RegisterConditon("alive", function(target, spell)
@@ -235,42 +164,6 @@ end)
 
 NeP.DSL.RegisterConditon("exists", function(target)
 	return (UnitExists(target))
-end)
-
-NeP.DSL.RegisterConditon("modifier.shift", function()
-	return IsShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.control", function()
-	return IsControlKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.alt", function()
-	return IsAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.lshift", function()
-	return IsLeftShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.lcontrol", function()
-	return IsLeftControlKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.lalt", function()
-	return IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.rshift", function()
-	return IsRightShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.rcontrol", function()
-	return IsRightControlKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-NeP.DSL.RegisterConditon("modifier.ralt", function()
-	return IsRightAltKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
 NeP.DSL.RegisterConditon("modifier.player", function()
@@ -339,22 +232,8 @@ NeP.DSL.RegisterConditon("threat", function(target)
 	return 0
 end)
 
-NeP.DSL.RegisterConditon("agro", function(target)
-	if UnitThreatSituation(target) and UnitThreatSituation(target) >= 2 then
-		return true
-	end
-	return false
-end)
-
-
-NeP.DSL.RegisterConditon("balance.sun", function()
-	local direction = GetEclipseDirection()
-	if direction == 'none' or direction == 'sun' then return true end
-end)
-
-NeP.DSL.RegisterConditon("balance.moon", function()
-	local direction = GetEclipseDirection()
-	if direction == 'moon' then return true end
+NeP.DSL.RegisterConditon("aggro", function(target)
+	return (UnitThreatSituation(target) and UnitThreatSituation(target) >= 2)
 end)
 
 NeP.DSL.RegisterConditon("moving", function(target)
@@ -429,51 +308,6 @@ NeP.DSL.RegisterConditon("movingfor", function(target)
 	end
 end)
 
-NeP.DSL.RegisterConditon("maelstrom", function(target, spell)
-    return UnitPower(target, SPELL_POWER_MAELSTROM)
-end)
-
-NeP.DSL.RegisterConditon("runicpower", function(target, spell)
-	return UnitPower(target, SPELL_POWER_RUNIC_POWER)
-end)
-
-NeP.DSL.RegisterConditon("runes.count", function(target)
-	local count = 0
-	for i=1, 6 do
-		local start, duration, runeReady = GetRuneCooldown(i)
-		if runeReady then count = count+1 end
-	end
-	return count
-end)
-
-NeP.DSL.RegisterConditon("runes.cooldown", function(target, runes)
-	local rT = {}
-	for i=1, 6 do
-		local r, d, c = GetRuneCooldown(i)
-		local cd = (r + d) - GetTime()
-		rT[#rT+1] = cd
-	end
-	table.sort(rT, function(a,b) return a < b end)
-	return rT[runes] or 0
-end)
-
-NeP.DSL.RegisterConditon("runes", function(target, rune)
-	return NeP.DSL.Conditions["runes.count"](target, rune)
-end)
-
-NeP.DSL.RegisterConditon("health", function(target)
-	local health = math.floor((UnitHealth(target) / UnitHealthMax(target)) * 100)
-	return health
-end)
-
-NeP.DSL.RegisterConditon("health.actual", function(target)
-	return UnitHealth(target)
-end)
-
-NeP.DSL.RegisterConditon("health.max", function(target)
-	return UnitHealthMax(target)
-end)
-
 NeP.DSL.RegisterConditon("mana", function(target, spell)
 	if UnitExists(target) then
 		return math.floor((UnitMana(target) / UnitManaMax(target)) * 100)
@@ -487,15 +321,6 @@ end)
 
 NeP.DSL.RegisterConditon("modifier.cooldowns", function()
 	return NeP.DSL.Conditions["modifier.toggle"]('Cooldowns')
-end)
-
-NeP.DSL.RegisterConditon("modifier.interrupts", function()
-	if NeP.DSL.Conditions["modifier.toggle"]('Interrupts') then
-		local stop = NeP.DSL.Conditions["casting"]('target')
-		if stop then StopCast() end
-		return stop
-	end
-	return false
 end)
 
 NeP.DSL.RegisterConditon("modifier.interrupt", function()
@@ -518,55 +343,9 @@ NeP.DSL.RegisterConditon("enchant.offhand", function()
 	return (select(4, GetWeaponEnchantInfo()) == 1)
 end)
 
-NeP.DSL.RegisterConditon("totem", function(target, totem)
-	for index = 1, 4 do
-		local _, totemName, startTime, duration = GetTotemInfo(index)
-		if totemName == GetSpellName(totem) then
-			return true
-		end
-	end
-	return false
-end)
-
 NeP.DSL.RegisterConditon("mounted", function()
 	return IsMounted()
 end)
-
-NeP.DSL.RegisterConditon("totem.duration", function(target, totem)
-	for index = 1, 4 do
-	local _, totemName, startTime, duration = GetTotemInfo(index)
-	if totemName == GetSpellName(totem) then
-		return floor(startTime + duration - GetTime())
-	end
-	end
-	return 0
-end)
-
-NeP.DSL.RegisterConditon("mushrooms", function ()
-	local count = 0
-	for slot = 1, 3 do
-	if GetTotemInfo(slot) then
-		count = count + 1 end
-	end
-	return count
-end)
-
-local function checkChanneling(target)
-	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
-	if name then return name, startTime, endTime, notInterruptible end
-
-	return false
-end
-
-local function checkCasting(target)
-	local name, startTime, endTime, notInterruptible = checkChanneling(target)
-	if name then return name, startTime, endTime, notInterruptible end
-
-	local name, _, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(target)
-	if name then return name, startTime, endTime, notInterruptible end
-
-	return false
-end
 
 NeP.DSL.RegisterConditon('casting.time', function(target, spell)
 	local name, startTime, endTime = checkCasting(target)
@@ -625,10 +404,6 @@ NeP.DSL.RegisterConditon('interruptAt', function (target, spell)
 	return false
 end)
 
-NeP.DSL.RegisterConditon('interruptsAt', function(target, spell)
-	return NeP.DSL.Conditions['casting.delta'](target, spell)
-end)
-
 NeP.DSL.RegisterConditon("spell.cooldown", function(target, spell)
 	local start, duration, enabled = GetSpellCooldown(spell)
 	if not start then return false end
@@ -682,8 +457,8 @@ NeP.DSL.RegisterConditon("friend", function(target, spell)
 end)
 
 NeP.DSL.RegisterConditon("enemy", function(target, spell)
-	return ( UnitCanAttack("player", target) )
-end)
+	return UnitCanAttack("player", target)
+end
 
 NeP.DSL.RegisterConditon("glyph", function(target, spell)
 	local spellId = tonumber(spell)
@@ -741,16 +516,14 @@ end)
 
 NeP.DSL.RegisterConditon("role", function(target, role)
 	local role = role:upper()
-
 	local damageAliases = { "DAMAGE", "DPS", "DEEPS" }
-
 	local targetRole = UnitGroupRolesAssigned(target)
 	if targetRole == role then return true
 	elseif role:find("HEAL") and targetRole == "HEALER" then return true
 	else
-	for i = 1, #damageAliases do
-		if role == damageAliases[i] then return true end
-	end
+		for i = 1, #damageAliases do
+			if role == damageAliases[i] then return true end
+		end
 	end
 
 	return false
@@ -798,50 +571,8 @@ NeP.DSL.RegisterConditon("falling", function()
 	return IsFalling()
 end)
 
-local heroismBuffs = { 32182, 90355, 80353, 2825, 146555 }
-
-NeP.DSL.RegisterConditon("hashero", function(unit, spell)
-	for i = 1, #heroismBuffs do
-		local SpellName = GetSpellName(heroismBuffs[i])
-		if UnitBuff('player', SpellName) then
-			return true
-		end
-	end
-	return false
-end)
-
 NeP.DSL.RegisterConditon("charmed", function(unit, _)
 	return (UnitIsCharmed(unit) == true)
-end)
-
-NeP.DSL.RegisterConditon("vengeance", function(unit, spell)
-	local vengeance = select(15, _G['UnitBuff']("player", GetSpellName(132365)))
-	if not vengeance then
-		return 0
-	end
-	if spell then
-		return vengeance
-	end
-	return vengeance / UnitHealthMax("player") * 100
-end)
-
--- Blizz Removed UnitIsTappedByPlayer is Legion!
-NeP.DSL.RegisterConditon('modifier.taunt', function()
-	--[[for i=1,#NeP.OM.unitEnemie do
-		local Obj = NeP.OM.unitEnemie[i]
-		if NeP.Engine.Infront('player', Obj.key) then
-			if UnitIsTappedByPlayer(Obj.key)
-			and Obj.distance <= 40
-			and UnitAffectingCombat(Obj.key) then
-				if UnitThreatSituation('player', Obj.key)
-				and UnitThreatSituation('player', Obj.key) <= 2 then
-					NeP.Engine.ForceTarget = Obj.key
-					return true
-				end
-			end
-		end
-	end]]
-	return false
 end)
 
 NeP.DSL.RegisterConditon("area.enemies", function(unit, distance)
@@ -878,23 +609,6 @@ end)
 
 NeP.DSL.RegisterConditon("ilevel", function(unit, _)
 	return math.floor(select(1,GetAverageItemLevel()))
-end)
-
-NeP.DSL.RegisterConditon('dispellAll', function(target, spell)
-	local condtion, target = NeP.Healing['DispellAll'](spell)
-	if condtion then
-		NeP.Engine.ForceTarget = target
-		return true
-	end
-	return false
-end)
-
-NeP.DSL.RegisterConditon('AoEHeal', function(args)
-	local health, num = strsplit(',', args, 2)
-	local health, num = tonumber(health), tonumber(num)
-	if num then
-		return NeP.Healing['AoEHeal'](health) >= tonumber(num) or false
-	end
 end)
 
 NeP.DSL.RegisterConditon("timeout", function(args)
@@ -939,11 +653,4 @@ NeP.DSL.RegisterConditon("IsNear", function(targetID, distance)
 			end
 		end
 	return false
-end)
-
-NeP.DSL.RegisterConditon("petrange", function(target)
-	if target then
-		return NeP.Engine.Distance('pet', target)
-	end
-	return 0
 end)

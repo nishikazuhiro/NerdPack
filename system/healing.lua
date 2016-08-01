@@ -24,7 +24,7 @@ local BlackListDebuff = {
 
 -- Build Roster
 C_Timer.NewTicker(1, (function()
-	wipe(NeP.Healing.Units)
+	wipe(Healing.Units)
 	for i=1,#NeP.OM.unitFriend do
 		local Obj = NeP.OM.unitFriend[i]
 		if UnitPlayerOrPetInParty(Obj.key)
@@ -140,3 +140,35 @@ NeP.library.register('coreHealing', {
 		return false
 	end
 })
+
+--[[ CONDITIONS ]]
+
+NeP.DSL.RegisterConditon('AoEHeal', function(args)
+	local health, num = strsplit(',', args, 2)
+	local health, num = tonumber(health), tonumber(num)
+	if num then
+		return NeP.Healing['AoEHeal'](health) >= tonumber(num) or false
+	end
+end)
+
+NeP.DSL.RegisterConditon('dispellAll', function(target, spell)
+	local condtion, target = NeP.Healing['DispellAll'](spell)
+	if condtion then
+		NeP.Engine.ForceTarget = target
+		return true
+	end
+	return false
+end)
+
+NeP.DSL.RegisterConditon("health", function(target)
+	local health = math.floor((UnitHealth(target) / UnitHealthMax(target)) * 100)
+	return health
+end)
+
+NeP.DSL.RegisterConditon("health.actual", function(target)
+	return UnitHealth(target)
+end)
+
+NeP.DSL.RegisterConditon("health.max", function(target)
+	return UnitHealthMax(target)
+end)
