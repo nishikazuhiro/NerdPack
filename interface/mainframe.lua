@@ -3,7 +3,7 @@ local Tittle = '|cff'..Intf.addonColor..NeP.Info.Name
 local Logo = '|T'..Intf.Logo..':15:15|t'
 local Config = NeP.Config
 local Round = NeP.Core.Round
-local fetchKey = NeP.Interface.fetchKey
+local F = NeP.Interface.F
 local TA = NeP.Core.TA
 
 local function OpenPage(URL)
@@ -243,12 +243,12 @@ end
 function Config.CreateMainFrame()
 
 	-- Read Saved Frame Position
-	local POS_1 = Config.Read('NePFrame_POS_1', 'TOP')
+	local POS_1 = Config.Read('NePFrame_POS_1', 'CENTER')
 	local POS_2 = Config.Read('NePFrame_POS_2', 0)
 	local POS_3 = Config.Read('NePFrame_POS_3', 0)
 
 	-- Update size
-	local NeP_Size = fetchKey('NePSettings', 'tSize', 40)
+	local NeP_Size = F('NePSettings', 'tSize', 40)
 	if NeP_Size < 25 then NeP_Size = 40 end
 	NeP.MFrame.buttonSize = NeP_Size
 
