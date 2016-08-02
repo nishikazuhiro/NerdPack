@@ -50,6 +50,8 @@
 	<Script file="system\dsl.lua" />
 	<script file="system\ttd.lua" />
 	<Script file="system\conditions\general.lua" />
+	<Script file="system\conditions\units.lua" />
+	<Script file="system\conditions\buffs.lua" />
 	<Script file="system\conditions\keybinds.lua" />
 	<Script file="system\conditions\class.lua" />
 	<Script file="system\engine.lua" />

@@ -6,6 +6,18 @@
 --------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 ]]
+
+NeP.DSL.RegisterConditon("energy", function(target, spell)
+	return UnitPower(target, UnitPowerType(target))
+end)
+
+NeP.DSL.RegisterConditon("mana", function(target, spell)
+	if UnitExists(target) then
+		return math.floor((UnitMana(target) / UnitManaMax(target)) * 100)
+	end
+	return 0
+end)
+
 --------------------------------------------------- PRIEST ---------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 
@@ -21,6 +33,10 @@ NeP.DSL.RegisterConditon("petrange", function(target)
 		return NeP.Engine.Distance('pet', target)
 	end
 	return 0
+end)
+
+NeP.DSL.RegisterConditon("focus", function(target, spell)
+	return UnitPower(target, SPELL_POWER_FOCUS)
 end)
 
 --------------------------------------------------- DEATHKNIGH -----------------------------------------------

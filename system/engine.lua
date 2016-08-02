@@ -34,6 +34,37 @@ local ByPassMounts = {
 	[221887] = '', -- Divine Steed (pally cd)
 }
 
+local invItems = {
+	['head']		= 'HeadSlot',
+	['helm']		= 'HeadSlot',
+	['neck']		= 'NeckSlot',
+	['shoulder']	= 'ShoulderSlot',
+	['shirt']		= 'ShirtSlot',
+	['chest']		= 'ChestSlot',
+	['belt']		= 'WaistSlot',
+	['waist']		= 'WaistSlot',
+	['legs']		= 'LegsSlot',
+	['pants']		= 'LegsSlot',
+	['feet']		= 'FeetSlot',
+	['boots']		= 'FeetSlot',
+	['wrist']		= 'WristSlot',
+	['bracers']		= 'WristSlot',
+	['gloves']		= 'HandsSlot',
+	['hands']		= 'HandsSlot',
+	['finger1']		= 'Finger0Slot',
+	['finger2']		= 'Finger1Slot',
+	['trinket1']	= 'Trinket0Slot',
+	['trinket2']	= 'Trinket1Slot',
+	['back']		= 'BackSlot',
+	['cloak']		= 'BackSlot',
+	['mainhand']	= 'MainHandSlot',
+	['offhand']		= 'SecondaryHandSlot',
+	['weapon']		= 'MainHandSlot',
+	['weapon1']		= 'MainHandSlot',
+	['weapon2']		= 'SecondaryHandSlot',
+	['ranged']		= 'RangedSlot'
+}
+
 local ListClassSpec = {
 	[0] = {}, -- None
 	[1] = { -- Warrior
@@ -224,37 +255,6 @@ local function canIterate(pX)
 	end
 	return false
 end
-
-local invItems = {
-	['head']		= 'HeadSlot',
-	['helm']		= 'HeadSlot',
-	['neck']		= 'NeckSlot',
-	['shoulder']	= 'ShoulderSlot',
-	['shirt']		= 'ShirtSlot',
-	['chest']		= 'ChestSlot',
-	['belt']		= 'WaistSlot',
-	['waist']		= 'WaistSlot',
-	['legs']		= 'LegsSlot',
-	['pants']		= 'LegsSlot',
-	['feet']		= 'FeetSlot',
-	['boots']		= 'FeetSlot',
-	['wrist']		= 'WristSlot',
-	['bracers']		= 'WristSlot',
-	['gloves']		= 'HandsSlot',
-	['hands']		= 'HandsSlot',
-	['finger1']		= 'Finger0Slot',
-	['finger2']		= 'Finger1Slot',
-	['trinket1']	= 'Trinket0Slot',
-	['trinket2']	= 'Trinket1Slot',
-	['back']		= 'BackSlot',
-	['cloak']		= 'BackSlot',
-	['mainhand']	= 'MainHandSlot',
-	['offhand']		= 'SecondaryHandSlot',
-	['weapon']		= 'MainHandSlot',
-	['weapon1']		= 'MainHandSlot',
-	['weapon2']		= 'SecondaryHandSlot',
-	['ranged']		= 'RangedSlot'
-}
 
 local sTrigger = {
 	-- Item

@@ -160,6 +160,11 @@ NeP.DSL.RegisterConditon('dispellAll', function(target, spell)
 	return false
 end)
 
+NeP.DSL.RegisterConditon("dispellable", function(target, spell)
+	local spellID = GetSpellID(GetSpellName(spell))
+	return LibDispellable:CanDispelWith(target, spellID)
+end)
+
 NeP.DSL.RegisterConditon("health", function(target)
 	local health = math.floor((UnitHealth(target) / UnitHealthMax(target)) * 100)
 	return health
