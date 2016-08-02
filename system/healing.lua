@@ -23,7 +23,7 @@ local BlackListDebuff = {
 }
 
 -- Build Roster
-C_Timer.NewTicker(1, (function()
+C_Timer.NewTicker(0.5, (function()
 	wipe(Healing.Units)
 	for i=1,#NeP.OM.unitFriend do
 		local Obj = NeP.OM.unitFriend[i]
@@ -34,16 +34,19 @@ C_Timer.NewTicker(1, (function()
 			if UnitIsVisible(Obj.key)
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
-				local health = (UnitHealthMax(Obj.key) - UnitHealth(Obj.key)) + UnitGetIncomingHeals(Obj.key)
-				local healthPercent =  health / UnitHealthMax(Obj.key) * 100
+				local avgDiff = NeP.CombatLog.GetAVG_DIFF(Obj.key)
+				local health = UnitHealth(Obj.key)
+				local maxHealth = UnitHealthMax(Obj.key)
+				local missingHealth = (maxHealth - health) + avgDiff
+				local healthPercent =  missingHealth / maxHealth * 100
 				local prio = Roles[tostring(Role)] * healthPercent
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
 					prio = prio,
 					name = Obj.name,
 					id = Obj.id,
-					health = health,
-					healrhp = healthPercent,
+					health = healthPercent,
+					healthRaw = health,
 					distance = Obj.distance,
 					role = Role
 				}
@@ -68,7 +71,7 @@ Healing['AoEHeal'] = function(health)
 	local numb = 0	
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		if Obj.healrhp > health then
+		if Obj.health > health then
 			numb = numb + 1
 		end
 	end
