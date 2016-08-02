@@ -164,7 +164,7 @@ NeP.DSL.RegisterConditon('AoEHeal', function(args)
 	end
 end)
 
-NeP.DSL.RegisterConditon('dispellAll', function(target, spell)
+NeP.DSL.RegisterConditon('dispellAll', function(spell)
 	local condtion, target = NeP.Healing['DispellAll'](spell)
 	if condtion then
 		NeP.Engine.ForceTarget = target
