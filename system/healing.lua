@@ -99,13 +99,22 @@ end
 -- Dispell's
 Healing['DispellAll'] = function(spell)
 	local spellID = GetSpellID(GetSpellName(spell))
+	local skip = false
 	for i=1,#Healing.Units do
 		local Obj = Healing.Units[i]
-		if LibDispellable:CanDispelWith(Obj.key, spellID) then
+		-- Check if the unit dosent have a blacklisted debuff
+		for k,v in pairs(BlackListDebuff) do 
+			local debuff = GetSpellName(tonumber(k))
+			if UnitDebuff(Obj.key, tostring(debuff)) then
+				skip = true
+			end
+		end
+		if not skip and LibDispellable:CanDispelWith(Obj.key, spellID) then
 			return true, Obj.key
 		end
 	end
 	return false, nil
+
 end
 
 -- Remaining complatible with ALL PEs Crs..
