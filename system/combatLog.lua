@@ -83,18 +83,24 @@ NeP.Listener.register('combatlog', "PLAYER_REGEN_ENABLED", stopLogging)
 NeP.Listener.register('combatlog', "PLAYER_REGEN_DISABLED", startLogging)
 NeP.Listener.register('combatlog', "PLAYER_LOGIN", stopLogging)
 
-local function getHeals(GUID)
-	local total = 1
-	if Data[GUID].healed > 0 then
-		total = Data[GUID].healed / Data[GUID].healsTaken
+function  NeP.CombatLog.getHeals(UNIT)
+	local total = 0
+	local GUID = UnitGUID(UNIT)
+	if Data[GUID] then
+		if Data[GUID].healed > 0 then
+			total = Data[GUID].healed / Data[GUID].healsTaken
+		end
 	end
 	return total
 end
 
-local function getDMG(GUID)
-	local total = 1
-	if Data[GUID].dmgTaken > 0 then
-		total = Data[GUID].dmgTaken / Data[GUID].hitsTaken
+function  NeP.CombatLog.getDMG(UNIT)
+	local total = 0
+	local GUID = UnitGUID(UNIT)
+	if Data[GUID] then
+		if Data[GUID].dmgTaken > 0 then
+			total = Data[GUID].dmgTaken / Data[GUID].hitsTaken
+		end
 	end
 	return total
 end
@@ -103,8 +109,8 @@ function NeP.CombatLog.GetAVG_DIFF(UNIT)
 	local total = 0
 	local GUID = UnitGUID(UNIT)
 	if Data[GUID] then
-		local dmg = getDMG(GUID)
-		local heal = getHeals(GUID)
+		local dmg =  NeP.CombatLog.getDMG(GUID)
+		local heal =  NeP.CombatLog.getHeals(GUID)
 		total = dmg - heal
 	end
 	return total

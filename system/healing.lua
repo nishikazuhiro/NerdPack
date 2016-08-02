@@ -27,19 +27,22 @@ C_Timer.NewTicker(0.5, (function()
 	wipe(Healing.Units)
 	for i=1,#NeP.OM.unitFriend do
 		local Obj = NeP.OM.unitFriend[i]
-		if UnitPlayerOrPetInParty(Obj.key)
+		if (UnitPlayerOrPetInParty(Obj.key) or UnitIsUnit('player', Obj.key))
 		and Obj.distance <= 40
 		and not UnitIsDeadOrGhost(Obj.key)
 		and not BlackListUnit[Obj.id] then
 			if UnitIsVisible(Obj.key)
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
-				local avgDiff = NeP.CombatLog.GetAVG_DIFF(Obj.key)
-				local health = UnitHealth(Obj.key)
+				local incDMG = 0
+				local incHeal = UnitGetIncomingHeals(Obj.key)
+				local healthRaw = UnitHealth(Obj.key)
 				local maxHealth = UnitHealthMax(Obj.key)
-				local missingHealth = (maxHealth - health) + avgDiff
-				local healthPercent =  missingHealth / maxHealth * 100
+				local incHeal = UnitGetIncomingHeals(Obj.key)
+				local missingHealth = ((maxHealth - healthRaw) + incDMG) - incHeal
+				local healthPercent =  ((healthRaw - missingHealth) / maxHealth) * 100
 				local prio = Roles[tostring(Role)] * healthPercent
+				print(Obj.name, ': ', healthRaw, ' - ', ' / ', healthPercent, ' / ', incDMG) 
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
 					prio = prio,
@@ -53,7 +56,7 @@ C_Timer.NewTicker(0.5, (function()
 			end
 		end
 	end
-	table.sort(NeP.Healing.Units, function(a,b) return a.prio > b.prio end)
+	table.sort(NeP.Healing.Units, function(a,b) return a.prio < b.prio end)
 end), nil)
 
 -- Lowest
