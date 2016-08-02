@@ -34,15 +34,15 @@ C_Timer.NewTicker(1, (function()
 			if UnitIsVisible(Obj.key)
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
-				local Health = (UnitHealthMax(Obj.key) - UnitHealth(Obj.key)) + UnitGetIncomingHeals(Obj.key)
-				local healthPercent =  Health / UnitHealthMax(Obj.key) * 100
+				local health = (UnitHealthMax(Obj.key) - UnitHealth(Obj.key)) + UnitGetIncomingHeals(Obj.key)
+				local healthPercent =  health / UnitHealthMax(Obj.key) * 100
 				local prio = Roles[tostring(Role)] * healthPercent
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
 					prio = prio,
 					name = Obj.name,
 					id = Obj.id,
-					health = Obj.health,
+					health = health,
 					distance = Obj.distance,
 					role = Role
 				}
@@ -79,25 +79,29 @@ Healing['tank'] = function()
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		local prio = Roles[tostring(Obj.role)] * Obj.health
-		tempTable[#tempTable+1] = {
-			key = Obj.key,
-			prio = prio
-		}
+		local prio = Roles[Obj.role] * UnitHealthMax(Obj.key)
+		if not UnitIsUnit('player', Obj.key) then
+			tempTable[#tempTable+1] = {
+				key = Obj.key,
+				prio = prio
+			}
+		end
 	end
 	table.sort(tempTable, function(a,b) return a.prio > b.prio end)
 	if tempTable[1] then
-		return tempTable[1].key 
+		return tempTable[1].key
 	else
-		return 'player'
+		-- I dont want it to pass :P
+		return 'FUCKTHISINVALIDUNIT'
 	end
 end
 
 -- Dispell's
 Healing['DispellAll'] = function(spell)
+	local spellID = GetSpellID(GetSpellName(spell))
 	for i=1,#Healing.Units do
 		local Obj = Healing.Units[i]
-		if LibDispellable:CanDispelWith(Obj.key, GetSpellID(GetSpellName(spell))) then
+		if LibDispellable:CanDispelWith(Obj.key, spellID) then
 			return true, Obj.key
 		end
 	end
