@@ -175,7 +175,17 @@ end)
 
 NeP.DSL.RegisterConditon("dispellable", function(target, spell)
 	local spellID = GetSpellID(GetSpellName(spell))
-	return LibDispellable:CanDispelWith(target, spellID)
+	local skip = false
+	for k,v in pairs(BlackListDebuff) do 
+		local debuff = GetSpellName(tonumber(k))
+		if UnitDebuff(target, tostring(debuff)) then
+			skip = true
+		end
+	end
+	if not skip then
+		return LibDispellable:CanDispelWith(target, spellID)
+	end
+	return false
 end)
 
 NeP.DSL.RegisterConditon("health", function(target)
