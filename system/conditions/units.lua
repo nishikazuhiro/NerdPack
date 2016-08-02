@@ -1,4 +1,5 @@
 local RegisterConditon = NeP.DSL.RegisterConditon
+local LibBoss = LibStub("LibBossIDs-1.0")
 --[[
 					UNITS CONDITIONS!
 			Only submit UNITS specific conditions here.

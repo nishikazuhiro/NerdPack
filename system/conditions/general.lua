@@ -1,6 +1,5 @@
 local RegisterConditon = NeP.DSL.RegisterConditon
 local rangeCheck = LibStub("LibRangeCheck-2.0")
-local LibBoss = LibStub("LibBossIDs-1.0")
 
 local function checkChanneling(target)
 	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
