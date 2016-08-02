@@ -67,7 +67,7 @@ Healing['AoEHeal'] = function(health)
 	local numb = 0	
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		if Obj.health < health then
+		if Obj.health > health then
 			numb = numb + 1
 		end
 	end
@@ -160,7 +160,7 @@ NeP.DSL.RegisterConditon('AoEHeal', function(args)
 	local health, num = strsplit(',', args, 2)
 	local health, num = tonumber(health), tonumber(num)
 	if num then
-		return NeP.Healing['AoEHeal'](health) >= tonumber(num) or false
+		return NeP.Healing['AoEHeal'](health) >= num
 	end
 end)
 
