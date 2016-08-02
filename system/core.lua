@@ -133,13 +133,10 @@ end
 
 function GetSpellID(spell)
 	if type(spell) == 'number' then return spell end
-
-	local spellID = string.match(GetSpellLink(spell) or '', 'Hspell:(%d+)|h')
+	local spellID = GetSpellLink(spell):match("spell:(%d+)")
 	if spellID then
 		return tonumber(spellID)
 	end
-
-	return false
 end
 
 function GetSpellName(spell)
