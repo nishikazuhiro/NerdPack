@@ -41,6 +41,7 @@ C_Timer.NewTicker(0.5, (function()
 				local missingHealth = maxHealth - healthRaw
 				local healthPercent =  (healthRaw / maxHealth) * 100
 				local prio = Roles[tostring(Role)] * healthPercent
+				--print(UnitName(Obj.key), ' / ', healthPercent)
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
 					prio = prio,
