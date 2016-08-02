@@ -43,6 +43,7 @@ C_Timer.NewTicker(1, (function()
 					name = Obj.name,
 					id = Obj.id,
 					health = health,
+					healrhp = healthPercent,
 					distance = Obj.distance,
 					role = Role
 				}
@@ -67,7 +68,7 @@ Healing['AoEHeal'] = function(health)
 	local numb = 0	
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		if Obj.health > health then
+		if Obj.healrhp > health then
 			numb = numb + 1
 		end
 	end
