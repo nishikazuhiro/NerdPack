@@ -1,22 +1,9 @@
-local GetTime = GetTime
-local GetSpellBookIndex = GetSpellBookIndex
-local UnitCastingInfo = UnitCastingInfo
-local UnitChannelInfo = UnitChannelInfo
-local UnitClassification = UnitClassification
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitIsPlayer = UnitIsPlayer
-local UnitName = UnitName
-local stringFind = string.find
-local stringLower = string.lower
-local stringGmatch = string.gmatch
-
 local rangeCheck = LibStub("LibRangeCheck-2.0")
 local LibBoss = LibStub("LibBossIDs-1.0")
 
 local function checkChanneling(target)
 	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
 	if name then return name, startTime, endTime, notInterruptible end
-
 	return false
 end
 

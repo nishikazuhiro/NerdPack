@@ -85,15 +85,15 @@ end)
 NeP.DSL.RegisterConditon("classification", function (target, spell)
 	if not spell then return false end
 	local classification = UnitClassification(target)
-	if stringFind(spell, '[%s,]+') then
-		for classificationExpected in stringGmatch(spell, '%a+') do
-			if classification == stringLower(classificationExpected) then
+	if string.find(spell, '[%s,]+') then
+		for classificationExpected in string.gmatch(spell, '%a+') do
+			if classification == string.lower(classificationExpected) then
 			return true
 			end
 		end
 		return false
 	else
-		return UnitClassification(target) == stringLower(spell)
+		return UnitClassification(target) == string.lower(spell)
 	end
 end)
 
