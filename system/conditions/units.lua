@@ -1,3 +1,4 @@
+local RegisterConditon = NeP.DSL.RegisterConditon
 --[[
 					UNITS CONDITIONS!
 			Only submit UNITS specific conditions here.
@@ -7,34 +8,34 @@
 --------------------------------------------------------------------------------------------------------------
 ]]
 
-NeP.DSL.RegisterConditon("modifier.party", function()
+RegisterConditon("modifier.party", function()
 	return IsInGroup()
 end)
 
-NeP.DSL.RegisterConditon("modifier.raid", function()
+RegisterConditon("modifier.raid", function()
 	return IsInRaid()
 end)
 
-NeP.DSL.RegisterConditon("party", function(target)
+RegisterConditon("party", function(target)
 	return UnitInParty(target)
 end)
 
-NeP.DSL.RegisterConditon("raid", function(target)
+RegisterConditon("raid", function(target)
 	return UnitInRaid(target)
 end)
 
-NeP.DSL.RegisterConditon("modifier.members", function()
+RegisterConditon("modifier.members", function()
 	return (GetNumGroupMembers() or 0)
 end)
 
-NeP.DSL.RegisterConditon("modifier.player", function()
+RegisterConditon("modifier.player", function()
 	return UnitIsPlayer("target")
 end)
 
 ------------------------------------------ ANY -------------------------------------------
 ------------------------------------------------------------------------------------------
 
-NeP.DSL.RegisterConditon('boss', function (target, spell)
+RegisterConditon('boss', function (target, spell)
 	local classification = UnitClassification(target)
 	if classification == 'rareelite'
 	or classification == 'rare'
@@ -45,7 +46,7 @@ NeP.DSL.RegisterConditon('boss', function (target, spell)
 	return false
 end)
 
-NeP.DSL.RegisterConditon('elite', function (target, spell)
+RegisterConditon('elite', function (target, spell)
 	local classification = UnitClassification(target)
 	if classification == 'elite'
 	or classification == 'rareelite'
@@ -57,7 +58,7 @@ NeP.DSL.RegisterConditon('elite', function (target, spell)
 	return false
 end)
 
-NeP.DSL.RegisterConditon("id", function(target, id)
+RegisterConditon("id", function(target, id)
 	local expectedID = tonumber(id)
 	if expectedID and UnitID(target) == expectedID then
 		return true
@@ -65,7 +66,7 @@ NeP.DSL.RegisterConditon("id", function(target, id)
 	return false
 end)
 
-NeP.DSL.RegisterConditon("threat", function(target)
+RegisterConditon("threat", function(target)
 	if UnitThreatSituation("player", target) then
 		local isTanking, status, scaledPercent, rawPercent, threatValue = UnitDetailedThreatSituation("player", target)
 		return scaledPercent
@@ -73,16 +74,16 @@ NeP.DSL.RegisterConditon("threat", function(target)
 	return 0
 end)
 
-NeP.DSL.RegisterConditon("aggro", function(target)
+RegisterConditon("aggro", function(target)
 	return (UnitThreatSituation(target) and UnitThreatSituation(target) >= 2)
 end)
 
-NeP.DSL.RegisterConditon("moving", function(target)
+RegisterConditon("moving", function(target)
 	local speed, _ = GetUnitSpeed(target)
 	return speed ~= 0
 end)
 
-NeP.DSL.RegisterConditon("classification", function (target, spell)
+RegisterConditon("classification", function (target, spell)
 	if not spell then return false end
 	local classification = UnitClassification(target)
 	if string.find(spell, '[%s,]+') then
@@ -97,36 +98,36 @@ NeP.DSL.RegisterConditon("classification", function (target, spell)
 	end
 end)
 
-NeP.DSL.RegisterConditon("target", function(target, spell)
+RegisterConditon("target", function(target, spell)
 	return ( UnitGUID(target .. "target") == UnitGUID(spell) )
 end)
 
-NeP.DSL.RegisterConditon("player", function (target)
+RegisterConditon("player", function (target)
 	return UnitIsPlayer(target)
 end)
 
-NeP.DSL.RegisterConditon("exists", function(target)
+RegisterConditon("exists", function(target)
 	return (UnitExists(target))
 end)
 
-NeP.DSL.RegisterConditon('dead', function (target)
+RegisterConditon('dead', function (target)
 	return UnitIsDeadOrGhost(target)
 end)
 
-NeP.DSL.RegisterConditon("alive", function(target, spell)
+RegisterConditon("alive", function(target, spell)
 	return (UnitExists(target) and UnitHealth(target) > 0)
 end)
 
-NeP.DSL.RegisterConditon("behind", function(target, spell)
+RegisterConditon("behind", function(target, spell)
 	return not NeP.Engine.Infront('player', target)
 end)
 
-NeP.DSL.RegisterConditon("infront", function(target, spell)
+RegisterConditon("infront", function(target, spell)
 	return NeP.Engine.Infront('player', target)
 end)
 
 local movingCache = { }
-NeP.DSL.RegisterConditon("lastmoved", function(target)
+RegisterConditon("lastmoved", function(target)
 	if target == 'player' then
 		if not NeP.Listener.locals.moving then
 			return GetTime() - NeP.Listener.locals.movingTime
@@ -158,7 +159,7 @@ NeP.DSL.RegisterConditon("lastmoved", function(target)
 	end
 end)
 
-NeP.DSL.RegisterConditon("movingfor", function(target)
+RegisterConditon("movingfor", function(target)
 	if target == 'player' then
 		if NeP.Listener.locals.moving then
 			return GetTime() - NeP.Listener.locals.movingTime
@@ -190,31 +191,31 @@ NeP.DSL.RegisterConditon("movingfor", function(target)
 	end
 end)
 
-NeP.DSL.RegisterConditon("friend", function(target, spell)
+RegisterConditon("friend", function(target, spell)
 	return ( UnitCanAttack("player", target) ~= 1 )
 end)
 
-NeP.DSL.RegisterConditon("enemy", function(target, spell)
+RegisterConditon("enemy", function(target, spell)
 	return UnitCanAttack("player", target)
 end)
 
-NeP.DSL.RegisterConditon("distance", function(target)
+RegisterConditon("distance", function(target)
 	return NeP.Engine.Distance('player', target)
 end)
 
-NeP.DSL.RegisterConditon("range", function(target)
+RegisterConditon("range", function(target)
 	return NeP.DSL.Conditions["distance"](target)
 end)
 
-NeP.DSL.RegisterConditon("level", function(target, range)
+RegisterConditon("level", function(target, range)
 	return UnitLevel(target)
 end)
 
-NeP.DSL.RegisterConditon("combat", function(target, range)
+RegisterConditon("combat", function(target, range)
 	return UnitAffectingCombat(target)
 end)
 
-NeP.DSL.RegisterConditon("role", function(target, role)
+RegisterConditon("role", function(target, role)
 	local role = role:upper()
 	local damageAliases = { "DAMAGE", "DPS", "DEEPS" }
 	local targetRole = UnitGroupRolesAssigned(target)
@@ -232,15 +233,15 @@ NeP.DSL.RegisterConditon("role", function(target, role)
 	return false
 end)
 
-NeP.DSL.RegisterConditon("name", function (target, expectedName)
+RegisterConditon("name", function (target, expectedName)
 	return UnitExists(target) and UnitName(target):lower():find(expectedName:lower()) ~= nil
 end)
 
-NeP.DSL.RegisterConditon("creatureType", function (target, expectedType)
+RegisterConditon("creatureType", function (target, expectedType)
 	return UnitCreatureType(target) == expectedType
 end)
 
-NeP.DSL.RegisterConditon("class", function (target, expectedClass)
+RegisterConditon("class", function (target, expectedClass)
 	local class, _, classID = UnitClass(target)
 	if tonumber(expectedClass) then
 		return tonumber(expectedClass) == classID
@@ -252,53 +253,53 @@ end)
 ------------------------------------------ PLAYER ----------------------------------------
 ------------------------------------------------------------------------------------------
 
-NeP.DSL.RegisterConditon("ilevel", function()
+RegisterConditon("ilevel", function()
 	return math.floor(select(1,GetAverageItemLevel()))
 end)
 
-NeP.DSL.RegisterConditon('swimming', function ()
+RegisterConditon('swimming', function ()
 	return IsSwimming()
 end)
 
-NeP.DSL.RegisterConditon("lastcast", function(spell, arg)
+RegisterConditon("lastcast", function(spell, arg)
 	if arg then spell = arg end
 	return NeP.Engine.lastCast == GetSpellName(spell)
 end)
 
-NeP.DSL.RegisterConditon("mounted", function()
+RegisterConditon("mounted", function()
 	return IsMounted()
 end)
 
-NeP.DSL.RegisterConditon("enchant.mainhand", function()
+RegisterConditon("enchant.mainhand", function()
 	return (select(1, GetWeaponEnchantInfo()) == 1)
 end)
 
-NeP.DSL.RegisterConditon("enchant.offhand", function()
+RegisterConditon("enchant.offhand", function()
 	return (select(4, GetWeaponEnchantInfo()) == 1)
 end)
 
-NeP.DSL.RegisterConditon("falling", function()
+RegisterConditon("falling", function()
 	return IsFalling()
 end)
 
-NeP.DSL.RegisterConditon("deathin", function(target)
+RegisterConditon("deathin", function(target)
 	return NeP.TimeToDie(target)
 end)
 
-NeP.DSL.RegisterConditon("ttd", function(target)
+RegisterConditon("ttd", function(target)
 	return NeP.DSL.Conditions["deathin"](target)
 end)
 
-NeP.DSL.RegisterConditon("charmed", function(unit, _)
+RegisterConditon("charmed", function(unit, _)
 	return UnitIsCharmed(unit)
 end)
 
-NeP.DSL.RegisterConditon("talent", function(args)
+RegisterConditon("talent", function(args)
 	local row, col = strsplit(",", args, 2)
 	return hasTalent(tonumber(row), tonumber(col))
 end)
 
-NeP.DSL.RegisterConditon("glyph", function()
+RegisterConditon("glyph", function()
 	local spellId = tonumber(spell)
 	local glyphName, glyphId
 	for i = 1, 6 do
@@ -321,11 +322,11 @@ end)
 
 ------------------------------------------ OM CRAP ---------------------------------------
 ------------------------------------------------------------------------------------------
-NeP.DSL.RegisterConditon("modifier.enemies", function()
+RegisterConditon("modifier.enemies", function()
 	return #NeP.OM.unitEnemie
 end)
 
-NeP.DSL.RegisterConditon("area.enemies", function(unit, distance)
+RegisterConditon("area.enemies", function(unit, distance)
 	local total = 0
 	local distance = tonumber(distance)
 	if UnitExists(unit) then
@@ -339,7 +340,7 @@ NeP.DSL.RegisterConditon("area.enemies", function(unit, distance)
 	return total
 end)
 
-NeP.DSL.RegisterConditon("area.friendly", function(unit, distance)
+RegisterConditon("area.friendly", function(unit, distance)
 	local total = 0
 	local distance = tonumber(distance)
 	if UnitExists(unit) then
