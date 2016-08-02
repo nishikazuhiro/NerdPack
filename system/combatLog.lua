@@ -94,7 +94,7 @@ function  NeP.CombatLog.getHeals(UNIT)
 	return total
 end
 
-function  NeP.CombatLog.getDMG(UNIT)
+function NeP.CombatLog.getDMG(UNIT)
 	local total = 0
 	local GUID = UnitGUID(UNIT)
 	if Data[GUID] then
