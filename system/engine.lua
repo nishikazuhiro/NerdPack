@@ -152,8 +152,8 @@ end
 
 local function checkTarget(spell, target)
 	if not target then target = Engine.FakeUnits['nil']() end
+	local ground = false
 	if type(spell) == 'string' then
-		local ground = false
 		-- Allow functions/conditions to force a target
 		if Engine.ForceTarget then
 			target = Engine.ForceTarget	
@@ -168,20 +168,22 @@ local function checkTarget(spell, target)
 			target = Engine.FakeUnits[target]()
 		end
 		-- Sanity Checks
-		if IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
-			return false
-		elseif (UnitExists(target) and Engine.LineOfSight('player', target)) or (ground and target == 'mouseover') then
+		if ground and target == 'mouseover' then
+			return true, target, ground
+		elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
+			return false, target, false
+		elseif UnitExists(target) and Engine.LineOfSight('player', target) then
 			return true, target, ground
 		end
-		return false, target, false
+		return false, target, ground
 	end
-	return true, target, false
+	return true, target, ground
 end
 
 local function castingTime(target)
     local _,_,_,_,_, endTime= UnitCastingInfo(target)
     if endTime then return endTime end
-    return false
+    return 0
 end
 
 local function InterruptCast(spell)
