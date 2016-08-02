@@ -34,7 +34,7 @@ C_Timer.NewTicker(0.5, (function()
 			if UnitIsVisible(Obj.key)
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
-				local incDMG = NeP.CombatLog.getDMG(Obj.key)
+				local incDMG = 0
 				local incHeal = UnitGetIncomingHeals(Obj.key)
 				local healthRaw = (UnitHealth(Obj.key) - incDMG) + incHeal
 				local maxHealth = UnitHealthMax(Obj.key)
