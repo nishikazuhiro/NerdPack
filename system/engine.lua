@@ -16,40 +16,33 @@ local TA = Core.TA
 local Parse = NeP.DSL.parse
 local fK = NeP.Interface.fetchKey
 
-local function splitString(unit)
-	local wT, pF = '', ''
-	local pX = string.sub(unit, 1, 1)
-	if string.find(unit, 'target') then
-		wT = 'target'
-	end
-	if pX == '!' then
-		pF = pX
-	end
-	return wT, pF
-end
+local fakeUnits = {
+	{ -- Tank
+		token = 'tank',
+		unit = function(num) return NeP.Healing['tank'](num) end
+	},
+	{ -- Lowest
+		token = 'lowest',
+		unit = function(num) return NeP.Healing['lowest'](num) end
+	}
+}
 
 function NeP.Engine.FilterUnit(unit)
 	local unit = tostring(unit)
-	local wT, pF = splitString(unit)
-	-- Tank
-	if string.find(unit, 'tank') then
-		local num = tonumber(string.match(unit, "%d+") or 1)
-		local fake = NeP.Healing['tank'](num)
-		if fake then
-			local unit = (pF or '')..fake..(wT or '')
-			return unit
+	-- This is needed to reattatch to the string
+	local wT, pF = '', ''
+	local pX = string.sub(unit, 1, 1)
+	if string.find(unit, 'target') then wT = 'target' end
+	if pX == '!' then pF = pX end
+	-- Find fake units
+	for i=1, #fakeUnits do
+		local token = fakeUnits[i].token
+		if string.find(unit, token) then
+			local num = tonumber(string.match(unit, "%d+") or 1)
+			local unit = fakeUnits[i].unit(num)
+			local result = pF..unit..wT
+			return result
 		end
-	-- Lowest
-	elseif string.find(unit, 'lowest') then
-		local num = tonumber(string.match(unit, "%d+") or 1)
-		local fake = NeP.Healing['lowest'](num)
-		if fake then
-			local unit = (pF or '')..fake..(wT or '')
-			return unit
-		end
-	-- Nil
-	elseif tostring(unit) == 'nil' then
-		return UnitExists('target') and 'target' or 'player'
 	end
 	return unit
 end
@@ -210,8 +203,15 @@ local function Cast(spell, target, ground)
 end
 
 local function checkTarget(spell, target)
-	if not target then target = NeP.Engine.FilterUnit(target) end
 	local ground = false
+	local target = target
+	-- decide a target
+	if type(target) == 'nil' then
+		if UnitExists('target') then
+			target = 'target' 
+		end
+		target = 'player'
+	end
 	if type(spell) == 'string' then
 		-- Allow functions/conditions to force a target
 		if Engine.ForceTarget then
