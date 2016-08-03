@@ -135,7 +135,6 @@ NeP.DSL.RegisterConditon('AoEHeal', function(args)
 			total = total + 1
 		end
 	end
-	print(total)
 	return total >= num
 
 end)
