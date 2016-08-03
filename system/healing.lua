@@ -59,10 +59,66 @@ C_Timer.NewTicker(0.5, (function()
 end), nil)
 
 -- Lowest
-Healing['lowest'] = function(num)
+Healing['lowest'] = function(num, role)
 	local num = num or 1
-	if Healing.Units[num] then
-		return Healing.Units[num].key
+	local tempTable = Healing.Units
+	if role then
+		for i=1, #Healing.Units do
+			local Obj = Healing.Units[i]
+			if Obj.Role == string.upper(role) then
+				tempTable[#tempTable+1] = {
+					key = Obj.key,
+					prio = prio
+				}
+			end
+		end
+	end
+	if tempTable[num] then
+		return tempTable[num].key
+	end
+end
+
+-- healer
+Healing['healer'] = function(num)
+	local num = num or 1
+	local tempTable = {}
+	for i=1, #Healing.Units do
+		local Obj = Healing.Units[i]
+		if Obj.Role == 'HEALER' then
+			local prio = Roles[Obj.role] * UnitManaMax(Obj.key)
+			if not UnitIsUnit('player', Obj.key) then
+				tempTable[#tempTable+1] = {
+					key = Obj.key,
+					prio = prio
+				}
+			end
+		end
+	end
+	table.sort(tempTable, function(a,b) return a.prio > b.prio end)
+	if tempTable[num] then
+		return tempTable[num].key
+	end
+end
+
+-- healer
+Healing['damager'] = function(num)
+	local num = num or 1
+	local tempTable = {}
+	for i=1, #Healing.Units do
+		local Obj = Healing.Units[i]
+		if Obj.Role == 'DAMAGER' then
+			local prio = Roles[Obj.role] * UnitHealthMax(Obj.key)
+			if not UnitIsUnit('player', Obj.key) then
+				tempTable[#tempTable+1] = {
+					key = Obj.key,
+					prio = prio
+				}
+			end
+		end
+	end
+	table.sort(tempTable, function(a,b) return a.prio > b.prio end)
+	if tempTable[num] then
+		return tempTable[num].key
 	end
 end
 
@@ -88,11 +144,6 @@ end
 
 -- Remaining complatible with ALL PEs Crs..
 NeP.library.register('coreHealing', {
-	
-	needsHealing = function(percent, count)
-		local total = Healing['AoEHeal'](percent)
-		return total >= count
-	end,
 
 	lowestDebuff = function(debuff, health)
 		for i=1, #Healing.Units do
@@ -121,13 +172,13 @@ NeP.library.register('coreHealing', {
 		end
 		return false
 	end
+
 })
 
 --[[ CONDITIONS ]]
 NeP.DSL.RegisterConditon('AoEHeal', function(args)
-	local health, num = strsplit(',', args, 2)
-	local health, num = tonumber(health), tonumber(num)
-
+	local health, num, distance = strsplit(',', args, 3)
+	local health, num, distance = tonumber(health), tonumber(num), tonumber(distance)
 	local total = 0	
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
@@ -136,7 +187,6 @@ NeP.DSL.RegisterConditon('AoEHeal', function(args)
 		end
 	end
 	return total >= num
-
 end)
 
 NeP.DSL.RegisterConditon('dispellAll', function(spell)

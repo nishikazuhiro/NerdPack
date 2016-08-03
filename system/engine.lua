@@ -24,6 +24,14 @@ local fakeUnits = {
 	{ -- Lowest
 		token = 'lowest',
 		unit = function(num) return NeP.Healing['lowest'](num) end
+	},
+	{ -- Healer
+		token = 'healer',
+		unit = function(num) return NeP.Healing['healer'](num) end
+	},
+	{ -- Damager
+		token = 'damager',
+		unit = function(num) return NeP.Healing['damager'](num) end
 	}
 }
 
@@ -39,7 +47,8 @@ function NeP.Engine.FilterUnit(unit)
 		local token = fakeUnits[i].token
 		if string.find(unit, token) then
 			local num = tonumber(string.match(unit, "%d+") or 1)
-			local unit = fakeUnits[i].unit(num)
+			local _, x2 = string.match(unit, '(.+)%((.+)%)')
+			local unit = fakeUnits[i].unit(num, x2)
 			if unit then
 				local result = pF..unit..wT
 				return result
