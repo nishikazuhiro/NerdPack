@@ -40,8 +40,10 @@ function NeP.Engine.FilterUnit(unit)
 		if string.find(unit, token) then
 			local num = tonumber(string.match(unit, "%d+") or 1)
 			local unit = fakeUnits[i].unit(num)
-			local result = pF..unit..wT
-			return result
+			if unit then
+				local result = pF..unit..wT
+				return result
+			end
 		end
 	end
 	return unit
