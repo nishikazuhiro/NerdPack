@@ -26,6 +26,44 @@ local TA = Core.TA
 local Parse = NeP.DSL.parse
 local fK = NeP.Interface.fetchKey
 
+
+local function splitString(unit)
+	local wT, pF = '', ''
+	local pX = string.sub(unit, 1, 1)
+	if string.find(unit, 'target') then
+		wT = 'target'
+	end
+	if pX == '!' then
+		pF = pX
+	end
+	return wT, pF
+end
+
+function NeP.Engine.FilterUnit(unit)
+	local unit = tostring(unit)
+	local wT, pF = splitString(unit)
+	-- Tank
+	if string.find(unit, 'tank') then
+		local num = tonumber(string.match(unit, "%d+") or 1)
+		local fake = NeP.Healing['tank'](num)
+		if fake then
+			local unit = (pF or '')..fake..(wT or '')
+			return unit
+		end
+	-- Lowest
+	elseif string.find(unit, 'lowest') then
+		local num = tonumber(string.match(unit, "%d+") or 1)
+		local fake = NeP.Healing['lowest'](num)
+		if fake then
+			local unit = (pF or '')..fake..(wT or '')
+			return unit
+		end
+	-- Nil
+	elseif tostring(unit) == 'nil' then
+		return UnitExists('target') and 'target' or 'player'
+	end
+end
+
 -- Engine will bypass IsMounted() if unit has any of this mount buff
 local ByPassMounts = {
 	[165803] = '', -- Telaari Talbuk
@@ -182,7 +220,7 @@ local function Cast(spell, target, ground)
 end
 
 local function checkTarget(spell, target)
-	if not target then target = Engine.FakeUnits['nil']() end
+	if not target then target = NeP.Engine.FilterUnit(target) end
 	local ground = false
 	if type(spell) == 'string' then
 		-- Allow functions/conditions to force a target
@@ -195,9 +233,7 @@ local function checkTarget(spell, target)
 			target = string.sub(target, 0, -8)
 		end
 		-- Fake Target
-		if Engine.FakeUnits[target] then
-			target = Engine.FakeUnits[target]()
-		end
+		target = NeP.Engine.FilterUnit(target)
 		-- Sanity Checks
 		if ground and target == 'mouseover' then
 			return true, target, ground

@@ -136,10 +136,7 @@ local parsez = function(dsl, spell)
 
 	local unitId, arg2, arg3 = strsplit('.', dsl, 3)
 
-	-- Fake Units (Tank/Lowest)
-	if NeP.Engine.FakeUnits[unitId] then
-		unitId = NeP.Engine.FakeUnits[unitId]()
-	end
+	unitId = NeP.Engine.FilterUnit(unitId)
 
 	if unitId then table.insert(parse_table, unitId) end
 	if arg2 then table.insert(parse_table, arg2) end

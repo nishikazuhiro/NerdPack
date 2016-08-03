@@ -59,29 +59,16 @@ C_Timer.NewTicker(0.5, (function()
 end), nil)
 
 -- Lowest
-Healing['lowest'] = function()
-	if Healing.Units[1] then
-		return Healing.Units[1].key 
-	else
-		return 'player'
+Healing['lowest'] = function(num)
+	local num = num or 1
+	if Healing.Units[num] then
+		return Healing.Units[num].key
 	end
-end
-
--- AoE Healing
-Healing['AoEHeal'] = function(health)
-	local health = tonumber(health)
-	local numb = 0	
-	for i=1, #Healing.Units do
-		local Obj = Healing.Units[i]
-		if Obj.health > health then
-			numb = numb + 1
-		end
-	end
-	return numb
 end
 
 -- Tank
-Healing['tank'] = function()
+Healing['tank'] = function(num)
+	local num = num or 1
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
@@ -94,33 +81,9 @@ Healing['tank'] = function()
 		end
 	end
 	table.sort(tempTable, function(a,b) return a.prio > b.prio end)
-	if tempTable[1] then
-		return tempTable[1].key
-	else
-		-- I dont want it to pass :P
-		return 'FUCKTHISINVALIDUNIT'
+	if tempTable[num] then
+		return tempTable[num].key
 	end
-end
-
--- Dispell's
-Healing['DispellAll'] = function(spell)
-	local spellID = GetSpellID(GetSpellName(spell))
-	local skip = false
-	for i=1,#Healing.Units do
-		local Obj = Healing.Units[i]
-		-- Check if the unit dosent have a blacklisted debuff
-		for k,v in pairs(BlackListDebuff) do 
-			local debuff = GetSpellName(tonumber(k))
-			if UnitDebuff(Obj.key, tostring(debuff)) then
-				skip = true
-			end
-		end
-		if not skip and LibDispellable:CanDispelWith(Obj.key, spellID) then
-			return true, Obj.key
-		end
-	end
-	return false, nil
-
 end
 
 -- Remaining complatible with ALL PEs Crs..
@@ -165,16 +128,34 @@ NeP.library.register('coreHealing', {
 NeP.DSL.RegisterConditon('AoEHeal', function(args)
 	local health, num = strsplit(',', args, 2)
 	local health, num = tonumber(health), tonumber(num)
-	if num then
-		return NeP.Healing['AoEHeal'](health) >= num
+
+	local total = 0	
+	for i=1, #Healing.Units do
+		local Obj = Healing.Units[i]
+		if Obj.health < health then
+			total = total + 1
+		end
 	end
+	return total >= num
+
 end)
 
 NeP.DSL.RegisterConditon('dispellAll', function(spell)
-	local condtion, target = NeP.Healing['DispellAll'](spell)
-	if condtion then
-		NeP.Engine.ForceTarget = target
-		return true
+	local spellID = GetSpellID(GetSpellName(spell))
+	local skip = false
+	for i=1,#Healing.Units do
+		local Obj = Healing.Units[i]
+		-- Check if the unit dosent have a blacklisted debuff
+		for k,v in pairs(BlackListDebuff) do 
+			local debuff = GetSpellName(tonumber(k))
+			if UnitDebuff(Obj.key, tostring(debuff)) then
+				skip = true
+			end
+		end
+		if not skip and LibDispellable:CanDispelWith(Obj.key, spellID) then
+			NeP.Engine.ForceTarget = target
+			return true
+		end
 	end
 	return false
 end)
