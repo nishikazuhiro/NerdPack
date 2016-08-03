@@ -219,9 +219,10 @@ local function checkTarget(spell, target)
 	-- decide a target
 	if type(target) == 'nil' then
 		if UnitExists('target') then
-			target = 'target' 
+			target = 'target'
+		else
+			target = 'player'
 		end
-		target = 'player'
 	end
 	if type(spell) == 'string' then
 		-- Allow functions/conditions to force a target
