@@ -72,7 +72,7 @@ Healing['tank'] = function(num)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		local prio = Roles[Obj.role] * UnitHealthMax(Obj.key)
+		local prio = Roles[Obj.role] * UnitHealthMax(Obj.key) - Obj.distance
 		if not UnitIsUnit('player', Obj.key) then
 			tempTable[#tempTable+1] = {
 				key = Obj.key,
@@ -124,7 +124,6 @@ NeP.library.register('coreHealing', {
 })
 
 --[[ CONDITIONS ]]
-
 NeP.DSL.RegisterConditon('AoEHeal', function(args)
 	local health, num = strsplit(',', args, 2)
 	local health, num = tonumber(health), tonumber(num)
@@ -136,6 +135,7 @@ NeP.DSL.RegisterConditon('AoEHeal', function(args)
 			total = total + 1
 		end
 	end
+	print(total)
 	return total >= num
 
 end)
@@ -153,7 +153,7 @@ NeP.DSL.RegisterConditon('dispellAll', function(spell)
 			end
 		end
 		if not skip and LibDispellable:CanDispelWith(Obj.key, spellID) then
-			NeP.Engine.ForceTarget = target
+			NeP.Engine.ForceTarget = Obj.key
 			return true
 		end
 	end

@@ -7,16 +7,6 @@ NeP.Engine = {
 	Current_Spell = nil,
 	isGroundSpell = false,
 	Rotations = {},
-	------------------------------------ Fake Units ------------------------------------
-	FakeUnits = {
-		['lowest']		= function() return	 NeP.Healing['lowest']()						end,
-		['!lowest']		= function() return '!'..NeP.Healing['lowest']()					end,
-		['tank']		= function() return	 NeP.Healing['tank']()							end,
-		['!tank']		= function() return '!'..NeP.Healing['tank']()						end,
-		['tanktarget']	= function() return	 NeP.Healing['tank']()..'target'				end,
-		['!tanktarget'] = function() return '!'..NeP.Healing['tank']()..'target'			end,
-		['nil']			= function() return UnitExists('target') and 'target' or 'player'	end
-	}
 }
 
 local Engine = NeP.Engine
@@ -25,7 +15,6 @@ local Debug = Core.Debug
 local TA = Core.TA
 local Parse = NeP.DSL.parse
 local fK = NeP.Interface.fetchKey
-
 
 local function splitString(unit)
 	local wT, pF = '', ''
@@ -62,6 +51,7 @@ function NeP.Engine.FilterUnit(unit)
 	elseif tostring(unit) == 'nil' then
 		return UnitExists('target') and 'target' or 'player'
 	end
+	return unit
 end
 
 -- Engine will bypass IsMounted() if unit has any of this mount buff
