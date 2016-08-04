@@ -142,8 +142,11 @@ Healing['tank'] = function(num)
 	end
 end
 
--- Remaining complatible with ALL PEs Crs..
 NeP.library.register('coreHealing', {
+
+	needsHealing = function(percent, count)
+		NeP.Core.Print('@coreHealing.needsHealing has been removed, tell the author of your CR to replace it with AoEHeal.')
+	end,
 
 	lowestDebuff = function(debuff, health)
 		for i=1, #Healing.Units do
