@@ -23,7 +23,7 @@ local BlackListDebuff = {
 }
 
 -- Build Roster
-C_Timer.NewTicker(0.5, (function()
+C_Timer.NewTicker(0.25, (function()
 	wipe(Healing.Units)
 	for i=1,#NeP.OM.unitFriend do
 		local Obj = NeP.OM.unitFriend[i]
@@ -181,11 +181,11 @@ NeP.library.register('coreHealing', {
 --[[ CONDITIONS ]]
 NeP.DSL.RegisterConditon('AoEHeal', function(args)
 	local health, num, distance = strsplit(',', args, 3)
-	local health, num, distance = tonumber(health), tonumber(num), tonumber(distance)
+	local health, num, distance = tonumber(health or 100), tonumber(num or 3), tonumber(distance or 40)
 	local total = 0	
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		if Obj.health < health then
+		if Obj.health <= health and Obj.distance <= distance then
 			total = total + 1
 		end
 	end
