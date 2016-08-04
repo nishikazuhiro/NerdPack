@@ -1,5 +1,5 @@
 local RegisterConditon = NeP.DSL.RegisterConditon
-local rangeCheck = LibStub("LibRangeCheck-2.0")
+local rangeCheck = LibStub('LibRangeCheck-2.0')
 
 local function checkChanneling(target)
 	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
@@ -17,32 +17,34 @@ local function checkCasting(target)
 	return false
 end
 
-RegisterConditon("timetomax", function(target, spell)
+RegisterConditon('timetomax', function(target, spell)
 	local max = UnitPowerMax(target)
 	local curr = UnitPower(target)
 	local regen = select(2, GetPowerRegen(target))
 	return (max - curr) * (1.0 / regen)
 end)
 
-RegisterConditon("toggle", function(toggle)
+RegisterConditon('toggle', function(toggle)
+	local toggle = string.lower(toggle)
 	return NeP.Config.Read('bStates_'..toggle, false)
 end)
 
-RegisterConditon("modifier.toggle", function(toggle)
+RegisterConditon('modifier.toggle', function(toggle)
+	local toggle = string.lower(toggle)
 	return NeP.Config.Read('bStates_'..toggle, false)
 end)
 
-RegisterConditon("modifier.multitarget", function()
-	return NeP.DSL.Conditions["modifier.toggle"]('AoE')
+RegisterConditon('modifier.multitarget', function()
+	return NeP.DSL.Conditions['modifier.toggle']('AoE')
 end)
 
-RegisterConditon("modifier.cooldowns", function()
-	return NeP.DSL.Conditions["modifier.toggle"]('Cooldowns')
+RegisterConditon('modifier.cooldowns', function()
+	return NeP.DSL.Conditions['modifier.toggle']('Cooldowns')
 end)
 
-RegisterConditon("modifier.interrupt", function()
-	if NeP.DSL.Conditions["modifier.toggle"]('Interrupts') then
-		return NeP.DSL.Conditions["casting"]('target')
+RegisterConditon('modifier.interrupt', function()
+	if NeP.DSL.Conditions['modifier.toggle']('Interrupts') then
+		return NeP.DSL.Conditions['casting']('target')
 	end
 	return false
 end)
@@ -79,7 +81,7 @@ RegisterConditon('channeling', function (target, spell)
 	return checkChanneling(target)
 end)
 
-RegisterConditon("casting", function(target, spell)
+RegisterConditon('casting', function(target, spell)
 	local castName,_,_,_,_,endTime,_,_,notInterruptibleCast = UnitCastingInfo(target)
 	local channelName,_,_,_,_,endTime,_,notInterruptibleChannel = UnitChannelInfo(target)
 	local spell = GetSpellName(spell)
@@ -104,7 +106,7 @@ RegisterConditon('interruptAt', function (target, spell)
 	return false
 end)
 
-RegisterConditon("spell.cooldown", function(target, spell)
+RegisterConditon('spell.cooldown', function(target, spell)
 	local start, duration, enabled = GetSpellCooldown(spell)
 	if not start then return false end
 	if start ~= 0 then
@@ -113,7 +115,7 @@ RegisterConditon("spell.cooldown", function(target, spell)
 	return 0
 end)
 
-RegisterConditon("spell.recharge", function(target, spell)
+RegisterConditon('spell.recharge', function(target, spell)
 	local charges, maxCharges, start, duration = GetSpellCharges(spell)
 	if not start then return false end
 	if start ~= 0 then
@@ -122,40 +124,40 @@ RegisterConditon("spell.recharge", function(target, spell)
 	return 0
 end)
 
-RegisterConditon("spell.usable", function(target, spell)
+RegisterConditon('spell.usable', function(target, spell)
 	return (IsUsableSpell(spell) ~= nil)
 end)
 
-RegisterConditon("spell.exists", function(target, spell)
+RegisterConditon('spell.exists', function(target, spell)
 	if GetSpellBookIndex(spell) then
 		return true
 	end
 	return false
 end)
 
-RegisterConditon("spell.charges", function(target, spell)
+RegisterConditon('spell.charges', function(target, spell)
 	return select(1, GetSpellCharges(spell))
 end)
 
-RegisterConditon("spell.cd", function(target, spell)
-	return NeP.DSL.Conditions["spell.cooldown"](target, spell)
+RegisterConditon('spell.cd', function(target, spell)
+	return NeP.DSL.Conditions['spell.cooldown'](target, spell)
 end)
 
-RegisterConditon("spell.range", function(target, spell)
+RegisterConditon('spell.range', function(target, spell)
 	local spellIndex, spellBook = GetSpellBookIndex(spell)
 	if not spellIndex then return false end
 	return spellIndex and IsSpellInRange(spellIndex, spellBook, target)
 end)
 
-RegisterConditon("time", function(target, range)
+RegisterConditon('time', function(target, range)
 	if NeP.Listener.locals.combat then
 		return GetTime() - NeP.Listener.locals.combatTime
 	end
 	return false
 end)
 
-RegisterConditon("timeout", function(args)
-	local name, time = strsplit(",", args, 2)
+RegisterConditon('timeout', function(args)
+	local name, time = strsplit(',', args, 2)
 	local time = tonumber(time)
 	if time then
 		if NeP.timeOut.check(name) then return false end
@@ -166,8 +168,8 @@ RegisterConditon("timeout", function(args)
 end)
 
 local waitTable = {}
-RegisterConditon("waitfor", function(args)
-	local name, time = strsplit(",", args, 2)
+RegisterConditon('waitfor', function(args)
+	local name, time = strsplit(',', args, 2)
 	if time then
 		local time = tonumber(time)
 		local GetTime = GetTime()
@@ -184,7 +186,7 @@ RegisterConditon("waitfor", function(args)
 	return false
 end)
 
-RegisterConditon("IsNear", function(targetID, distance)
+RegisterConditon('IsNear', function(targetID, distance)
 	local targetID = tonumber(targetID) or 0
 	local distance = tonumber(distance) or 60
 		for i=1,#NeP.OM.unitEnemie do

@@ -88,10 +88,10 @@ Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
 		end
 		self.actv = not self.actv
 		self:SetChecked(self.actv)
-		Config.Write('bStates_'..key, self.actv)
+		Config.Write('bStates_'..string.lower(key), self.actv)
 	end
 	NeP.MFrame.Buttons[#NeP.MFrame.Buttons+1] = {
-		key = tostring(key),
+		key = string.lower(key),
 		name = tostring(name),
 		tooltip = tooltipz,
 		icon = icon,

@@ -185,13 +185,13 @@ DSL.parse = function(dsl, spell)
 end
 
 DSL.get = function(condition)
+	local condition = string.lower(condition)
 	if DSL.Conditions[condition] then
 		return DSL.Conditions[condition]
-	else
-		return (function() return false end)
 	end
+	return (function() return false end)
 end
 
 DSL.RegisterConditon = function(name, eval)
-	DSL.Conditions[name] = eval
+	DSL.Conditions[string.lower(name)] = eval
 end

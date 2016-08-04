@@ -199,7 +199,7 @@ local function insertToLog(whatIs, spell, target)
 	elseif whatIs == 'Item' or whatIs == 'InvItem' then
 		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
 	end
-	NeP.MFrame.usedButtons['MasterToggle'].texture:SetTexture(icon)
+	NeP.MFrame.usedButtons['mastertoggle'].texture:SetTexture(icon)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
@@ -457,7 +457,7 @@ end
 -- Engine Ticker
 local LastTimeOut = 0
 C_Timer.NewTicker(0.1, (function()
-	local Running = NeP.Config.Read('bStates_MasterToggle', false)
+	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running and not Engine.forcePause then
 		-- Hide FaceRoll.
 		NeP.FaceRoll:Hide()
