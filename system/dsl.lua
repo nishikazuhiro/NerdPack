@@ -114,11 +114,11 @@ end
 local function Nested(table, spell)
 	local tArray = {[1] = true}
 	for k,v in ipairs(table) do
-		local cD = DSL.parse(v, spell) or false
 		if v == 'or' then
 			tArray[#tArray+1] = {}
 		else
 			if tArray[#tArray] then
+				local cD = DSL.parse(v, spell) or false
 				tArray[#tArray] = cD
 			end
 		end
