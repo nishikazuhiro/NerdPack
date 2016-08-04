@@ -3,7 +3,7 @@ NeP = {
 		Name = 'NerdPack',
 		Nick = 'NeP',
 		Author = 'MrTheSoulz',
-		Version = '7.0.3.6',
+		Version = 70.1,
 		Branch = 'BETA',
 	},
 	Interface = {
@@ -100,10 +100,8 @@ end
 
 -- FIXME: Needs to create a new chat channel for each prefix and print to that
 function NeP.Core.Debug(prefix, text)
-	if NeP.Core.DebugMode then
+	if NeP.Core.DebugMode and prefix == 'Engine' then
 		local prefix, text = tostring(prefix), tostring(text)
-		--ChatFrame_AddChannel(SELECTED_CHAT_FRAME, prefix);
-		--ChatFrame2:AddMessage(text)
 		print(printPrefix, '(DEBUG): (', prefix, ') ', text)
 	end
 end
