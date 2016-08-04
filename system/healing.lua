@@ -63,6 +63,7 @@ Healing['lowest'] = function(num, role)
 	local num = num or 1
 	local tempTable = Healing.Units
 	if role then
+		wipe(tempTable)
 		for i=1, #Healing.Units do
 			local Obj = Healing.Units[i]
 			if Obj.Role == string.upper(role) then
