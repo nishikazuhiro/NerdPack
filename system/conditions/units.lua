@@ -103,8 +103,12 @@ RegisterConditon("target", function(target, spell)
 	return ( UnitGUID(target .. "target") == UnitGUID(spell) )
 end)
 
-RegisterConditon("player", function (target)
+RegisterConditon("player", function(target)
 	return UnitIsPlayer(target)
+end)
+
+RegisterConditon("isPlayer", function(target)
+	return UnitIsUnit(target, 'player')
 end)
 
 RegisterConditon("exists", function(target)
