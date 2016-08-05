@@ -1,5 +1,6 @@
 local Intf = NeP.Interface
-local Tittle = '|cff'..Intf.addonColor..NeP.Info.Name
+local addonColor = '|cff'..Intf.addonColor
+local Tittle = addonColor..NeP.Info.Name
 local Logo = '|T'..Intf.Logo..':15:15|t'
 local Config = NeP.Config
 local Round = NeP.Core.Round
@@ -54,8 +55,8 @@ end
 local function defaultSettings()
 	Intf.CreateSetting(TA('mainframe', 'OM'), function() NeP.OM.List:Show() end)
 	Intf.CreateSetting(TA('mainframe', 'AL'), function() PE_ActionLog:Show() end)
-	Intf.CreateSetting(TA('mainframe', 'Settings'), function() NeP.Interface.ShowGUI('NePSettings') end)
 	Intf.CreateSetting(TA('mainframe', 'HideNeP'), function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end)
+	Intf.CreateSetting(addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), function() NeP.Interface.ShowGUI('NePSettings') end)
 end
 
 Intf.CreateSetting = function(name, func)

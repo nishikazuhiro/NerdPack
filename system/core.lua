@@ -12,14 +12,11 @@ NeP = {
 		printColor = '|cffFFFFFF',
 		mediaDir = 'Interface\\AddOns\\NerdPack\\media\\',
 	},
-	Core = {
-		DebugMode = false
-	},
+	Core = {},
 	Locale = {}
 }
 
 local printPrefix = '|r[|cff'..NeP.Interface.addonColor..NeP.Info.Nick..'|r]: '..NeP.Interface.printColor
-
 
 local locale = GetLocale()
 function NeP.Core.TA(gui, index)
@@ -95,14 +92,6 @@ function NeP.Core.Message(txt)
 	if text ~= lastMSG then
 	message(printPrefix..text)
 		lastMSG = text
-	end
-end
-
--- FIXME: Needs to create a new chat channel for each prefix and print to that
-function NeP.Core.Debug(prefix, text)
-	if NeP.Core.DebugMode and prefix == 'Engine' then
-		local prefix, text = tostring(prefix), tostring(text)
-		print(printPrefix, '(DEBUG): (', prefix, ') ', text)
 	end
 end
 

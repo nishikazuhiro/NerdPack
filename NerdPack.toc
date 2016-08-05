@@ -5,4 +5,4 @@
 ## SavedVariables: NePDataG
 ## SavedVariablesPerCharacter: NePData
 
-NerdPack.xml
+files.xml
