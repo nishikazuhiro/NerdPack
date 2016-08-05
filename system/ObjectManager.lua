@@ -109,43 +109,35 @@ function NeP.OM.addToOM(Obj)
 	local objectType, _, _, _, _, ObjID, _ = strsplit('-', GUID)
 	local ObjID = tonumber(ObjID) or '0'
 	if not BlacklistedObject(ObjID) and not BlacklistedDebuffs(Obj) then
-		local maxHealth = UnitHealthMax(Obj) or 1
-		local rawHealth = UnitHealth(Obj) or 1
-		local health = math.floor((rawHealth / maxHealth) * 100)
+		local distance = NeP.Engine.Distance('player', Obj)
 		-- Friendly
-		if UnitIsFriend('player', Obj) and UnitHealth(Obj) > 0 then
+		if UnitIsFriend('player', Obj) then
 			NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
 				key = Obj,
 				name = UnitName(Obj),
-				class = Classifications[tostring(UnitClassification(Obj))],
-				distance = NeP.Engine.Distance('player', Obj),
+				class = Classifications[UnitClassification(Obj)],
+				distance = distance,
 				is = 'friendly',
 				id = ObjID,
 				guid = GUID,
-				health = health,
-				maxHealth = maxHealth,
-				actualHealth = rawHealth
 			}
 		-- Enemie
-		elseif UnitCanAttack('player', Obj) and UnitHealth(Obj) > 0 then
+		elseif UnitCanAttack('player', Obj) then
 			NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
 				key = Obj,
 				name = UnitName(Obj),
-				class = Classifications[tostring(UnitClassification(Obj))],
-				distance = NeP.Engine.Distance('player', Obj),
+				class = Classifications[UnitClassification(Obj)],
+				distance = distance,
 				is = isDummy(Obj) and 'dummy' or 'enemie',
 				id = ObjID,
 				guid = GUID,
-				health = health,
-				maxHealth = maxHealth,
-				actualHealth = rawHealth
 			}
 		-- Object
 		elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
 			NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {
 				key = Obj,
 				name = UnitName(Obj) or '',
-				distance = NeP.Engine.Distance('player', Obj),
+				distance = distance,
 				is = 'object',
 				id = ObjID,
 				guid = GUID
@@ -204,9 +196,8 @@ local buttonStyleSheet = {
 	},
 }
 
--- Tables to Control Status Bars Used
-local statusBars = { }
-local statusBarsUsed = { }
+local statusBars = {}
+local statusBarsUsed = {}
 local tOM = NeP.OM.unitEnemie
 
 NeP.OM.List = DiesalGUI:Create('Window')
@@ -269,10 +260,8 @@ local function recycleStatusBars()
 end
 
 local function RefreshGUI()
-
 	local offset = -5
 	recycleStatusBars()
-
 	for i=1,#tOM do
 		local Obj = tOM[i]
 		local ID = Obj.id or ''
@@ -281,11 +270,9 @@ local function RefreshGUI()
 		local Health = Obj.health or 100
 		local classColor = NeP.Core.classColor(Obj.key)
 		local statusBar = getStatusBar()
-
 		statusBar.frame:SetPoint('TOP', ListWindow.content, 'TOP', 2, offset )
 		statusBar.frame.Left:SetText('|cff'..classColor..Name)
 		statusBar.frame.Right:SetText('( |cffff0000ID|r: '..ID..' / |cffff0000Health|r: '..Health..' / |cffff0000Dist|r: '..Round(Distance)..' )')
-
 		statusBar.frame:SetScript('OnMouseDown', function(self) TargetUnit(Obj.key) end)
 		statusBar:SetValue(Health)
 		offset = offset -18
@@ -300,7 +287,6 @@ C_Timer.NewTicker(0.25, (function()
 		wipe(NeP.OM.unitEnemie)
 		wipe(NeP.OM.unitFriend)
 		wipe(NeP.OM.GameObjects)
-
 		-- Run OM depending on unlocker
 		NeP.OM.Maker()
 		-- Sort by distance
@@ -308,6 +294,7 @@ C_Timer.NewTicker(0.25, (function()
 		table.sort(NeP.OM.unitFriend, function(a,b) return a.distance < b.distance end)
 		table.sort(NeP.OM.GameObjects, function(a,b) return a.distance < b.distance end)
 	end
+	-- UPDATE GUI
 	if NeP.OM.List:IsShown() then 
 		RefreshGUI()
 		bt1:SetText('ENEMIE ('..#NeP.OM.unitEnemie..')')
