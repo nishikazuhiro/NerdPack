@@ -407,7 +407,7 @@ function Engine.Iterate(table)
 	for i=1, #table do
 		local aR, tP = table[i], type(table[i][1])
 		if pTypes[tP] and canIterate(aR[1]) then
-			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell))
+			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(aR[1]))
 			local canCast, spell, sI = castSanityCheck(aR[1])
 			if canCast and Parse(aR[2], spell) then
 				Debug('Engine', 'Passed conditions')
