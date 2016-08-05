@@ -222,7 +222,6 @@ OMListGUI:AddChild(bt1)
 bt1:SetParent(OMListGUI.content)
 bt1:SetPoint("TOPLEFT", OMListGUI.content, "TOPLEFT", 0, 0)
 bt1.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
-bt1:SetText('ENEMIE')
 bt1:AddStyleSheet(buttonStyleSheet)
 bt1:SetEventListener("OnClick", function() tOM = NeP.OM.unitEnemie end)
 
@@ -231,7 +230,6 @@ OMListGUI:AddChild(bt2)
 bt2:SetParent(OMListGUI.content)
 bt2:SetPoint("TOP", OMListGUI.content, "TOP", 0, 0)
 bt2.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
-bt2:SetText('FRIENFLY')
 bt2:AddStyleSheet(buttonStyleSheet)
 bt2:SetEventListener("OnClick", function() tOM = NeP.OM.unitFriend end)
 
@@ -240,7 +238,6 @@ OMListGUI:AddChild(bt3)
 bt3:SetParent(OMListGUI.content)
 bt3:SetPoint("TOPRIGHT", OMListGUI.content, "TOPRIGHT", 0, 0)
 bt3.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
-bt3:SetText('OBJECTS')
 bt3:AddStyleSheet(buttonStyleSheet)
 bt3:SetEventListener("OnClick", function() tOM = NeP.OM.GameObjects end)
 
@@ -311,5 +308,10 @@ C_Timer.NewTicker(0.25, (function()
 		table.sort(NeP.OM.unitFriend, function(a,b) return a.distance < b.distance end)
 		table.sort(NeP.OM.GameObjects, function(a,b) return a.distance < b.distance end)
 	end
-	if NeP.OM.List:IsShown() then RefreshGUI() end
+	if NeP.OM.List:IsShown() then 
+		RefreshGUI()
+		bt1:SetText('ENEMIE ('..#NeP.OM.unitEnemie..')')
+		bt2:SetText('FRIENFLY ('..#NeP.OM.unitFriend..')')
+		bt3:SetText('OBJECTS ('..#NeP.OM.GameObjects..')')
+	end
 end), nil)
