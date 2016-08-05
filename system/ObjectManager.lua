@@ -211,8 +211,8 @@ local tOM = NeP.OM.unitEnemie
 
 NeP.OM.List = DiesalGUI:Create('Window')
 local OMListGUI = NeP.OM.List
-OMListGUI:SetWidth(500)
-OMListGUI:SetHeight(250)
+OMListGUI.frame:SetSize(500, 250)
+OMListGUI.frame:SetMinResize(500, 250)
 OMListGUI:SetTitle('ObjectManager GUI')
 OMListGUI.frame:SetClampedToScreen(true)
 OMListGUI:Hide()
