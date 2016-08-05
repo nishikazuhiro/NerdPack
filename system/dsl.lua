@@ -192,6 +192,11 @@ DSL.get = function(condition)
 	return (function() return false end)
 end
 
-DSL.RegisterConditon = function(name, eval)
-	DSL.Conditions[string.lower(name)] = eval
+DSL.RegisterConditon = function(name, eval, overwrite)
+	local name = string.lower(name)
+	if DSL.Conditions[name] or overwrite then
+		NeP.Core.Debug('DSL', 'ERROR! a condition named: '..name..' already exists, rename it!')
+	else
+		DSL.Conditions[name] = eval
+	end
 end
