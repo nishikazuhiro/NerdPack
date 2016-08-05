@@ -155,44 +155,44 @@ local SharedMedia = LibStub('LibSharedMedia-3.0')
 local buttonStyleSheet = {
 	['frame-color'] = {	
 		type			= 'texture',
-		layer			= 'BACKGROUND',								
-		color			= '2f353b',			
+		layer			= 'BACKGROUND',
+		color			= '2f353b',
 		offset		= 0,	
 	},
 	['frame-highlight'] = {
-		type			= 'texture',
-		layer			= 'BORDER',
-		gradient	= 'VERTICAL',							
-		color			= 'FFFFFF',			
+		type		= 'texture',
+		layer		= 'BORDER',
+		gradient	= 'VERTICAL',					
+		color		= 'FFFFFF',
 		alpha 		= 0,
 		alphaEnd	= .1,
 		offset		= -1,
 	},	
-	['frame-outline'] = {		
-		type			= 'outline',
-		layer			= 'BORDER',								
-		color			= '000000',		
+	['frame-outline'] = {
+		type		= 'outline',
+		layer		= 'BORDER',			
+		color		= '000000',
 		offset		= 0,		
 	},	
 	['frame-inline'] = {		
-		type			= 'outline',
-		layer			= 'BORDER',
+		type		= 'outline',
+		layer		= 'BORDER',
 		gradient	= 'VERTICAL',
-		color			= 'ffffff',
+		color		= 'ffffff',
 		alpha 		= .02,
 		alphaEnd	= .09,
 		offset		= -1,
-	},	
-	['frame-hover'] = {		
-		type			= 'texture',
-		layer			= 'HIGHLIGHT',	
-		color			= 'ffffff',
-		alpha			= .1,
-		offset		= 0,	
+	},
+	['frame-hover'] = {
+		type		= 'texture',
+		layer		= 'HIGHLIGHT',
+		color		= 'ffffff',
+		alpha		= .1,
+		offset		= 0,
 	},
 	['text-color'] = {
-		type			= 'Font',
-		color			= 'b8c2cc',
+		type		= 'Font',
+		color		= 'b8c2cc',
 	},
 }
 
@@ -267,7 +267,9 @@ local function RefreshGUI()
 		local ID = Obj.id or ''
 		local Name = Obj.name or ''
 		local Distance = Obj.distance or ''
-		local Health = Obj.health or 100
+		local maxHealth = UnitHealthMax(Obj.key) or 1
+		local rawHealth = UnitHealth(Obj.key) or 1
+		local Health = math.floor((rawHealth / maxHealth) * 100)
 		local classColor = NeP.Core.classColor(Obj.key)
 		local statusBar = getStatusBar()
 		statusBar.frame:SetPoint('TOP', ListWindow.content, 'TOP', 2, offset )
