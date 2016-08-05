@@ -9,7 +9,7 @@ local TA = NeP.Core.TA
 
 local function OpenPage(URL)
 	local URL = tostring(URL)
-	if OpenURL then 
+	if OpenURL then
 		OpenURL(URL)
 	else
 		NeP.Core.Message('Please Visit:\n'..URL)
@@ -102,6 +102,7 @@ Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
 end
 
 Intf.toggleToggle = function(key)
+	local key = string.lower(key)
 	button = _G[key]
 	button.actv = not button.actv
 	button:SetChecked(button.actv)
