@@ -160,9 +160,54 @@ local DiesalGUI = LibStub('DiesalGUI-1.0')
 local DiesalMenu = LibStub('DiesalMenu-1.0')
 local SharedMedia = LibStub('LibSharedMedia-3.0')
 
+local buttonStyleSheet = {
+	['frame-color'] = {	
+		type			= 'texture',
+		layer			= 'BACKGROUND',								
+		color			= '2f353b',			
+		offset		= 0,	
+	},
+	['frame-highlight'] = {
+		type			= 'texture',
+		layer			= 'BORDER',
+		gradient	= 'VERTICAL',							
+		color			= 'FFFFFF',			
+		alpha 		= 0,
+		alphaEnd	= .1,
+		offset		= -1,
+	},	
+	['frame-outline'] = {		
+		type			= 'outline',
+		layer			= 'BORDER',								
+		color			= '000000',		
+		offset		= 0,		
+	},	
+	['frame-inline'] = {		
+		type			= 'outline',
+		layer			= 'BORDER',
+		gradient	= 'VERTICAL',
+		color			= 'ffffff',
+		alpha 		= .02,
+		alphaEnd	= .09,
+		offset		= -1,
+	},	
+	['frame-hover'] = {		
+		type			= 'texture',
+		layer			= 'HIGHLIGHT',	
+		color			= 'ffffff',
+		alpha			= .1,
+		offset		= 0,	
+	},
+	['text-color'] = {
+		type			= 'Font',
+		color			= 'b8c2cc',
+	},
+}
+
 -- Tables to Control Status Bars Used
 local statusBars = { }
 local statusBarsUsed = { }
+local tOM = NeP.OM.unitEnemie
 
 NeP.OM.List = DiesalGUI:Create('Window')
 local OMListGUI = NeP.OM.List
@@ -172,10 +217,38 @@ OMListGUI:SetTitle('ObjectManager GUI')
 OMListGUI.frame:SetClampedToScreen(true)
 OMListGUI:Hide()
 
+local bt1 = DiesalGUI:Create("Button")
+OMListGUI:AddChild(bt1)
+bt1:SetParent(OMListGUI.content)
+bt1:SetPoint("TOPLEFT", OMListGUI.content, "TOPLEFT", 0, 0)
+bt1.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
+bt1:SetText('ENEMIE')
+bt1:AddStyleSheet(buttonStyleSheet)
+bt1:SetEventListener("OnClick", function() tOM = NeP.OM.unitEnemie end)
+
+local bt2 = DiesalGUI:Create("Button")
+OMListGUI:AddChild(bt2)
+bt2:SetParent(OMListGUI.content)
+bt2:SetPoint("TOP", OMListGUI.content, "TOP", 0, 0)
+bt2.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
+bt2:SetText('FRIENFLY')
+bt2:AddStyleSheet(buttonStyleSheet)
+bt2:SetEventListener("OnClick", function() tOM = NeP.OM.unitFriend end)
+
+local bt3 = DiesalGUI:Create("Button")
+OMListGUI:AddChild(bt3)
+bt3:SetParent(OMListGUI.content)
+bt3:SetPoint("TOPRIGHT", OMListGUI.content, "TOPRIGHT", 0, 0)
+bt3.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
+bt3:SetText('OBJECTS')
+bt3:AddStyleSheet(buttonStyleSheet)
+bt3:SetEventListener("OnClick", function() tOM = NeP.OM.GameObjects end)
+
 local ListWindow = DiesalGUI:Create('ScrollFrame')
 OMListGUI:AddChild(ListWindow)
 ListWindow:SetParent(OMListGUI.content)
-ListWindow:SetAllPoints(OMListGUI.content)
+ListWindow:SetPoint("TOP", OMListGUI.content, "TOP", 0, -30)
+ListWindow.frame:SetSize(OMListGUI.content:GetWidth(), OMListGUI.content:GetHeight()-30)
 ListWindow.OMListGUI = OMListGUI
 
 local function getStatusBar()
@@ -199,19 +272,12 @@ local function recycleStatusBars()
 end
 
 local function RefreshGUI()
-	local tempTable = {}
-
-	-- Combine all tables..
-	for i=1, #NeP.OM.unitEnemie do tempTable[#tempTable+1] = NeP.OM.unitEnemie[i] end
-	for i=1, #NeP.OM.unitFriend do tempTable[#tempTable+1] = NeP.OM.unitFriend[i] end
-	for i=1, #NeP.OM.GameObjects do tempTable[#tempTable+1] = NeP.OM.GameObjects[i] end
-	table.sort(tempTable, function(a,b) return a.distance < b.distance end)
 
 	local offset = -5
 	recycleStatusBars()
 
-	for i=1,#tempTable do
-		local Obj = tempTable[i]
+	for i=1,#tOM do
+		local Obj = tOM[i]
 		local ID = Obj.id or ''
 		local Name = Obj.name or ''
 		local Distance = Obj.distance or ''
@@ -225,7 +291,7 @@ local function RefreshGUI()
 
 		statusBar.frame:SetScript('OnMouseDown', function(self) TargetUnit(Obj.key) end)
 		statusBar:SetValue(Health)
-		offset = offset -17
+		offset = offset -18
 	end
 end
 
