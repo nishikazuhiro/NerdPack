@@ -255,6 +255,23 @@ RegisterConditon("class", function (target, expectedClass)
 	end
 end)
 
+NeP.DSL.RegisterConditon("inMelee", function(target)
+	return NeP.Core.UnitAttackRange('player', target, 'melee')
+end)
+
+NeP.DSL.RegisterConditon("inRanged", function(target)
+	return NeP.Core.UnitAttackRange('player', target, 'ranged')
+end)
+
+NeP.DSL.RegisterConditon("power.regen", function(target)
+	return select(2, GetPowerRegen(target))
+end)
+
+NeP.DSL.RegisterConditon("casttime", function(target, spell)
+	local name, rank, icon, cast_time, min_range, max_range = GetSpellInfo(spell)
+	return cast_time
+end)
+
 ------------------------------------------ PLAYER ----------------------------------------
 ------------------------------------------------------------------------------------------
 
@@ -323,6 +340,14 @@ RegisterConditon("glyph", function()
 		end
 	end
 	return false
+end)
+
+NeP.DSL.RegisterConditon('twohand', function(target)
+	return IsEquippedItemType("Two-Hand")
+end)
+
+NeP.DSL.RegisterConditon('onehand', function(target)
+	return IsEquippedItemType("One-Hand")
 end)
 
 ------------------------------------------ OM CRAP ---------------------------------------
