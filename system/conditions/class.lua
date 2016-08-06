@@ -130,38 +130,12 @@ end)
 --------------------------------------------------- DRUID ----------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 
-RegisterConditon("eclipse", function(target, spell)
-	return math.abs(UnitPower(target, SPELL_POWER_ECLIPSE))
-end)
-
-RegisterConditon("eclipseRaw", function(target, spell)
-	return UnitPower(target, SPELL_POWER_ECLIPSE)
-end)
-
-RegisterConditon("solar", function(target, spell)
-	return GetEclipseDirection() == 'sun'
-end)
-
-RegisterConditon("lunar", function(target, spell)
-	return GetEclipseDirection() == 'moon'
-end)
-
 RegisterConditon("form", function(target, spell)
 	return GetShapeshiftForm()
 end)
 
 RegisterConditon("combopoints", function()
 	return GetComboPoints('player', 'target')
-end)
-
-RegisterConditon("balance.sun", function()
-	local direction = GetEclipseDirection()
-	if direction == 'none' or direction == 'sun' then return true end
-end)
-
-RegisterConditon("balance.moon", function()
-	local direction = GetEclipseDirection()
-	if direction == 'moon' then return true end
 end)
 
 RegisterConditon("mushrooms", function ()
