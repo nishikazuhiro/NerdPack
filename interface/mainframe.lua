@@ -21,14 +21,32 @@ NeP.MFrame = {
 	buttonSize = 40,
 	Buttons = {},
 	usedButtons = {},
+	dSettings = {
+		{
+			name = TA('mainframe', 'OM'),
+			func = function() NeP.OM.List:Show() end
+		},
+		{
+			name = TA('mainframe', 'AL'),
+			func = function() PE_ActionLog:Show() end
+		},
+		{
+			name = TA('mainframe', 'HideNeP'),
+			func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end
+		},
+		{
+			name = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'),
+			func = function() NeP.Interface.ShowGUI('NePSettings') end
+		}
+	},
 	Settings = {},
 	Plugins = {},
 	About = {
-		['Forum'] = {
+		{
 			name = TA('mainframe', 'Forum'),
 			func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end
 		},
-		['Donate'] = {
+		{
 			name = TA('mainframe', 'Donate'),
 			func = function() OpenPage('http://goo.gl/yrctPO') end
 		}
@@ -51,14 +69,6 @@ local function defaultToggles()
 	Intf.CreateToggle('AoE', 'Interface\\ICONS\\Ability_Druid_Starfall.png', 'AoE', TA('mainframe', 'AoE'))
 end
 
--- These are the default Settings.
-local function defaultSettings()
-	Intf.CreateSetting(TA('mainframe', 'OM'), function() NeP.OM.List:Show() end)
-	Intf.CreateSetting(TA('mainframe', 'AL'), function() PE_ActionLog:Show() end)
-	Intf.CreateSetting(TA('mainframe', 'HideNeP'), function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end)
-	Intf.CreateSetting(addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), function() NeP.Interface.ShowGUI('NePSettings') end)
-end
-
 Intf.CreateSetting = function(name, func)
 	NeP.MFrame.Settings[#NeP.MFrame.Settings+1] = {
 		name = tostring(name),
@@ -68,7 +78,6 @@ end
 
 Intf.ResetSettings = function()
 	wipe(NeP.MFrame.Settings)
-	defaultSettings()
 end
 
 Intf.CreatePlugin = function(name, func)
@@ -308,8 +317,17 @@ function Config.CreateMainFrame()
 		info.notCheckable = 1
 		info.text = 'Settings:'
 		UIDropDownMenu_AddButton(info)
-		local settingsTable = NeP.MFrame.Settings or { ['Cant find any Setting...'] = '' }
-		for k,v in pairs(settingsTable) do
+		for i=1, #NeP.MFrame.Settings do
+			local v = NeP.MFrame.Settings[i]
+			info = UIDropDownMenu_CreateInfo()
+			info.text = v.name
+			info.value = v.name
+			info.func = v.func
+			info.notCheckable = 1
+			UIDropDownMenu_AddButton(info)
+		end
+		for i=1, #NeP.MFrame.dSettings do
+			local v = NeP.MFrame.dSettings[i]
 			info = UIDropDownMenu_CreateInfo()
 			info.text = v.name
 			info.value = v.name
@@ -336,8 +354,8 @@ function Config.CreateMainFrame()
 		info.notCheckable = 1
 		info.text = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
 		UIDropDownMenu_AddButton(info)
-		local aboutTable = NeP.MFrame.About or { ['Cant find any...'] = '' }
-		for k,v in pairs(aboutTable) do
+		for i=1, #NeP.MFrame.About do
+			local v = NeP.MFrame.About[i]
 			info = UIDropDownMenu_CreateInfo()
 			info.text = v.name
 			info.value = v.name
@@ -388,8 +406,6 @@ function Config.CreateMainFrame()
 	end)
 	ST_DB:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 
-	-- Create Defaults
-	defaultSettings()
 	defaultToggles()
 
 end
