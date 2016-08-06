@@ -116,7 +116,7 @@ local ListClassSpec = {
 	},
 	[4] = { -- Rogue
 		[259] = 'Assassination',
-		[260] = 'Combat',
+		[260] = 'Outlaw',
 		[261] = 'Subtlety',
 	},
 	[5] = {  -- Priest
