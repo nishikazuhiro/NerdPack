@@ -35,8 +35,10 @@ C_Timer.NewTicker(0.25, (function()
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
 				local incDMG = 0
+				--local tAbsorbs = UnitGetTotalAbsorbs(Obj.key) or 0
+				local pAbsorbs = UnitGetTotalHealAbsorbs(Obj.key) or 0
 				local incHeal = UnitGetIncomingHeals(Obj.key) or 0
-				local healthRaw = (UnitHealth(Obj.key) - incDMG) + incHeal
+				local healthRaw = UnitHealth(Obj.key) - incDMG - pAbsorbs + incHeal 
 				local maxHealth = UnitHealthMax(Obj.key)
 				local missingHealth = maxHealth - healthRaw
 				local healthPercent =  (healthRaw / maxHealth) * 100
