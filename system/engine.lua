@@ -16,6 +16,8 @@ local TA = Core.TA
 local Parse = NeP.DSL.parse
 local fK = NeP.Interface.fetchKey
 
+local SR = LibStub("SpellRange-1.0")
+
 local fakeUnits = {
 	{ -- Tank
 		token = 'tank',
@@ -203,8 +205,8 @@ local function insertToLog(whatIs, spell, target)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
-local function Cast(spell, target, ground)
-	if ground then
+local function Cast(spell, target)
+	if Engine.isGroundSpell then
 		Engine.CastGround(spell, target)
 	else
 		Engine.Cast(spell, target)
@@ -241,7 +243,7 @@ local function checkTarget(spell, target)
 			return true, target, ground
 		elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 			return false, target, false
-		elseif UnitExists(target) and Engine.LineOfSight('player', target) then
+		elseif UnitExists(target) and SR.IsSpellInRange(spell, target) and Engine.LineOfSight('player', target) then
 			return true, target, ground
 		end
 		return false, target, ground
@@ -394,9 +396,9 @@ local pTypes = {
 			return sb
 		-- Regular sanity checks
 		else
-			if sI then SpellStopCasting() end
 			Debug('Engine', 'Hit Regular')
-			Cast(spell, target, Engine.isGroundSpell)
+			if sI then SpellStopCasting() end
+			Cast(spell, target)
 			return true
 		end
 	end
@@ -463,7 +465,7 @@ C_Timer.NewTicker(0.1, (function()
 		NeP.FaceRoll:Hide()
 		-- Run the engine.
 		if Engine.SelectedCR then
-			local InCombatCheck = UnitAffectingCombat('player')
+			local InCombatCheck = InCombatLockdown()
 			local table = Engine.SelectedCR[InCombatCheck]
 			Engine.Iterate(table)
 		else

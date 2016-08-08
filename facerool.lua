@@ -80,7 +80,10 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function Engine.LineOfSight(a, b)
-		return true
+		if UnitExists(b) then
+			return UnitIsVisible(b)
+		end
+		return false
 	end
 
 	-- Distance

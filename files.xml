@@ -17,7 +17,7 @@
 	<Include file="external\DiesalGUI-1.0\DiesalGUI-1.0.xml" />
 	<Include file="external\DiesalMenu-1.0\DiesalMenu-1.0.xml" />
 	<Script file="external\DiesalGUI-1.0\Objects\TableExplorer.lua" />
-
+	<Script file="external\LibSpellRange-1.0\LibSpellRange-1.0.lua" />
 
 	<!-- Core -->
 	<Script file="system\core.lua" />
