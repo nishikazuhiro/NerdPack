@@ -243,7 +243,7 @@ local function checkTarget(spell, target)
 			return true, target, ground
 		elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 			return false, target, false
-		elseif UnitExists(target) and SR.IsSpellInRange(spell, target) and Engine.LineOfSight('player', target) then
+		elseif UnitExists(target) and IsSpellInRange(spell, target) ~= 0 and Engine.LineOfSight('player', target) then
 			return true, target, ground
 		end
 		return false, target, ground
