@@ -195,7 +195,7 @@ local function insertToLog(whatIs, spell, target)
 		else
 			name, _, icon = GetSpellInfo(spellIndex)
 		end
-	elseif whatIs == 'Item' or whatIs == 'InvItem' then
+	elseif whatIs == 'Item' then
 		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
 	end
 	NeP.MFrame.usedButtons['mastertoggle'].texture:SetTexture(icon)
@@ -314,28 +314,6 @@ local function castSanityCheck(spell)
 	end
 end
 
-local function ItemSanity(item)
-	if invItems[item] then
-		local item = invItems[item]
-		local item_X = GetInventoryItemID("player", GetInventorySlotInfo(item))
-		local isUsable, notEnoughMana = IsUsableItem(item_X)
-		if isUsable then
-			local itemStart, itemDuration, itemEnable = GetItemCooldown(item_X)
-			if itemStart == 0 then
-				return true, item
-			end
-		end
-	else
-		local isUsable, notEnoughMana = IsUsableItem(item)
-		if isUsable then
-			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-			if itemStart == 0 and GetItemCount(item) > 0 then
-				return false, item
-			end
-		end
-	end
-end
-
 -- This iterates the routine table itself.
 function Engine.Parse(table)
 	for i=1, #table do
@@ -363,16 +341,15 @@ function Engine.Parse(table)
 						if pX == '#' then
 							Debug('Engine', 'Hit #Item')
 							local item = string.sub(spell, 2);
-							local invItem, item = ItemSanity(item)
-							if item then
-								if invItem then
-									insertToLog('InvItem', item_X, target)
-									Engine.UseInvItem(GetInventorySlotInfo(item))
-									break
-								else
-									insertToLog('Item', item, target)
-									Engine.UseItem(item, target)
-									break
+							if invItems[item] then
+								item = invItems[item]
+								item = GetInventoryItemID("player", GetInventorySlotInfo(item))
+							end
+							local isUsable, notEnoughMana = IsUsableItem(item)
+							if isUsable then
+								local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
+								if itemStart == 0 and GetItemCount(item) > 0 then
+									return false, item
 								end
 							end
 						elseif pX == '@' then
