@@ -238,12 +238,8 @@ local function checkTarget(spell, target)
 		return target
 	elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 		return
-	elseif UnitExists(target) and Engine.LineOfSight('player', target) then
-		local Distance = Engine.Distance('player', target)
-		local _,_,_,_, minRange, maxRange = GetSpellInfo(spell)
-		if Distance < maxRange or maxRange == 0 then
-			return target
-		end
+	elseif UnitExists(target) and IsSpellInRange(spell, target) ~= 0 and Engine.LineOfSight('player', target) then
+		return target
 	end
 end
 
