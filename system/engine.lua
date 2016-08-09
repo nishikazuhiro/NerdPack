@@ -244,8 +244,11 @@ local function checkTarget(spell, target)
 end
 
 local function castingTime(target)
-    local _,_,_,_,_, endTime= UnitCastingInfo(target)
-    if endTime then return endTime end
+    local a_name, _,_,_, a_startTime, a_endTime = UnitCastingInfo("player")
+    local b_name, _,_,_, b_startTime, b_endTime = UnitChannelInfo("player")
+    local time = GetTime() * 1000
+    if a_endTime then return (a_endTime - time) / 1000 end
+    if b_endTime then return (b_endTime - time) / 1000 end
     return 0
 end
 
@@ -263,25 +266,23 @@ end
 
 local function canIterate(spell)
 	local Iterate, spell, pause, sI = false, spell, false, false
+	local sType = type(spell)
 	-- If not Dead and not mounted
 	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
-		if type(spell) == 'string' then
-			local pX = string.sub(spell, 1, 1)
+		local castingTime = castingTime('player')
+		if sType == 'string' then
 			if string.lower(spell) == 'pause' then
 				pause = true
 			end
+			local pX = string.sub(spell, 1, 1)
 			if pX == '!' then
 				spell = string.sub(spell, 2);
-				local castingTime = castingTime('player')
-				if not castingTime or castingTime > 1 then
+				if castingTime >= 0.5 then
 					sI = true
 				end
 			end
 		end
-		local nCasting = UnitCastingInfo('player') == nil
-		local nChanneling = UnitChannelInfo('player') == nil
-		-- If not Casting, channeling or should interrupt
-		if nCasting and nChanneling then
+		if castingTime == 0 or sType == 'table' then
 			Iterate = true
 		end
 	end
@@ -291,20 +292,19 @@ end
 local function castSanityCheck(spell)
 	-- Convert Ids to Names
 	if string.match(spell, '%d') then
-		spell = tonumber(spell)
-		spell = GetSpellInfo(spell)
+		spell = GetSpellInfo(tonumber(spell))
 	end
 	if spell then
-		-- Make sure we have the spell
+		-- Make sure we can cast the spell
+		local _, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(spell)
 		local skillType, spellId = GetSpellBookItemInfo(spell)
+		local start, duration, enabled = GetSpellCooldown(spell)
+		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if skillType == 'FUTURESPELL' then 
 			return
-		-- Spell Sanity Checks
-		elseif IsUsableSpell(spell) then
-			if GetSpellCooldown(spell) < 1 then
-				Engine.Current_Spell = spell
-				return spell
-			end 
+		elseif isUsable and start < 1 and not notEnoughMana then
+			Engine.Current_Spell = spell
+			return spell
 		end
 	end
 end
