@@ -238,8 +238,12 @@ local function checkTarget(spell, target)
 		return target
 	elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 		return
-	elseif UnitExists(target) and IsSpellInRange(spell, target) ~= 0 and Engine.LineOfSight('player', target) then
-		return target
+	elseif UnitExists(target) and Engine.LineOfSight('player', target) then
+		local Distance = Engine.Distance('player', target)
+		local _,_,_,_, minRange, maxRange = GetSpellInfo(spell)
+		if Distance < maxRange or maxRange == 0 then
+			return target
+		end
 	end
 end
 
@@ -277,7 +281,7 @@ local function canIterate(spell)
 			local pX = string.sub(spell, 1, 1)
 			if pX == '!' then
 				spell = string.sub(spell, 2);
-				if castingTime >= 0.5 then
+				if spell ~= Engine.lastCast and castingTime >= 0.5 then
 					sI = true
 				end
 			end
@@ -296,7 +300,6 @@ local function castSanityCheck(spell)
 	end
 	if spell then
 		-- Make sure we can cast the spell
-		local _, rank, icon, castingTime, minRange, maxRange, spellID = GetSpellInfo(spell)
 		local skillType, spellId = GetSpellBookItemInfo(spell)
 		local start, duration, enabled = GetSpellCooldown(spell)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
