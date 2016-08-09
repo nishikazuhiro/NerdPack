@@ -349,7 +349,9 @@ function Engine.Parse(table)
 							if isUsable then
 								local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 								if itemStart == 0 and GetItemCount(item) > 0 then
-									return false, item
+									insertToLog('Item', item, target)
+									Engine.UseItem(item, target)
+									break
 								end
 							end
 						elseif pX == '@' then
