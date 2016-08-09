@@ -183,7 +183,6 @@ function Engine.registerRotation(SpecID, CrName, InCombat, outCombat, initFunc)
 	end
 end
 
-
 local function insertToLog(whatIs, spell, target)
 	local targetName = UnitName(target or 'player')
 	local name, icon
