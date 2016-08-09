@@ -338,36 +338,36 @@ function Engine.Parse(table)
 					break
 				elseif tP == 'string' then
 					Debug('Engine', 'Hit String')
-					local pX = string.sub(spell, 1, 1)
-					if pX == '#' then
-						Debug('Engine', 'Hit #Item')
-						local item = string.sub(spell, 2);
-						if invItems[item] then
-							item = invItems[item]
-							item = GetInventoryItemID("player", GetInventorySlotInfo(item))
-						end
-						local isUsable, notEnoughMana = IsUsableItem(item)
-						if isUsable then
-							local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-							if itemStart == 0 and GetItemCount(item) > 0 then
-								insertToLog('Item', item, target)
-								Engine.UseItem(item, target)
-								break
+					local target = checkTarget(spell, target)
+					if target then
+						local pX = string.sub(spell, 1, 1)
+						if pX == '#' then
+							Debug('Engine', 'Hit #Item')
+							local item = string.sub(spell, 2);
+							if invItems[item] then
+								item = invItems[item]
+								item = GetInventoryItemID("player", GetInventorySlotInfo(item))
 							end
-						end
-					elseif pX == '@' then
-						local lib = string.sub(spell, 2);
-						NeP.library.parse(false, spell, lib)
-						break
-					elseif pX == '/' then
-						Engine.Macro(spell)
-						break
-					else
-						Debug('Engine', 'Hit Regular')
-						local spell = castSanityCheck(spell)
-						if spell then
-							local target = checkTarget(spell, target)
-							if target then
+							local isUsable, notEnoughMana = IsUsableItem(item)
+							if isUsable then
+								local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
+								if itemStart == 0 and GetItemCount(item) > 0 then
+									insertToLog('Item', item, target)
+									Engine.UseItem(item, target)
+									break
+								end
+							end
+						elseif pX == '@' then
+							local lib = string.sub(spell, 2);
+							NeP.library.parse(false, spell, lib)
+							break
+						elseif pX == '/' then
+							Engine.Macro(spell)
+							break
+						else
+							Debug('Engine', 'Hit Regular')
+							local spell = castSanityCheck(spell)
+							if spell then
 								if sI then SpellStopCasting() end
 								Cast(spell, target)
 								break
