@@ -237,13 +237,17 @@ local function checkTarget(spell, target)
 	if ground and target == 'mouseover' then
 		return target
 	elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
-		return
+		return false, target
 	elseif UnitExists(target) and Engine.LineOfSight('player', target) then
 		local Distance = Engine.Distance('player', target)
 		local _,_,_,_, minRange, maxRange = GetSpellInfo(spell)
-		if maxRange == 0 then maxRange = 5 end
+		if maxRange == 0 and IsAttackSpell(spell) ~= false then 
+			maxRange = 5
+		elseif maxRange == 0 then
+			maxRange = 9999
+		end
 		if Distance <= maxRange then
-			return target
+			return true, target
 		end
 	end
 end
@@ -362,8 +366,8 @@ function Engine.Parse(table)
 						Debug('Engine', 'Hit Regular')
 						local spell = castSanityCheck(spell)
 						if spell then
-							local target = checkTarget(spell, target)
-							if target then
+							local hastarget, target = checkTarget(spell, target)
+							if hastarget then
 								if sI then SpellStopCasting() end
 								Cast(spell, target)
 								break
