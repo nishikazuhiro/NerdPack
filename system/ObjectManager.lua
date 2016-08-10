@@ -300,7 +300,7 @@ C_Timer.NewTicker(0.25, (function()
 	if NeP.OM.List:IsShown() then 
 		RefreshGUI()
 		bt1:SetText('ENEMIE ('..#NeP.OM.unitEnemie..')')
-		bt2:SetText('FRIENFLY ('..#NeP.OM.unitFriend..')')
+		bt2:SetText('FRIENDLY ('..#NeP.OM.unitFriend..')')
 		bt3:SetText('OBJECTS ('..#NeP.OM.GameObjects..')')
 	end
 end), nil)
