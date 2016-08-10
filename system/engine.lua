@@ -241,10 +241,11 @@ local function checkTarget(spell, target)
 	elseif UnitExists(target) and Engine.LineOfSight('player', target) then
 		local Distance = Engine.Distance('player', target)
 		local _,_,_,_, minRange, maxRange = GetSpellInfo(spell)
-		if maxRange == 0 and IsAttackSpell(spell) ~= false then 
-			maxRange = 5
-		elseif maxRange == 0 then
-			maxRange = 9999
+			if IsAttackSpell(spell) ~= false then 
+				maxRange = 5
+			else
+				maxRange = 9999
+			end
 		end
 		if Distance <= maxRange then
 			return target
