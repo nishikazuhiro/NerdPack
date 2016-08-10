@@ -121,50 +121,29 @@ end
 local function LoadCrs(info)
 	local Spec = GetSpecialization()
 	local localizedClass, englishClass, classIndex = UnitClass('player')
-	local pLvL = UnitLevel('player')
-	if Spec and pLvL >= 10 then
-		local SpecInfo = GetSpecializationInfo(Spec)
-		local routinesTable = NeP.Engine.Rotations[SpecInfo]
-		if routinesTable then
-			local lastCR = Config.Read('NeP_SlctdCR_'..(SpecInfo))
-			for k,v in pairs(routinesTable) do
-				local rState = (lastCR == k) or false
-				info = UIDropDownMenu_CreateInfo()
-				info.text = v['Name']
-				info.value = k
-				info.checked = rState
-				info.func = function(self)
-					NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
-					Intf.ResetToggles()
-					Intf.ResetSettings()
-					Config.Write('NeP_SlctdCR_'..(SpecInfo), k)
-					NeP.Core.updateSpec()
-				end
-				UIDropDownMenu_AddButton(info)
+	local SpecInfo = classIndex
+	if Spec then
+		SpecInfo = GetSpecializationInfo(Spec)
+	end
+	local routinesTable = NeP.Engine.Rotations[SpecInfo]
+	if routinesTable then
+		local lastCR = Config.Read('NeP_SlctdCR_'..(SpecInfo))
+		for k,v in pairs(routinesTable) do
+			local rState = (lastCR == k) or false
+			info = UIDropDownMenu_CreateInfo()
+			info.text = v['Name']
+			info.value = k
+			info.checked = rState
+			info.func = function(self)
+				NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
+				Intf.ResetToggles()
+				Intf.ResetSettings()
+				Config.Write('NeP_SlctdCR_'..(SpecInfo), k)
+				NeP.Core.updateSpec()
 			end
-			return
+			UIDropDownMenu_AddButton(info)
 		end
-	elseif classIndex then
-		local routinesTable = NeP.Engine.Rotations[classIndex]
-		if routinesTable then
-			local lastCR = Config.Read('NeP_SlctdCR_'..(classIndex))
-			for k,v in pairs(routinesTable) do
-				local rState = (lastCR == k) or false
-				info = UIDropDownMenu_CreateInfo()
-				info.text = v['Name']
-				info.value = k
-				info.checked = rState
-				info.func = function(self)
-					NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
-					Intf.ResetToggles()
-					Intf.ResetSettings()
-					Config.Write('NeP_SlctdCR_'..(classIndex), k)
-					NeP.Core.updateSpec()
-				end
-				UIDropDownMenu_AddButton(info)
-			end
-			return
-		end
+		return
 	end
 	-- No CR
 	info = UIDropDownMenu_CreateInfo()
