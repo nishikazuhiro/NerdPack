@@ -110,7 +110,6 @@ local conditionize = function(target, condition)
 	end
 end
 
--- FIXME: Does not work for nested OR's
 local function Nested(table, spell)
 	local tArray = {[1] = true}
 	for k,v in ipairs(table) do
