@@ -96,85 +96,13 @@ local invItems = {
 	['ranged']		= 'RangedSlot'
 }
 
-local ListClassSpec = {
-	[0] = {}, -- None
-	[1] = { -- Warrior
-		[71] = 'Arms',
-		[72] = 'Fury',
-		[73] = 'Protection',
-	},
-	[2] = {  -- Paladin
-		[65] = 'Holy',
-		[66] = 'Protection',
-		[70] = 'Retribution',
-	},
-	[3] = { -- Hunter
-		[253] = 'Beast Mastery',
-		[254] = 'Marksmanship',
-		[255] = 'Survival',
-	},
-	[4] = { -- Rogue
-		[259] = 'Assassination',
-		[260] = 'Outlaw',
-		[261] = 'Subtlety',
-	},
-	[5] = {  -- Priest
-		[256] = 'Discipline',
-		[257] = 'Holy',
-		[258] = 'Shadow',
-	},
-	[6] = { -- DeathKnight
-		[250] = 'Blood',
-		[251] = 'Frost',
-		[252] = 'Unholy',
-	},
-	[7] = {  -- Shaman
-		[262] = 'Elemental',
-		[263] = 'Enhancement',
-		[264] = 'Restoration',
-	},
-	[8] = {  -- Mage
-		[62] = 'Arcane',
-		[63] = 'Fire',
-		[64] = 'Frost',
-	},
-	[9] = { -- Warlock
-		[265] = 'Affliction',
-		[266] = 'Demonology',
-		[267] = 'Destruction',
-	},
-	[10] = { -- Monk
-		[268] = 'Brewmaster',
-		[269] = 'Windwalker',
-		[270] = 'Mistweaver',
-	},
-	[11] = { -- Druid
-		[102] = 'Balance',
-		[103] = 'Feral Combat',
-		[104] = 'Guardian',
-		[105] = 'Restoration',
-	},
-	[12] = { -- Demon Hunter
-		[577] = 'Havoc',
-		[581] = 'Vengeance',
-	}
-}
-
 -- Register CRs
+local ClassTable = NeP.Core.ClassTable
 function Engine.registerRotation(SpecID, CrName, InCombat, outCombat, initFunc)
-	-- Only Load Crs for our current class (saves memory)
-	local Spec = GetSpecialization() or 0
-	local SpecInfo = GetSpecializationInfo(Spec)
-	local localizedClass, englishClass, classIndex = UnitClass('player')
-	if ListClassSpec[tonumber(classIndex)][tonumber(SpecID)]
-	or ListClassSpec[tonumber(SpecID)] then
-		-- If SpecID Table is not created yet, create one.
+	local _,_, classIndex = UnitClass('player')
+	if ClassTable[classIndex][SpecID] or ClassTable[SpecID] then
 		if Engine.Rotations[SpecID] == nil then Engine.Rotations[SpecID] = {} end
-		-- In case someone tries to load a cr with the same name of a existing one
-		local TableName = CrName
-		if Engine.Rotations[SpecID][CrName] then TableName = CrName..'_'..math.random(0,1000) end
-		-- Create CR table
-		Engine.Rotations[SpecID][TableName] = { 
+		Engine.Rotations[SpecID][CrName] = { 
 			[true] = InCombat,
 			[false] = outCombat,
 			['InitFunc'] = initFunc or (function() return end),

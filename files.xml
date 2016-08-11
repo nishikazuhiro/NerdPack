@@ -36,6 +36,7 @@
 
 	<!-- Core Files -->
 	<Script file="interface\debug.lua" />
+	<Script file="system\classindex.lua" />
 	<Script file="system\config.lua" />
 	<Script file="system\timeout.lua" />
 	<Script file="system\listener.lua" />

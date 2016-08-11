@@ -3,7 +3,7 @@ NeP = {
 		Name = 'NerdPack',
 		Nick = 'NeP',
 		Author = 'MrTheSoulz',
-		Version = 70.4,
+		Version = 70.5,
 		Branch = 'Release',
 	},
 	Interface = {
@@ -101,20 +101,6 @@ function NeP.Core.Round(num, idp)
 		return math.floor(num * mult + 0.5) / mult
 	else
 		return 0
-	end
-end
-
-local _rangeTable = {
-	['melee'] = 1.5,
-	['ranged'] = 40,
-}
-
-function NeP.Core.UnitAttackRange(unitA, unitB, _type)
-	if IsHackEnabled then
-		return _rangeTable[_type] + UnitCombatReach(unitA) + UnitCombatReach(unitB)
-	else
-		-- Unlockers wich dont have UnitCombatReach like functions...
-		return _rangeTable[_type] + 3.5
 	end
 end
 
