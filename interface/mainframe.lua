@@ -217,13 +217,6 @@ local function createButtons(key, icon, name, tooltip, func)
 			htex:SetColorTexture(NeP.Core.classColor('player', 'RBG', 0.65))
 			htex:SetAllPoints()
 			temp:SetCheckedTexture(htex)
-		else
-			local htex = temp:CreateTexture()
-			htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-			htex:SetTexCoord(0, 0.625, 0, 0.6875)
-			htex:SetAllPoints()
-			temp:SetHighlightTexture(htex)
-			temp:SetPushedTexture(htex)
 		end
 		temp.actv = Config.Read('bStates_'..key, false)
 		temp:SetChecked(temp.actv)
