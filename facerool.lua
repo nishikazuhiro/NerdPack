@@ -101,6 +101,18 @@ function NeP.Engine.FaceRoll()
 		return true
 	end
 
+	local _rangeTable = {
+		['melee'] = 1.5,
+		['ranged'] = 40,
+	}
+
+	function Engine.UnitAttackRange(unitA, unitB, rType)
+		if rType then
+			return _rangeTable[rType] + 3.5
+		end
+		return 0
+	end
+
 	--[[				Generic OM
 	---------------------------------------------------]]
 	local function GenericFilter(unit)

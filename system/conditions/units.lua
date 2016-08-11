@@ -256,11 +256,11 @@ RegisterConditon("class", function (target, expectedClass)
 end)
 
 NeP.DSL.RegisterConditon("inMelee", function(target)
-	return NeP.Core.UnitAttackRange('player', target, 'melee')
+	return NeP.Engine.UnitAttackRange('player', target, 'melee')
 end)
 
 NeP.DSL.RegisterConditon("inRanged", function(target)
-	return NeP.Core.UnitAttackRange('player', target, 'ranged')
+	return NeP.Engine.UnitAttackRange('player', target, 'ranged')
 end)
 
 NeP.DSL.RegisterConditon("power.regen", function(target)
