@@ -25,6 +25,10 @@ NeP.MFrame = {
 	Plugins = {},
 	nSettings = {
 		{
+			name = 'Move '..NeP.Info.Name,
+			func = function() NePfDrag:Show() end
+		},
+		{
 			name = TA('mainframe', 'OM'),
 			func = function() NeP.OM.List:Show() end
 		},
@@ -57,59 +61,6 @@ if IsAddOnLoaded("ElvUI") then
 	ElvSkin = E:GetModule('ActionBars')
 	NeP.MFrame.buttonPadding = 2
 	NeP.MFrame.buttonSize = 32
-end
-
--- These are the default toggles.
-local function defaultToggles()
-	Intf.CreateToggle('MasterToggle', 'Interface\\ICONS\\Ability_repair.png', 'MasterToggle', TA('mainframe', 'MasterToggle'), function(self) NeP.FaceRoll:Hide() end)
-	Intf.CreateToggle('Interrupts', 'Interface\\ICONS\\Ability_Kick.png', 'Interrupts', TA('mainframe', 'Interrupts'))
-	Intf.CreateToggle('Cooldowns', 'Interface\\ICONS\\Achievement_BG_winAB_underXminutes.png', 'Cooldowns', TA('mainframe', 'Cooldowns'))
-	Intf.CreateToggle('AoE', 'Interface\\ICONS\\Ability_Druid_Starfall.png', 'AoE', TA('mainframe', 'AoE'))
-end
-
-Intf.CreateSetting = function(name, func)
-	NeP.MFrame.Settings[#NeP.MFrame.Settings+1] = {
-		name = name,
-		func = func
-	}
-end
-
-Intf.CreatePlugin = function(name, func)
-	NeP.MFrame.Plugins[#NeP.MFrame.Plugins+1] = {
-		name = tostring(name),
-		func = func
-	}
-end
---[[FIXME
-Intf.RemovePlugin = function(name, func)
-	NeP.MFrame.Plugins[tostring(name)] = nil
-end]]
-
-Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
-	func = function(self)
-		if callback then
-			callback(self)
-		end
-		self.actv = not self.actv
-		self:SetChecked(self.actv)
-		Config.Write('bStates_'..string.lower(key), self.actv)
-	end
-	NeP.MFrame.Buttons[#NeP.MFrame.Buttons+1] = {
-		key = string.lower(key),
-		name = tostring(name),
-		tooltip = tooltipz,
-		icon = icon,
-		func = func
-	}
-	Intf.RefreshToggles()
-end
-
-Intf.toggleToggle = function(key)
-	local key = string.lower(key)
-	button = _G[key]
-	button.actv = not button.actv
-	button:SetChecked(button.actv)
-	Config.Write('bStates_'..key, button.actv)	Intf.RefreshToggles()
 end
 
 local function LoadCrs(info)
@@ -146,6 +97,124 @@ local function LoadCrs(info)
 	UIDropDownMenu_AddButton(info)
 end
 
+local function dropdown(self)
+	local info = UIDropDownMenu_CreateInfo()
+	-- Routines
+	info.isTitle = 1
+	info.notCheckable = 1
+	info.text = 'Combat Routines:'
+	UIDropDownMenu_AddButton(info)
+	LoadCrs(info)
+	-- Settings
+	info.isTitle = 1
+	info.notCheckable = 1
+	info.text = 'CR Settings:'
+	UIDropDownMenu_AddButton(info)
+	local stTable = {{name = 'Cant find any CR setting...', func = function() end}}
+	if #NeP.MFrame.Settings > 0 then stTable = NeP.MFrame.Settings end
+	for i=1, #stTable do
+		local v = stTable[i]
+		info = UIDropDownMenu_CreateInfo()
+		info.text = v.name
+		info.value = v.name
+		info.func = v.func
+		info.notCheckable = 1
+		UIDropDownMenu_AddButton(info)
+	end
+	-- Plugins
+	info.isTitle = 1
+	info.notCheckable = 1
+	info.text = 'Plugins:'
+	UIDropDownMenu_AddButton(info)
+	local pgTable = {{name = 'Cant find any Plugin...', func = function() end}}
+	if #NeP.MFrame.Plugins > 0 then pgTable = NeP.MFrame.Plugins end
+	for i=1, #pgTable do
+		local v = pgTable[i]
+		info = UIDropDownMenu_CreateInfo()
+		info.text = v.name
+		info.value = v.name
+		info.func = v.func
+		info.notCheckable = 1
+		UIDropDownMenu_AddButton(info)
+	end
+	-- NeP Settings
+	info.isTitle = 1
+	info.notCheckable = 1
+	info.text = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
+	UIDropDownMenu_AddButton(info)
+	for i=1, #NeP.MFrame.nSettings do
+		local v = NeP.MFrame.nSettings[i]
+		info = UIDropDownMenu_CreateInfo()
+		info.text = v.name
+		info.value = v.name
+		info.func = v.func
+		info.notCheckable = 1
+		UIDropDownMenu_AddButton(info)
+	end
+end
+
+-- These are the default toggles.
+local function defaultToggles()
+	Intf.CreateToggle('MasterToggle',
+		'Interface\\ICONS\\Ability_repair.png',
+		'MasterToggle',
+		TA('mainframe','MasterToggle'),
+		function(self, button) 
+		if button == "RightButton" then
+			local ST_Dropdown = CreateFrame("Frame", "ST_Dropdown", self, "UIDropDownMenuTemplate");
+			UIDropDownMenu_Initialize(ST_Dropdown, dropdown, "MENU");
+			ToggleDropDownMenu(1, nil, ST_Dropdown, self, 0, 0);
+		end
+		NeP.FaceRoll:Hide()
+	end)
+	Intf.CreateToggle('Interrupts', 'Interface\\ICONS\\Ability_Kick.png', 'Interrupts', TA('mainframe', 'Interrupts'))
+	Intf.CreateToggle('Cooldowns', 'Interface\\ICONS\\Achievement_BG_winAB_underXminutes.png', 'Cooldowns', TA('mainframe', 'Cooldowns'))
+	Intf.CreateToggle('AoE', 'Interface\\ICONS\\Ability_Druid_Starfall.png', 'AoE', TA('mainframe', 'AoE'))
+end
+
+Intf.CreateSetting = function(name, func)
+	NeP.MFrame.Settings[#NeP.MFrame.Settings+1] = {
+		name = name,
+		func = func
+	}
+end
+
+Intf.CreatePlugin = function(name, func)
+	NeP.MFrame.Plugins[#NeP.MFrame.Plugins+1] = {
+		name = tostring(name),
+		func = func
+	}
+end
+
+Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
+	func = function(self, button)
+		if callback then
+			callback(self, button)
+		end
+		if button == "LeftButton" then
+			self.actv = not self.actv
+			Config.Write('bStates_'..string.lower(key), self.actv)
+		end
+		self:SetChecked(self.actv)
+	end
+	NeP.MFrame.Buttons[#NeP.MFrame.Buttons+1] = {
+		key = string.lower(key),
+		name = tostring(name),
+		tooltip = tooltipz,
+		icon = icon,
+		func = func
+	}
+	Intf.RefreshToggles()
+end
+
+Intf.toggleToggle = function(key)
+	local key = string.lower(key)
+	button = _G[key]
+	button.actv = not button.actv
+	button:SetChecked(button.actv)
+	Config.Write('bStates_'..key, button.actv)	Intf.RefreshToggles()
+end
+
 local function createButtons(key, icon, name, tooltip, func)
 	if NeP.MFrame.usedButtons[key] ~= nil then
 		NeP.MFrame.usedButtons[key]:Show()
@@ -153,14 +222,13 @@ local function createButtons(key, icon, name, tooltip, func)
 		local pos = (NeP.MFrame.buttonSize*#NeP.MFrame.Buttons)+(#NeP.MFrame.Buttons*NeP.MFrame.buttonPadding)-(NeP.MFrame.buttonSize+NeP.MFrame.buttonPadding)
 		NeP.MFrame.usedButtons[key] = CreateFrame("CheckButton", key, NePFrame, 'ActionButtonTemplate')
 		local temp = NeP.MFrame.usedButtons[key]
-		temp:SetPoint("TOPLEFT", NePFrame, pos, -( NePFrame.TF:GetHeight() ))
+		temp:SetPoint("TOPLEFT", NePFrame, pos, 0)
 		temp:SetSize(NeP.MFrame.buttonSize, NeP.MFrame.buttonSize)
-		temp:SetFrameLevel(3)
+		temp:SetFrameLevel(1)
 		temp:SetNormalFontObject("GameFontNormal")
 		temp.texture = temp:CreateTexture()
 		temp.texture:SetTexture(icon)
 		temp.texture:SetAllPoints()
-
 		if ElvSkin then
 			ElvSkin.db = E.db.actionbar
 			temp.texture:SetTexCoord(.08, .92, .08, .92)
@@ -180,10 +248,11 @@ local function createButtons(key, icon, name, tooltip, func)
 		end
 		temp.actv = Config.Read('bStates_'..key, false)
 		temp:SetChecked(temp.actv)
+		temp:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 		temp:SetScript("OnClick", func)
 		temp:SetScript("OnEnter", function(self)
 			GameTooltip:SetOwner(self, "ANCHOR_TOP")
-			GameTooltip:AddLine("|cffffffff"..name..' '..(self.actv and '|cff08EE00'..TA('Any', 'ON') or '|cffFF0000'..TA('Any', 'OFF')).."|r")
+			GameTooltip:AddLine("|cffFFFFFF"..name..' '..(self.actv and '|cff08EE00'..TA('Any', 'ON') or '|cffFF0000'..TA('Any', 'OFF')).."|r")
 			if tooltip then
 				GameTooltip:AddLine(tooltip)
 			end
@@ -196,20 +265,14 @@ end
 
 -- Refresh Toggles
 Intf.RefreshToggles = function()
-	-- Update Sizes
-	--local testU = #NeP.MFrame.Buttons+1
 	for k,v in pairs(NeP.MFrame.usedButtons) do
-		--testU = testU-1
 		NeP.MFrame.usedButtons[k]:SetSize(NeP.MFrame.buttonSize, NeP.MFrame.buttonSize)
-		--local pos = (NeP.MFrame.buttonSize*testU)+(testU*NeP.MFrame.buttonPadding)-(NeP.MFrame.buttonSize+NeP.MFrame.buttonPadding)
-		--NeP.MFrame.usedButtons[k]:SetPoint("TOPLEFT", NePFrame, pos, -(NePFrame.TF:GetHeight()))
 	end
-	-- Create buttons
 	for k,v in pairs(NeP.MFrame.Buttons) do
 		createButtons( v.key, v.icon, v.name, v.tooltip, v.func )
 	end
-	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), NeP.MFrame.buttonSize+NePFrame.TF:GetHeight())
-	NePFrame.TF:SetPoint('TOP', NePFrame, 0, 0)
+	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), NeP.MFrame.buttonSize)
+	NePfDrag:SetSize((#NeP.MFrame.Buttons-1)*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), 40)
 end
 
 Intf.ResetSettings = function()
@@ -217,12 +280,10 @@ Intf.ResetSettings = function()
 end
 
 Intf.ResetToggles = function()
-	--hide toggles
 	for k,v in pairs(NeP.MFrame.usedButtons) do
 		NeP.MFrame.usedButtons[k]:Hide()
 	end
 	wipe(NeP.MFrame.Buttons)
-	--Create defaults
 	defaultToggles()
 end
 
@@ -243,139 +304,42 @@ function Config.CreateMainFrame()
 	NePFrame = CreateFrame("Frame", "NePFrame", UIParent)
 	NePFrame:SetPoint(POS_1, POS_2, POS_3)
 	NePFrame:SetMovable(true)
-	NePFrame:EnableMouse(true)
-	NePFrame:RegisterForDrag('LeftButton')
-	NePFrame:SetScript('OnDragStart', NePFrame.StartMoving)
-	NePFrame:SetScript('OnDragStop', function(self)
-		local from, _, to, x, y = self:GetPoint()
-		self:StopMovingOrSizing()
-		Config.Write('NePFrame_POS_1', from)
-		Config.Write('NePFrame_POS_2', x)
-		Config.Write('NePFrame_POS_3', y)
-	end)
 	NePFrame:SetFrameLevel(0)
 	NePFrame:SetFrameStrata('HIGH')
 	NePFrame:SetClampedToScreen(true)
+	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize, NeP.MFrame.buttonSize)
 
-	-- Tittle
-	NePFrame.TF = CreateFrame("Frame", nil, NePFrame)
-	NePFrame.TF:SetFrameLevel(1)
-	NePFrame.TF.TT = NePFrame.TF:CreateFontString(nil, "OVERLAY")
-	NePFrame.TF.TT:SetPoint('RIGHT', NePFrame.TF, -4, 0)
-	NePFrame.TF.TT:SetFont('Fonts\\FRIZQT__.TTF', 17)
-	NePFrame.TF.TT:SetText(Tittle)
-	NePFrame.TF.TT:SetTextColor(1,1,1,1)
-	if ElvSkin then
-		NePFrame.TF:CreateBackdrop('Default')
-		NePFrame.TF:SetSize(NePFrame.TF.TT:GetStringWidth()+33, NePFrame.TF.TT:GetStringHeight())
-	else
-		NePFrame.TF:SetBackdrop({
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-			tile = true, tileSize = 16, edgeSize = 16,
-			insets = { left = 4, right = 4, top = 4, bottom = 4 }});
-		NePFrame.TF:SetBackdropColor(0,0,0,1);
-		NePFrame.TF:SetSize(NePFrame.TF.TT:GetStringWidth()+33, NePFrame.TF.TT:GetStringHeight()+4)
-	end
-	NePFrame.TF:SetPoint('TOP', NePFrame, 0, 0)
-	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize, NeP.MFrame.buttonSize+NePFrame.TF.TT:GetStringHeight())
-
-	local function STDR_initialize(self)
-		local info = UIDropDownMenu_CreateInfo()
-		-- Routines
-		info.isTitle = 1
-		info.notCheckable = 1
-		info.text = 'Combat Routines:'
-		UIDropDownMenu_AddButton(info)
-		LoadCrs(info)
-		-- Settings
-		info.isTitle = 1
-		info.notCheckable = 1
-		info.text = 'CR Settings:'
-		UIDropDownMenu_AddButton(info)
-		local stTable = {{name = 'Cant find any CR setting...', func = function() end}}
-		if #NeP.MFrame.Settings > 0 then stTable = NeP.MFrame.Settings end
-		for i=1, #stTable do
-			local v = stTable[i]
-			info = UIDropDownMenu_CreateInfo()
-			info.text = v.name
-			info.value = v.name
-			info.func = v.func
-			info.notCheckable = 1
-			UIDropDownMenu_AddButton(info)
-		end
-		-- Plugins
-		info.isTitle = 1
-		info.notCheckable = 1
-		info.text = 'Plugins:'
-		UIDropDownMenu_AddButton(info)
-		local pgTable = {{name = 'Cant find any Plugin...', func = function() end}}
-		if #NeP.MFrame.Plugins > 0 then pgTable = NeP.MFrame.Plugins end
-		for i=1, #pgTable do
-			local v = pgTable[i]
-			info = UIDropDownMenu_CreateInfo()
-			info.text = v.name
-			info.value = v.name
-			info.func = v.func
-			info.notCheckable = 1
-			UIDropDownMenu_AddButton(info)
-		end
-		-- NeP Settings
-		info.isTitle = 1
-		info.notCheckable = 1
-		info.text = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
-		UIDropDownMenu_AddButton(info)
-		for i=1, #NeP.MFrame.nSettings do
-			local v = NeP.MFrame.nSettings[i]
-			info = UIDropDownMenu_CreateInfo()
-			info.text = v.name
-			info.value = v.name
-			info.func = v.func
-			info.notCheckable = 1
-			UIDropDownMenu_AddButton(info)
-		end
-	end
-	local function STDR_onClick(self, button)
-		local ST_Dropdown = CreateFrame("Frame", "ST_Dropdown", self, "UIDropDownMenuTemplate");
-		UIDropDownMenu_Initialize(ST_Dropdown, STDR_initialize, "MENU");
-		ToggleDropDownMenu(1, nil, ST_Dropdown, self, 0, 0);
-	end
-	local ST_DB = CreateFrame("Button", nil, NePFrame.TF)
-	ST_DB:SetPoint("LEFT", NePFrame.TF, 0, 0)
-	ST_DB:SetFrameLevel(2)
-	ST_DB:SetText(Logo)
-	ST_DB:SetNormalFontObject("GameFontNormal")
-	ST_DB:SetScript("OnClick", func)
-	if ElvSkin then
-		local texture = ST_DB:CreateTexture()
-		texture:SetColorTexture(0, 0, 0, 0.75)
-		texture:SetAllPoints()
-		ST_DB:SetSize(25, NePFrame.TF.TT:GetStringHeight())
-	else
-		ST_DB:SetBackdrop({
-			bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-			tile = true, tileSize = 16, edgeSize = 16,
-			insets = { left = 4, right = 4, top = 4, bottom = 4 }});
-		ST_DB:SetBackdropColor(0,0,0,1);
-		ST_DB:SetSize(25, NePFrame.TF.TT:GetStringHeight()+4)
-	end
-	local htex = ST_DB:CreateTexture()
-	htex:SetTexture("Interface/Buttons/UI-Panel-Button-Highlight")
-	htex:SetTexCoord(0, 0.625, 0, 0.6875)
-	htex:SetAllPoints()
-	ST_DB:SetNormalTexture(ntex)
-	ST_DB:SetHighlightTexture(htex)
-	ST_DB:SetPushedTexture(htex)
-	ST_DB:RegisterForClicks('anyUp')
-	ST_DB:RegisterForDrag('LeftButton', 'RightButton')
-	ST_DB:SetScript('OnClick', STDR_onClick)
-	ST_DB:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_TOP")
-		GameTooltip:AddLine('|cffffffff'..TA('mainframe', 'Settings')..'|r')
-		GameTooltip:Show()
+	NePfDrag = CreateFrame("Frame", 'MOVENEP', NePFrame)
+	NePfDrag:SetPoint('Right', NePFrame)
+	NePfDrag:SetFrameLevel(2)
+	NePfDrag:EnableMouse(true)
+	local statusText = NePfDrag:CreateFontString('PE_StatusText')
+	statusText:SetFont("Fonts\\ARIALN.TTF", 16)
+	statusText:SetShadowColor(0,0,0, 0.8)
+	statusText:SetShadowOffset(-1,-1)
+	statusText:SetPoint("CENTER", NePfDrag)
+	statusText:SetText("|cffffffffDRAG ME!|r")
+	local texture = NePfDrag:CreateTexture()
+	texture:SetAllPoints(NePfDrag)
+	texture:SetColorTexture(0,0,0,0.9)
+	NePfDrag:SetSize((#NeP.MFrame.Buttons-1)*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), 40)
+	NePfDrag:RegisterForDrag('LeftButton', 'RightButton')
+	NePfDrag:SetScript('OnDragStart', function() NePFrame:StartMoving() end)
+	NePfDrag:SetScript('OnDragStop', function(self)
+		local from, _, to, x, y = NePFrame:GetPoint()
+		NePFrame:StopMovingOrSizing()
+		Config.Write('NePFrame_POS_1', from)
+		Config.Write('NePFrame_POS_2', x)
+		Config.Write('NePFrame_POS_3', y)
+		NePfDrag:Hide()
 	end)
-	ST_DB:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
+	NePfDrag:Hide()
+
+	-- Show on 1st run
+	if not Config.Read('NePranOnce', false) then
+		NePfDrag:Show()
+		Config.Write('NePranOnce', true)
+	end
 
 	defaultToggles()
 

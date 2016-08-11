@@ -5,7 +5,7 @@ NeP.Locale['enUS'] = {
 		['OFF'] = 'OFF'
 	},
 	['mainframe'] = {
-		['MasterToggle'] = 'Start/Stop Combat Routines',
+		['MasterToggle'] = 'Right Click: Enable/Disable\nLeft Click: Open Settings',
 		['Interrupts'] = 'Toggle Interrupts ON or OFF',
 		['Cooldowns'] = 'Toggle Cooldowns ON or OFF',
 		['AoE'] = 'Toggle AoE ON or OFF',
