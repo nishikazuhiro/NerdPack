@@ -97,6 +97,14 @@ local function LoadCrs(info)
 	UIDropDownMenu_AddButton(info)
 end
 
+local ntest = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
+
+local stD = {
+	['CR Settings:'] = NeP.MFrame.Settings,
+	['Modules:'] = NeP.MFrame.Plugins,
+	[ntest] = NeP.MFrame.nSettings
+}
+
 local function dropdown(self)
 	local info = UIDropDownMenu_CreateInfo()
 	-- Routines
@@ -105,51 +113,22 @@ local function dropdown(self)
 	info.text = 'Combat Routines:'
 	UIDropDownMenu_AddButton(info)
 	LoadCrs(info)
-	-- Settings
-	info.isTitle = 1
-	info.notCheckable = 1
-	info.text = 'CR Settings:'
-	UIDropDownMenu_AddButton(info)
-	local stTable = {{name = 'Cant find any CR setting...', func = function() end}}
-	if #NeP.MFrame.Settings > 0 then stTable = NeP.MFrame.Settings end
-	for i=1, #stTable do
-		local v = stTable[i]
-		info = UIDropDownMenu_CreateInfo()
-		info.text = v.name
-		info.value = v.name
-		info.func = v.func
+	for k,v in pairs(stD) do
+		info.isTitle = 1
 		info.notCheckable = 1
+		info.text = k
 		UIDropDownMenu_AddButton(info)
-	end
-	-- Plugins
-	info.isTitle = 1
-	info.notCheckable = 1
-	info.text = 'Plugins:'
-	UIDropDownMenu_AddButton(info)
-	local pgTable = {{name = 'Cant find any Plugin...', func = function() end}}
-	if #NeP.MFrame.Plugins > 0 then pgTable = NeP.MFrame.Plugins end
-	for i=1, #pgTable do
-		local v = pgTable[i]
-		info = UIDropDownMenu_CreateInfo()
-		info.text = v.name
-		info.value = v.name
-		info.func = v.func
-		info.notCheckable = 1
-		UIDropDownMenu_AddButton(info)
-	end
-	-- NeP Settings
-	info.isTitle = 1
-	info.notCheckable = 1
-	info.text = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
-	UIDropDownMenu_AddButton(info)
-	for i=1, #NeP.MFrame.nSettings do
-		local v = NeP.MFrame.nSettings[i]
-		info = UIDropDownMenu_CreateInfo()
-		info.text = v.name
-		info.value = v.name
-		info.func = v.func
-		info.notCheckable = 1
-		UIDropDownMenu_AddButton(info)
+		if #v > 0 then
+			for i=1, #v do
+				local v = v[i]
+				info = UIDropDownMenu_CreateInfo()
+				info.text = v.name
+				info.value = v.name
+				info.func = v.func
+				info.notCheckable = 1
+				UIDropDownMenu_AddButton(info)
+			end
+		end
 	end
 end
 
