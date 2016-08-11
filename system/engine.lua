@@ -212,7 +212,6 @@ local function Cast(spell, target)
 end
 
 local function checkTarget(spell, target)
-	local ground = Engine.isGroundSpell
 	local target = target
 	-- decide a target
 	if type(target) == 'nil' then
@@ -228,13 +227,13 @@ local function checkTarget(spell, target)
 	end
 	-- Ground target
 	if string.sub(target, -7) == '.ground' then
-		ground = true
+		Engine.isGroundSpell = true
 		target = string.sub(target, 0, -8)
 	end
 	-- Fake Target
 	target = NeP.Engine.FilterUnit(target)
 	-- Sanity Checks
-	if ground and target == 'mouseover' then
+	if Engine.isGroundSpell and target == 'mouseover' then
 		return target
 	elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 		return
