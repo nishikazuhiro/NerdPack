@@ -329,14 +329,14 @@ function Engine.Parse(table)
 			if NeP.DSL.parse(conditions, spell) then
 				Debug('Engine', 'Passed conditions')
 				if pause then
-					break
+					return true
 				elseif tP == 'table' then
 					Debug('Engine', 'Hit Table')
-					Engine.Parse(spell)
+					if Engine.Parse(spell) then return true end
 				elseif tP == 'function' then
 					Debug('Engine', 'Hit Function')
 					spell()
-					break
+					return true
 				elseif tP == 'string' then
 					Debug('Engine', 'Hit String')
 					local target = checkTarget(spell, target)
@@ -355,23 +355,23 @@ function Engine.Parse(table)
 								if itemStart == 0 and GetItemCount(item) > 0 then
 									insertToLog('Item', item, target)
 									Engine.UseItem(item, target)
-									break
+									return true
 								end
 							end
 						elseif pX == '@' then
 							local lib = string.sub(spell, 2);
 							NeP.library.parse(false, spell, lib)
-							break
+							return true
 						elseif pX == '/' then
 							Engine.Macro(spell)
-							break
+							return true
 						else
 							Debug('Engine', 'Hit Regular')
 							local spell = castSanityCheck(spell)
 							if spell then
 								if sI then SpellStopCasting() end
 								Cast(spell, target)
-								break
+								return true
 							end
 						end
 					end
