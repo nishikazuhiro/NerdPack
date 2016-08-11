@@ -21,7 +21,9 @@ NeP.MFrame = {
 	buttonSize = 40,
 	Buttons = {},
 	usedButtons = {},
-	dSettings = {
+	Settings = {},
+	Plugins = {},
+	nSettings = {
 		{
 			name = TA('mainframe', 'OM'),
 			func = function() NeP.OM.List:Show() end
@@ -31,24 +33,20 @@ NeP.MFrame = {
 			func = function() PE_ActionLog:Show() end
 		},
 		{
-			name = TA('mainframe', 'HideNeP'),
-			func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end
-		},
-		{
-			name = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'),
-			func = function() NeP.Interface.ShowGUI('NePSettings') end
-		}
-	},
-	Settings = {},
-	Plugins = {},
-	About = {
-		{
 			name = TA('mainframe', 'Forum'),
 			func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end
 		},
 		{
+			name = TA('mainframe', 'HideNeP'),
+			func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end
+		},
+		{
 			name = TA('mainframe', 'Donate'),
 			func = function() OpenPage('http://goo.gl/yrctPO') end
+		},
+		{
+			name = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'),
+			func = function() NeP.Interface.ShowGUI('NePSettings') end
 		}
 	}
 }
@@ -71,25 +69,21 @@ end
 
 Intf.CreateSetting = function(name, func)
 	NeP.MFrame.Settings[#NeP.MFrame.Settings+1] = {
-		name = tostring(name),
+		name = name,
 		func = func
 	}
-end
-
-Intf.ResetSettings = function()
-	wipe(NeP.MFrame.Settings)
 end
 
 Intf.CreatePlugin = function(name, func)
-	NeP.MFrame.Plugins[tostring(name)] = {
+	NeP.MFrame.Plugins[#NeP.MFrame.Plugins+1] = {
 		name = tostring(name),
 		func = func
 	}
 end
-
+--[[FIXME
 Intf.RemovePlugin = function(name, func)
 	NeP.MFrame.Plugins[tostring(name)] = nil
-end
+end]]
 
 Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
 	func = function(self)
@@ -218,7 +212,10 @@ Intf.RefreshToggles = function()
 	NePFrame.TF:SetPoint('TOP', NePFrame, 0, 0)
 end
 
--- Reset Toggles
+Intf.ResetSettings = function()
+	wipe(NeP.MFrame.Settings)
+end
+
 Intf.ResetToggles = function()
 	--hide toggles
 	for k,v in pairs(NeP.MFrame.usedButtons) do
@@ -294,19 +291,12 @@ function Config.CreateMainFrame()
 		-- Settings
 		info.isTitle = 1
 		info.notCheckable = 1
-		info.text = 'Settings:'
+		info.text = 'CR Settings:'
 		UIDropDownMenu_AddButton(info)
-		for i=1, #NeP.MFrame.Settings do
-			local v = NeP.MFrame.Settings[i]
-			info = UIDropDownMenu_CreateInfo()
-			info.text = v.name
-			info.value = v.name
-			info.func = v.func
-			info.notCheckable = 1
-			UIDropDownMenu_AddButton(info)
-		end
-		for i=1, #NeP.MFrame.dSettings do
-			local v = NeP.MFrame.dSettings[i]
+		local stTable = {{name = 'Cant find any CR setting...', func = function() end}}
+		if #NeP.MFrame.Settings > 0 then stTable = NeP.MFrame.Settings end
+		for i=1, #stTable do
+			local v = stTable[i]
 			info = UIDropDownMenu_CreateInfo()
 			info.text = v.name
 			info.value = v.name
@@ -319,8 +309,10 @@ function Config.CreateMainFrame()
 		info.notCheckable = 1
 		info.text = 'Plugins:'
 		UIDropDownMenu_AddButton(info)
-		local pluginsTable = NeP.MFrame.Plugins or { ['Cant find any Plugin...'] = '' }
-		for k,v in pairs(pluginsTable) do
+		local pgTable = {{name = 'Cant find any Plugin...', func = function() end}}
+		if #NeP.MFrame.Plugins > 0 then pgTable = NeP.MFrame.Plugins end
+		for i=1, #pgTable do
+			local v = pgTable[i]
 			info = UIDropDownMenu_CreateInfo()
 			info.text = v.name
 			info.value = v.name
@@ -328,13 +320,13 @@ function Config.CreateMainFrame()
 			info.notCheckable = 1
 			UIDropDownMenu_AddButton(info)
 		end
-		-- About
+		-- NeP Settings
 		info.isTitle = 1
 		info.notCheckable = 1
 		info.text = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
 		UIDropDownMenu_AddButton(info)
-		for i=1, #NeP.MFrame.About do
-			local v = NeP.MFrame.About[i]
+		for i=1, #NeP.MFrame.nSettings do
+			local v = NeP.MFrame.nSettings[i]
 			info = UIDropDownMenu_CreateInfo()
 			info.text = v.name
 			info.value = v.name
