@@ -206,6 +206,19 @@ OMListGUI.frame:SetSize(500, 250)
 OMListGUI.frame:SetMinResize(500, 250)
 OMListGUI:SetTitle('ObjectManager GUI')
 OMListGUI.frame:SetClampedToScreen(true)
+OMListGUI:SetEventListener('OnDragStop', function(self, event, left, top)
+	NeP.Config.Write('OML_window', {left, top})
+end)
+
+function NeP.Config.CreateOMFrame(  )
+	local left, top = unpack(NeP.Config.Read('OML_window', {false, false}))
+	if left and top then
+		OMListGUI.settings.left = left
+		OMListGUI.settings.top = top
+		OMListGUI:UpdatePosition()
+	end
+end
+
 OMListGUI:Hide()
 
 local bt = {
