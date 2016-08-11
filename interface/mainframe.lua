@@ -114,11 +114,11 @@ local function dropdown(self)
 	UIDropDownMenu_AddButton(info)
 	LoadCrs(info)
 	for k,v in pairs(stD) do
-		info.isTitle = 1
-		info.notCheckable = 1
-		info.text = k
-		UIDropDownMenu_AddButton(info)
 		if #v > 0 then
+			info.isTitle = 1
+			info.notCheckable = 1
+			info.text = k
+			UIDropDownMenu_AddButton(info)
 			for i=1, #v do
 				local v = v[i]
 				info = UIDropDownMenu_CreateInfo()
