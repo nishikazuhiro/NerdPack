@@ -20,6 +20,7 @@ NeP.Listener.register("PLAYER_LOGIN", function(...)
 	-- Execute Inits
 	NeP.Config.CreateMainFrame()
 	NeP.Config.CreateSettingsFrame()
+	NeP.Config.CreateOMFrame()
 	NeP.Core.updateSpec()
 	NeP.Listener.register("PLAYER_SPECIALIZATION_CHANGED", function(unitID)
 		if unitID == 'player' then
