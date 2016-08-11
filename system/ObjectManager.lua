@@ -208,29 +208,21 @@ OMListGUI:SetTitle('ObjectManager GUI')
 OMListGUI.frame:SetClampedToScreen(true)
 OMListGUI:Hide()
 
-local bt1 = DiesalGUI:Create("Button")
-OMListGUI:AddChild(bt1)
-bt1:SetParent(OMListGUI.content)
-bt1:SetPoint("TOPLEFT", OMListGUI.content, "TOPLEFT", 0, 0)
-bt1.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
-bt1:AddStyleSheet(buttonStyleSheet)
-bt1:SetEventListener("OnClick", function() tOM = NeP.OM.unitEnemie end)
+local bt = {
+	['ENEMIE'] = {a = 'TOPLEFT', b = NeP.OM.unitEnemie},
+	['FRIENDLY'] = {a = 'TOP', b = NeP.OM.unitFriend},
+	['OBJECTS'] = {a = 'TOPRIGHT', b = NeP.OM.GameObjects}
+}
 
-local bt2 = DiesalGUI:Create("Button")
-OMListGUI:AddChild(bt2)
-bt2:SetParent(OMListGUI.content)
-bt2:SetPoint("TOP", OMListGUI.content, "TOP", 0, 0)
-bt2.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
-bt2:AddStyleSheet(buttonStyleSheet)
-bt2:SetEventListener("OnClick", function() tOM = NeP.OM.unitFriend end)
-
-local bt3 = DiesalGUI:Create("Button")
-OMListGUI:AddChild(bt3)
-bt3:SetParent(OMListGUI.content)
-bt3:SetPoint("TOPRIGHT", OMListGUI.content, "TOPRIGHT", 0, 0)
-bt3.frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
-bt3:AddStyleSheet(buttonStyleSheet)
-bt3:SetEventListener("OnClick", function() tOM = NeP.OM.GameObjects end)
+for k,v in pairs(bt) do
+	bt[k] = DiesalGUI:Create("Button")
+	OMListGUI:AddChild(bt1)
+	bt[k]:SetParent(OMListGUI.content)
+	bt[k]:SetPoint(v.a, OMListGUI.content, v.a, 0, 0)
+	bt[k].frame:SetSize(OMListGUI.content:GetWidth()/3, 30)
+	bt[k]:AddStyleSheet(buttonStyleSheet)
+	bt[k]:SetEventListener("OnClick", function() tOM = v.b end)
+end
 
 local ListWindow = DiesalGUI:Create('ScrollFrame')
 OMListGUI:AddChild(ListWindow)
@@ -299,8 +291,8 @@ C_Timer.NewTicker(0.25, (function()
 	-- UPDATE GUI
 	if NeP.OM.List:IsShown() then 
 		RefreshGUI()
-		bt1:SetText('ENEMIE ('..#NeP.OM.unitEnemie..')')
-		bt2:SetText('FRIENDLY ('..#NeP.OM.unitFriend..')')
-		bt3:SetText('OBJECTS ('..#NeP.OM.GameObjects..')')
+		bt['ENEMIE']:SetText('ENEMIE ('..#NeP.OM.unitEnemie..')')
+		bt['FRIENDLY']:SetText('FRIENDLY ('..#NeP.OM.unitFriend..')')
+		bt['OBJECTS']:SetText('OBJECTS ('..#NeP.OM.GameObjects..')')
 	end
 end), nil)
