@@ -11,7 +11,7 @@ NeP.Locale['ptBR'] = {
 		['OFF'] = 'DESLIGADO'
 	},
 	['mainframe'] = {
-		['MasterToggle'] = 'Começar/Parar Rotinas de combate',
+		['MasterToggle'] = 'Esquerdo: Ligar/Desligar\nDireto: Abrir Configurações',
 		['Interrupts'] = 'Alternar Interrupts ON or OFF',
 		['Cooldowns'] = 'Alternar Cooldowns ON or OFF',
 		['AoE'] = 'Alternar AoE ON ou OFF',
