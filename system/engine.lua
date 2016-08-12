@@ -334,6 +334,7 @@ local eQueue = {}
 
 function Engine.Cast_Queue(spell, target, sI)
 	if not eQueue[spell] then
+		print(target)
 		eQueue[spell] = {s = spell, t = target, i = sI or false}
 	end
 end
@@ -370,9 +371,11 @@ Engine.add_Sync('Engine_Queue', function()
 	for k,v in pairs(eQueue) do
 		local Iterate, spell, sI = canIterate(v.s)
 		local target = v.t
-		if Iterate then
+		local spell = castSanityCheck(spell)
+		if Iterate and spell then
 			if sI or v.i then
 				SpellStopCasting()
+				Engine.clear_Cast_Queue()
 				Engine.Cast_Queue(spell, target)
 			else
 				Cast(spell, target)
