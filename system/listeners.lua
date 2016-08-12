@@ -9,10 +9,10 @@ NeP.Listener.register("ADDON_LOADED", function(...)
 
 	local addon = ...
 
-	if string.lower(addon) ~= string.lower(NeP.Info.Name) then return end
-
-	-- load all our config data
-	NeP.Config.Load(NePData)
+	if string.lower(addon) == string.lower(NeP.Info.Name) then
+		-- load all our config data
+		NeP.Config.Load()
+	end
 
 end)
 

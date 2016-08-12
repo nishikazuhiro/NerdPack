@@ -2,7 +2,6 @@
 ## Notes: NerdPack custom engine.
 ## Interface: 70000
 ## Author: MrTheSoulz
-## SavedVariables: NePDataG
-## SavedVariablesPerCharacter: NePData
+## SavedVariablesPerCharacter: NeP_Data
 
 files.xml

@@ -1,20 +1,19 @@
 NeP.Config = {}
-local Config = NeP.Config
---local Debug = NeP.Core.Debug
+
 local data = {}
 
-function Config.Load(tbl)
-	--Debug('Config', 'Config Data Loaded')
+function NeP.Config.Load()
+	local tbl = NeP_Data
 	if tbl == nil then
-		NePData = {}
-		data = NePData
+		print('hit')
+		tbl = {}
+		data = tbl
 	else
 		data = tbl
 	end
 end
 
-function Config.Read(key, ...)
-	--Debug('Config', 'Reading Config Key: '..key)
+function NeP.Config.Read(key, ...)
 	key = tostring(key)
 	local length = select('#', ...)
 	local default
@@ -60,8 +59,7 @@ function Config.Read(key, ...)
 	return nil
 end
 
-function Config.Write(key, ...)
-	--Debug('Config', 'Writing Config Key: '..key)
+function NeP.Config.Write(key, ...)
 	key = tostring(key)
 	local length = select('#', ...)
 	local value = select(length, ...)
@@ -91,8 +89,7 @@ function Config.Write(key, ...)
 	vKey[bKey] = value
 end
 
-function Config.Toggle(key)
-	--Debug('Config', 'Toggling Config Key: '..key)
+function NeP.Config.Toggle(key)
 	key = tostring(key)
 	data[key] = not data[key]
 	return data[key]
