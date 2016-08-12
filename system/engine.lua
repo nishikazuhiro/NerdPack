@@ -5,7 +5,6 @@ NeP.Engine = {
 	lastCast = nil,
 	forcePause = false,
 	Current_Spell = nil,
-	isGroundSpell = false,
 	Rotations = {},
 }
 
@@ -129,7 +128,8 @@ local function insertToLog(whatIs, spell, target)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
-local function Cast(spell, target)
+local function Cast(spell, target, ground)
+	local ground = ground or false
 	if Engine.isGroundSpell then
 		Engine.CastGround(spell, target)
 	else
@@ -141,6 +141,7 @@ end
 
 local function checkTarget(spell, target)
 	local target = target
+	local ground = false
 	-- decide a target
 	if type(target) == 'nil' then
 		if UnitExists('target') then
@@ -155,18 +156,18 @@ local function checkTarget(spell, target)
 	end
 	-- Ground target
 	if string.sub(target, -7) == '.ground' then
-		Engine.isGroundSpell = true
+		ground = true
 		target = string.sub(target, 0, -8)
 	end
 	-- Fake Target
 	target = NeP.Engine.FilterUnit(target)
 	-- Sanity Checks
-	if Engine.isGroundSpell and target == 'mouseover' then
-		return target
+	if ground and target == 'mouseover' then
+		return target, ground
 	elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 		return
 	elseif UnitExists(target) and IsSpellInRange(spell, target) ~= 0 and Engine.LineOfSight('player', target) then
-		return target
+		return target, ground
 	end
 end
 
@@ -234,7 +235,7 @@ local function castSanityCheck(spell)
 end
 
 local sTriggers = {
-	['#'] = function(spell, target, sI)
+	['#'] = function(spell, target, ground, sI)
 		Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
 		if invItems[item] then
@@ -246,19 +247,19 @@ local sTriggers = {
 			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 			if itemStart == 0 and GetItemCount(item) > 0 then
 				if sI then SpellStopCasting() end
-				Engine.UseItem(item, target)
+				Engine.UseItem(item, target, ground)
 				insertToLog('Item', item, target)
 				return true
 			end
 		end
 	end,
-	['@'] = function(spell, target, sI)
+	['@'] = function(spell, target, ground, sI)
 		local lib = string.sub(spell, 2);
 		if sI then SpellStopCasting() end
 		NeP.library.parse(false, spell, lib)
 		return true
 	end,
-	['/'] = function(spell, target, sI)
+	['/'] = function(spell, target, ground, sI)
 		if sI then SpellStopCasting() end
 		Engine.Macro(spell)
 		return true
@@ -284,11 +285,11 @@ function Engine.Parse(table)
 					return true
 				elseif tP == 'string' then
 					Debug('Engine', 'Hit String')
-					local target = checkTarget(spell, target)
+					local target, ground = checkTarget(spell, target)
 					if target then
 						local pX = string.sub(spell, 1, 1)
 						if sTriggers[px] then
-							if sTriggers[px](spell, target, sI) then return true end
+							if sTriggers[px](spell, target, ground, sI) then return true end
 						elseif string.lower(spell) == 'pause' then
 							if sI then SpellStopCasting() end
 							return true
@@ -296,7 +297,7 @@ function Engine.Parse(table)
 							Debug('Engine', 'Hit Regular')
 							local spell = castSanityCheck(spell)
 							if spell then
-								Engine.Cast_Queue(spell, target, sI)
+								Engine.Cast_Queue(spell, target, ground, sI)
 								return true
 							end
 						end
@@ -306,7 +307,6 @@ function Engine.Parse(table)
 		end
 	end
 	-- Reset States
-	Engine.isGroundSpell = false
 	Engine.Current_Spell = nil
 	Engine.ForceTarget = nil
 end
@@ -332,9 +332,9 @@ end
 
 local eQueue = {}
 
-function Engine.Cast_Queue(spell, target, sI)
+function Engine.Cast_Queue(spell, target, ground, sI)
 	if not eQueue[spell] then
-		eQueue[spell] = {s = spell, t = target, i = sI or false}
+		eQueue[spell] = {s = spell, t = target, g = ground or false, i = sI or false}
 	end
 end
 
@@ -369,15 +369,15 @@ Engine.add_Sync('Engine_Queue', function()
 	-- Cast in queue
 	for k,v in pairs(eQueue) do
 		local Iterate, spell, sI = canIterate(v.s)
-		local target = v.t
+		local target, ground = v.t, v.g
 		local spell = castSanityCheck(spell)
 		if Iterate and spell then
 			if sI or v.i then
 				SpellStopCasting()
 				Engine.clear_Cast_Queue()
-				Engine.Cast_Queue(spell, target)
+				Engine.Cast_Queue(spell, target, ground)
 			else
-				Cast(spell, target)
+				Cast(spell, target, ground)
 			end
 			eQueue[k] = nil
 			break
