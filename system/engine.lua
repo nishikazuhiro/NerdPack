@@ -192,28 +192,26 @@ local function IsMountedCheck()
 end
 
 local function canIterate(spell)
-	local Iterate, spell, pause, sI = false, spell, false, false
+	local Iterate, spell, sI = false, spell, false
 	local sType = type(spell)
 	-- If not Dead and not mounted
 	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
 		local castingTime = castingTime('player')
+		if castingTime == 0 or sType == 'table' then
+			Iterate = true
+		end
 		if sType == 'string' then
-			if string.lower(spell) == 'pause' then
-				pause = true
-			end
 			local pX = string.sub(spell, 1, 1)
 			if pX == '!' then
 				spell = string.sub(spell, 2);
 				if spell ~= Engine.lastCast and castingTime >= 0.5 then
 					sI = true
+					Iterate = true
 				end
 			end
 		end
-		if castingTime == 0 or sType == 'table' then
-			Iterate = true
-		end
 	end
-	return Iterate, spell, pause, sI
+	return Iterate, spell, sI
 end
 
 local function castSanityCheck(spell)
@@ -235,19 +233,49 @@ local function castSanityCheck(spell)
 	end
 end
 
+local sTriggers = {
+	['#'] = function(spell, target, sI)
+		Debug('Engine', 'Hit #Item')
+		local item = string.sub(spell, 2);
+		if invItems[item] then
+			item = invItems[item]
+			item = GetInventoryItemID("player", GetInventorySlotInfo(item))
+		end
+		local isUsable, notEnoughMana = IsUsableItem(item)
+		if isUsable then
+			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
+			if itemStart == 0 and GetItemCount(item) > 0 then
+				if sI then SpellStopCasting() end
+				Engine.UseItem(item, target)
+				insertToLog('Item', item, target)
+				return true
+			end
+		end
+	end,
+	['@'] = function(spell, target, sI)
+		local lib = string.sub(spell, 2);
+		if sI then SpellStopCasting() end
+		NeP.library.parse(false, spell, lib)
+		return true
+	end,
+	['/'] = function(spell, target, sI)
+		if sI then SpellStopCasting() end
+		Engine.Macro(spell)
+		return true
+	end
+}
+
 -- This iterates the routine table itself.
 function Engine.Parse(table)
 	for i=1, #table do
 		local aR, tP = table[i], type(table[i][1])
 		local spell, conditions, target = aR[1], aR[2], aR[3]
-		local Iterate, spell, pause, sI = canIterate(spell)
-		if sI or Iterate then
+		local Iterate, spell, sI = canIterate(spell)
+		if Iterate then
 			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell))
 			if NeP.DSL.parse(conditions, spell) then
 				Debug('Engine', 'Passed conditions')
-				if pause then
-					return true
-				elseif tP == 'table' then
+				if tP == 'table' then
 					Debug('Engine', 'Hit Table')
 					if Engine.Parse(spell) then return true end
 				elseif tP == 'function' then
@@ -259,35 +287,16 @@ function Engine.Parse(table)
 					local target = checkTarget(spell, target)
 					if target then
 						local pX = string.sub(spell, 1, 1)
-						if pX == '#' then
-							Debug('Engine', 'Hit #Item')
-							local item = string.sub(spell, 2);
-							if invItems[item] then
-								item = invItems[item]
-								item = GetInventoryItemID("player", GetInventorySlotInfo(item))
-							end
-							local isUsable, notEnoughMana = IsUsableItem(item)
-							if isUsable then
-								local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-								if itemStart == 0 and GetItemCount(item) > 0 then
-									insertToLog('Item', item, target)
-									Engine.UseItem(item, target)
-									return true
-								end
-							end
-						elseif pX == '@' then
-							local lib = string.sub(spell, 2);
-							NeP.library.parse(false, spell, lib)
-							return true
-						elseif pX == '/' then
-							Engine.Macro(spell)
+						if sTriggers[px] then
+							if sTriggers[px](spell, target, sI) then return true end
+						elseif string.lower(spell) == 'pause' then
+							if sI then SpellStopCasting() end
 							return true
 						else
 							Debug('Engine', 'Hit Regular')
 							local spell = castSanityCheck(spell)
 							if spell then
-								if sI then SpellStopCasting() end
-								Engine.add_Queue(spell, target)
+								Engine.Cast_Queue(spell, target, sI)
 								return true
 							end
 						end
@@ -323,9 +332,9 @@ end
 
 eQueue = {}
 
-function Engine.add_Queue(spell, target)
+function Engine.Cast_Queue(spell, target, sI)
 	if not eQueue[spell] then
-		eQueue[spell] = {s = spell, t = target}
+		eQueue[spell] = {s = spell, t = target, i = sI or false}
 	end
 end
 
@@ -359,8 +368,12 @@ end)
 Engine.add_Sync('Engine_Queue', function()
 	-- Cast in queue
 	for k,v in pairs(eQueue) do
-		if canIterate(v.s) then
-			Cast(v.s, v.t)
+		local Iterate, spell, sI = canIterate(v.s)
+		local target = v.t
+		if v.i then sI = true end
+		if Iterate then
+			if sI then SpellStopCasting() end
+			Cast(spell, target)
 			eQueue[k] = nil
 			break
 		end
