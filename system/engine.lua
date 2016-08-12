@@ -260,17 +260,20 @@ function Engine.Parse(table)
 					if pX == '#' then
 						Debug('Engine', 'Hit #Item')
 						local item = string.sub(spell, 2);
+						local invItemReady = true
 						if invItems[item] then
-							item = invItems[item]
-							item = GetInventoryItemID("player", GetInventorySlotInfo(item))
+							item = GetInventoryItemID("player", GetInventorySlotInfo(invItems[item]))
+							invItemReady = GetItemSpell(item) ~= nil
 						end
-						local isUsable, notEnoughMana = IsUsableItem(item)
-						if isUsable then
-							local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-							if itemStart == 0 and GetItemCount(item) > 0 then
-								insertToLog('Item', item, target)
-								Engine.UseItem(item, target)
-								return true
+						if invItemReady then
+							local isUsable, notEnoughMana = IsUsableItem(item)
+							if isUsable then
+								local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
+								if itemStart == 0 and GetItemCount(item) > 0 then
+									insertToLog('Item', item, target)
+									Engine.UseItem(item, target)
+									return true
+								end
 							end
 						end
 					elseif pX == '@' then
