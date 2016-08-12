@@ -334,7 +334,6 @@ local eQueue = {}
 
 function Engine.Cast_Queue(spell, target, sI)
 	if not eQueue[spell] then
-		print(target)
 		eQueue[spell] = {s = spell, t = target, i = sI or false}
 	end
 end
