@@ -59,7 +59,6 @@ function NeP.Config.Write(key, ...)
 	key = tostring(key)
 	local length = select('#', ...)
 	local value = select(length, ...)
-	print(length, value)
 
 	if length == 1 then
 		data[key] = value
