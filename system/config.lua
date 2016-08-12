@@ -3,13 +3,11 @@ NeP.Config = {}
 local data = {}
 
 function NeP.Config.Load()
-	local tbl = NeP_Data
-	if tbl == nil then
-		print('hit')
-		tbl = {}
-		data = tbl
+	if nDavG == nil then
+		nDavG = {}
+		data = nDavG
 	else
-		data = tbl
+		data = nDavG
 	end
 end
 
@@ -22,9 +20,9 @@ function NeP.Config.Read(key, ...)
 	end
 
 	if length <= 1 then
-		if data[key] then
+		if data[key] ~= nil then
 			return data[key]
-		elseif default then
+		elseif default ~= nil then
 			data[key] = default
 			return data[key]
 		else
@@ -32,61 +30,61 @@ function NeP.Config.Read(key, ...)
 		end
 	end
 
-	local vKey = data[key]
-	if not vKey then
+	local _key = data[key]
+	if not _key then
 		data[key] = {}
-		vKey = data[key]
+		_key = data[key]
 	end
-	local bKey
+	local __key
 	for i = 1, length - 2 do
-		bKey = tostring(select(i, ...))
-		if vKey[bKey] then
-			vKey = vKey[bKey]
+		__key = tostring(select(i, ...))
+		if _key[__key] then
+			_key = _key[__key]
 		else
-			vKey[bKey] = {}
-			vKey = vKey[bKey]
+			_key[__key] = {}
+			_key = _key[__key]
 		end
 	end
-	bKey = tostring(select(length - 1, ...))
+	__key = tostring(select(length - 1, ...))
 
-	if vKey[bKey] then
-		return vKey[bKey]
-	elseif default then
-		vKey[bKey] = default
+	if _key[__key] then
+		return _key[__key]
+	elseif default ~= nil then
+		_key[__key] = default
 		return default
 	end
-
-	return nil
 end
 
 function NeP.Config.Write(key, ...)
 	key = tostring(key)
 	local length = select('#', ...)
 	local value = select(length, ...)
+	print(length, value)
 
 	if length == 1 then
 		data[key] = value
 		return
 	end
 
-	local vKey = data[key]
-	if not vKey then
+	local _key = data[key]
+	if not _key then
 		data[key] = {}
-		vKey = data[key]
+		_key = data[key]
 	end
-	local bKey
+
+	local __key
 	for i = 1, length - 2 do
-		bKey = tostring(select(i, ...))
-		if vKey[bKey] then
-			vKey = vKey[bKey]
+		__key = tostring(select(i, ...))
+		if _key[__key] then
+			_key = _key[__key]
 		else
-			vKey[bKey] = {}
-			vKey = vKey[bKey]
+			_key[__key] = {}
+			_key = _key[__key]
 		end
 	end
 
-	bKey = tostring(select(length - 1, ...))
-	vKey[bKey] = value
+	__key = tostring(select(length - 1, ...))
+	_key[__key] = value
 end
 
 function NeP.Config.Toggle(key)

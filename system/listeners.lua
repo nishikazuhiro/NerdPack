@@ -6,14 +6,10 @@ NeP.Listener.locals = {
 }
 
 NeP.Listener.register("ADDON_LOADED", function(...)
-
 	local addon = ...
-
 	if string.lower(addon) == string.lower(NeP.Info.Name) then
-		-- load all our config data
 		NeP.Config.Load()
 	end
-
 end)
 
 NeP.Listener.register("PLAYER_LOGIN", function(...)
