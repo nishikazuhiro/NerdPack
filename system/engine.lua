@@ -321,10 +321,12 @@ function NeP.Core.updateSpec()
 	end
 end
 
-local eQueue = {}
+eQueue = {}
 
 function Engine.add_Queue(spell, target)
-	eQueue[#eQueue+1] = {s = spell, t = target}
+	if not eQueue[spell] then
+		eQueue[spell] = {s = spell, t = target}
+	end
 end
 
 function Engine.clear_Queue()
@@ -356,11 +358,11 @@ end)
 
 Engine.add_Sync('Engine_Queue', function()
 	-- Cast in queue
-	for i=1, #eQueue do
-		local queue = eQueue[i]
-		if queue then
-			Cast(queue.s, queue.t)
-			eQueue[i] = nil
+	for k,v in pairs(eQueue) do
+		if canIterate(v.s) then
+			Cast(v.s, v.t)
+			eQueue[k] = nil
+			break
 		end
 	end
 end)
