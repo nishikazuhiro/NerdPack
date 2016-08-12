@@ -287,7 +287,7 @@ function Engine.Parse(table)
 							local spell = castSanityCheck(spell)
 							if spell then
 								if sI then SpellStopCasting() end
-								Cast(spell, target)
+								Engine.add_Queue(spell, target)
 								return true
 							end
 						end
@@ -321,20 +321,56 @@ function NeP.Core.updateSpec()
 	end
 end
 
+local eQueue = {}
+
+function Engine.add_Queue(spell, target)
+	eQueue[#eQueue+1] = {s = spell, t = target}
+end
+
+function Engine.clear_Queue()
+	wipe(eQueue)
+end
+
+local eSync = {}
+
+function Engine.add_Sync(name, callback)
+	if type(callback) == 'function' and not eSync[name] then
+		eSync[name] = callback
+	end
+end
+
+function Engine.remove_Sync(name)
+	eSync[name] = nil
+end
+
+Engine.add_Sync('Engine_Parser', function()
+	NeP.FaceRoll:Hide()
+	if Engine.SelectedCR then
+		local InCombatCheck = InCombatLockdown()
+		local table = Engine.SelectedCR[InCombatCheck]
+		Engine.Parse(table)
+	else
+		Core.Message(TA('Engine', 'NoCR'))
+	end
+end)
+
+Engine.add_Sync('Engine_Queue', function()
+	-- Cast in queue
+	for i=1, #eQueue do
+		local queue = eQueue[i]
+		if queue then
+			Cast(queue.s, queue.t)
+			eQueue[i] = nil
+		end
+	end
+end)
+
 -- Engine Ticker
-local LastTimeOut = 0
 C_Timer.NewTicker(0.1, (function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running and not Engine.forcePause then
-		-- Hide FaceRoll.
-		NeP.FaceRoll:Hide()
-		-- Run the engine.
-		if Engine.SelectedCR then
-			local InCombatCheck = InCombatLockdown()
-			local table = Engine.SelectedCR[InCombatCheck]
-			Engine.Parse(table)
-		else
-			Core.Message(TA('Engine', 'NoCR'))
+		for k,v in pairs(eSync) do
+			v()
 		end
 	end
 end), nil)

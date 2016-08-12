@@ -3,8 +3,8 @@ NeP = {
 		Name = 'NerdPack',
 		Nick = 'NeP',
 		Author = 'MrTheSoulz',
-		Version = 70.6,
-		Branch = 'Release',
+		Version = 70.7,
+		Branch = 'BETA',
 	},
 	Interface = {
 		Logo = 'Interface\\AddOns\\NerdPack\\media\\logo.blp',
