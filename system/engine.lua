@@ -330,7 +330,7 @@ function NeP.Core.updateSpec()
 	end
 end
 
-eQueue = {}
+local eQueue = {}
 
 function Engine.Cast_Queue(spell, target, sI)
 	if not eQueue[spell] then
@@ -338,7 +338,7 @@ function Engine.Cast_Queue(spell, target, sI)
 	end
 end
 
-function Engine.clear_Queue()
+function Engine.clear_Cast_Queue()
 	wipe(eQueue)
 end
 
@@ -370,10 +370,13 @@ Engine.add_Sync('Engine_Queue', function()
 	for k,v in pairs(eQueue) do
 		local Iterate, spell, sI = canIterate(v.s)
 		local target = v.t
-		if v.i then sI = true end
 		if Iterate then
-			if sI then SpellStopCasting() end
-			Cast(spell, target)
+			if sI or v.i then
+				SpellStopCasting()
+				Engine.Cast_Queue(spell, target)
+			else
+				Cast(spell, target)
+			end
 			eQueue[k] = nil
 			break
 		end
