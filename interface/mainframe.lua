@@ -97,12 +97,10 @@ local function LoadCrs(info)
 	UIDropDownMenu_AddButton(info)
 end
 
-local ntest = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch
-
 local stD = {
-	['CR Settings:'] = NeP.MFrame.Settings,
-	['Modules:'] = NeP.MFrame.Plugins,
-	[ntest] = NeP.MFrame.nSettings
+	{n = 'CR Settings:', t = NeP.MFrame.Settings},
+	{n = 'Modules:', t = NeP.MFrame.Plugins},
+	{n = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch, t = NeP.MFrame.nSettings}
 }
 
 local function dropdown(self)
@@ -113,18 +111,19 @@ local function dropdown(self)
 	info.text = 'Combat Routines:'
 	UIDropDownMenu_AddButton(info)
 	LoadCrs(info)
-	for k,v in pairs(stD) do
-		if #v > 0 then
+	for k=1,#stD do
+		local v = stD[k]
+		if #v.t > 0 then
 			info.isTitle = 1
 			info.notCheckable = 1
-			info.text = k
+			info.text = v.n
 			UIDropDownMenu_AddButton(info)
-			for i=1, #v do
-				local v = v[i]
+			for i=1, #v.t do
+				local z = v.t[i]
 				info = UIDropDownMenu_CreateInfo()
-				info.text = v.name
-				info.value = v.name
-				info.func = v.func
+				info.text = z.name
+				info.value = z.name
+				info.func = z.func
 				info.notCheckable = 1
 				UIDropDownMenu_AddButton(info)
 			end
