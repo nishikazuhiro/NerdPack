@@ -100,7 +100,7 @@ end
 local stD = {
 	{n = 'CR Settings:', t = NeP.MFrame.Settings},
 	{n = 'Modules:', t = NeP.MFrame.Plugins},
-	{n = Logo..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch, t = NeP.MFrame.nSettings}
+	{n = Logo..'['..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch..']', t = NeP.MFrame.nSettings}
 }
 
 local function dropdown(self)
