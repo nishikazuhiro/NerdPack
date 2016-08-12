@@ -5,6 +5,7 @@ NeP.Engine = {
 	lastCast = nil,
 	forcePause = false,
 	Current_Spell = nil,
+	isGroundSpell = false,
 	Rotations = {},
 }
 
@@ -128,8 +129,7 @@ local function insertToLog(whatIs, spell, target)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
-local function Cast(spell, target, ground)
-	local ground = ground or false
+local function Cast(spell, target)
 	if Engine.isGroundSpell then
 		Engine.CastGround(spell, target)
 	else
@@ -141,7 +141,6 @@ end
 
 local function checkTarget(spell, target)
 	local target = target
-	local ground = false
 	-- decide a target
 	if type(target) == 'nil' then
 		if UnitExists('target') then
@@ -156,18 +155,18 @@ local function checkTarget(spell, target)
 	end
 	-- Ground target
 	if string.sub(target, -7) == '.ground' then
-		ground = true
+		Engine.isGroundSpell = true
 		target = string.sub(target, 0, -8)
 	end
 	-- Fake Target
 	target = NeP.Engine.FilterUnit(target)
 	-- Sanity Checks
-	if ground and target == 'mouseover' then
-		return target, ground
+	if Engine.isGroundSpell and target == 'mouseover' then
+		return target
 	elseif IsHarmfulSpell(spell) and not UnitCanAttack('player', target) then
 		return
 	elseif UnitExists(target) and IsSpellInRange(spell, target) ~= 0 and Engine.LineOfSight('player', target) then
-		return target, ground
+		return target
 	end
 end
 
@@ -193,26 +192,28 @@ local function IsMountedCheck()
 end
 
 local function canIterate(spell)
-	local Iterate, spell, sI = false, spell, false
+	local Iterate, spell, pause, sI = false, spell, false, false
 	local sType = type(spell)
 	-- If not Dead and not mounted
 	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
 		local castingTime = castingTime('player')
-		if castingTime == 0 or sType == 'table' then
-			Iterate = true
-		end
 		if sType == 'string' then
+			if string.lower(spell) == 'pause' then
+				pause = true
+			end
 			local pX = string.sub(spell, 1, 1)
 			if pX == '!' then
 				spell = string.sub(spell, 2);
 				if spell ~= Engine.lastCast and castingTime >= 0.5 then
 					sI = true
-					Iterate = true
 				end
 			end
 		end
+		if castingTime == 0 or sType == 'table' then
+			Iterate = true
+		end
 	end
-	return Iterate, spell, sI
+	return Iterate, spell, pause, sI
 end
 
 local function castSanityCheck(spell)
@@ -234,49 +235,19 @@ local function castSanityCheck(spell)
 	end
 end
 
-local sTriggers = {
-	['#'] = function(spell, target, ground, sI)
-		Debug('Engine', 'Hit #Item')
-		local item = string.sub(spell, 2);
-		if invItems[item] then
-			item = invItems[item]
-			item = GetInventoryItemID("player", GetInventorySlotInfo(item))
-		end
-		local isUsable, notEnoughMana = IsUsableItem(item)
-		if isUsable then
-			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-			if itemStart == 0 and GetItemCount(item) > 0 then
-				if sI then SpellStopCasting() end
-				Engine.UseItem(item, target, ground)
-				insertToLog('Item', item, target)
-				return true
-			end
-		end
-	end,
-	['@'] = function(spell, target, ground, sI)
-		local lib = string.sub(spell, 2);
-		if sI then SpellStopCasting() end
-		NeP.library.parse(false, spell, lib)
-		return true
-	end,
-	['/'] = function(spell, target, ground, sI)
-		if sI then SpellStopCasting() end
-		Engine.Macro(spell)
-		return true
-	end
-}
-
 -- This iterates the routine table itself.
 function Engine.Parse(table)
 	for i=1, #table do
 		local aR, tP = table[i], type(table[i][1])
 		local spell, conditions, target = aR[1], aR[2], aR[3]
-		local Iterate, spell, sI = canIterate(spell)
-		if Iterate then
+		local Iterate, spell, pause, sI = canIterate(spell)
+		if sI or Iterate then
 			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell))
 			if NeP.DSL.parse(conditions, spell) then
 				Debug('Engine', 'Passed conditions')
-				if tP == 'table' then
+				if pause then
+					return true
+				elseif tP == 'table' then
 					Debug('Engine', 'Hit Table')
 					if Engine.Parse(spell) then return true end
 				elseif tP == 'function' then
@@ -285,19 +256,38 @@ function Engine.Parse(table)
 					return true
 				elseif tP == 'string' then
 					Debug('Engine', 'Hit String')
-					local target, ground = checkTarget(spell, target)
-					if target then
-						local pX = string.sub(spell, 1, 1)
-						if sTriggers[px] then
-							if sTriggers[px](spell, target, ground, sI) then return true end
-						elseif string.lower(spell) == 'pause' then
-							if sI then SpellStopCasting() end
-							return true
-						else
-							Debug('Engine', 'Hit Regular')
-							local spell = castSanityCheck(spell)
-							if spell then
-								Engine.Cast_Queue(spell, target, ground, sI)
+					local pX = string.sub(spell, 1, 1)
+					if pX == '#' then
+						Debug('Engine', 'Hit #Item')
+						local item = string.sub(spell, 2);
+						if invItems[item] then
+							item = invItems[item]
+							item = GetInventoryItemID("player", GetInventorySlotInfo(item))
+						end
+						local isUsable, notEnoughMana = IsUsableItem(item)
+						if isUsable then
+							local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
+							if itemStart == 0 and GetItemCount(item) > 0 then
+								insertToLog('Item', item, target)
+								Engine.UseItem(item, target)
+								return true
+							end
+						end
+					elseif pX == '@' then
+						local lib = string.sub(spell, 2);
+						NeP.library.parse(false, spell, lib)
+						return true
+					elseif pX == '/' then
+						Engine.Macro(spell)
+						return true
+					else
+						Debug('Engine', 'Hit Regular')
+						local spell = castSanityCheck(spell)
+						if spell then
+							local target = checkTarget(spell, target)
+							if target then
+								if sI then SpellStopCasting() end
+								Cast(spell, target)
 								return true
 							end
 						end
@@ -307,6 +297,7 @@ function Engine.Parse(table)
 		end
 	end
 	-- Reset States
+	Engine.isGroundSpell = false
 	Engine.Current_Spell = nil
 	Engine.ForceTarget = nil
 end
@@ -330,18 +321,6 @@ function NeP.Core.updateSpec()
 	end
 end
 
-local eQueue = {}
-
-function Engine.Cast_Queue(spell, target, ground, sI)
-	if not eQueue[spell] then
-		eQueue[spell] = {s = spell, t = target, g = ground or false, i = sI or false}
-	end
-end
-
-function Engine.clear_Cast_Queue()
-	wipe(eQueue)
-end
-
 local eSync = {}
 
 function Engine.add_Sync(name, callback)
@@ -354,43 +333,50 @@ function Engine.remove_Sync(name)
 	eSync[name] = nil
 end
 
-Engine.add_Sync('Engine_Parser', function()
-	NeP.FaceRoll:Hide()
-	if Engine.SelectedCR then
-		local InCombatCheck = InCombatLockdown()
-		local table = Engine.SelectedCR[InCombatCheck]
-		Engine.Parse(table)
-	else
-		Core.Message(TA('Engine', 'NoCR'))
-	end
-end)
+local eQueue = {}
 
-Engine.add_Sync('Engine_Queue', function()
-	-- Cast in queue
+function Engine.Cast_Queue(spell, target)
+	if not eQueue[spell] then
+		eQueue[spell] = {s = spell, t = target}
+	end
+end
+
+function Engine.clear_Cast_Queue()
+	wipe(eQueue)
+end
+
+Engine.add_Sync('eQueue_parser', function()
 	for k,v in pairs(eQueue) do
-		local Iterate, spell, sI = canIterate(v.s)
-		local target, ground = v.t, v.g
+		local spell , target = v.s, v.t
+		local Iterate, spell, pause, sI = canIterate(spell)
 		local spell = castSanityCheck(spell)
-		if Iterate and spell then
-			if sI or v.i then
-				SpellStopCasting()
-				Engine.clear_Cast_Queue()
-				Engine.Cast_Queue(spell, target, ground)
-			else
-				Cast(spell, target, ground)
+		if spell then
+			local target = checkTarget(spell, target)
+			if Iterate and target then
+				if sI then SpellStopCasting() end
+				Cast(spell, target)
+				eQueue[k] = nil
+				break
 			end
-			eQueue[k] = nil
-			break
 		end
 	end
 end)
 
 -- Engine Ticker
+local LastTimeOut = 0
 C_Timer.NewTicker(0.1, (function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
-	if Running and not Engine.forcePause then
+	if Running then
+		NeP.FaceRoll:Hide()
 		for k,v in pairs(eSync) do
 			v()
 		end
+		if Engine.SelectedCR and not Engine.forcePause and #eQueue == 0 then
+			local InCombatCheck = InCombatLockdown()
+			local table = Engine.SelectedCR[InCombatCheck]
+			Engine.Parse(table)
+		end
 	end
 end), nil)
+
+--Core.Message(TA('Engine', 'NoCR'))
