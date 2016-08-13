@@ -273,9 +273,9 @@ function Engine.Parse(table)
 		local spell, conditions, target = aR[1], aR[2], aR[3]
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
-			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell))
-			if NeP.DSL.parse(conditions, spell) then
-				local target = checkTarget(target)
+			local target = checkTarget(target)
+			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
+			if NeP.DSL.parse(conditions, spell) and target then
 				Debug('Engine', 'Passed conditions')
 				if tP == 'table' then
 					Debug('Engine', 'Hit Table')

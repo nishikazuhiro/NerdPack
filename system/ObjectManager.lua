@@ -105,6 +105,7 @@ end
 	to repeate code over and over again for all unlockers.
 ---------------------------------------------------]]
 function NeP.OM.addToOM(Obj)
+	if not UnitExists(Obj) then return end
 	local GUID = UnitGUID(Obj) or '0'
 	local objectType, _, _, _, _, ObjID, _ = strsplit('-', GUID)
 	local ObjID = tonumber(ObjID) or '0'
