@@ -43,7 +43,6 @@ C_Timer.NewTicker(0.25, (function()
 				local missingHealth = maxHealth - healthRaw
 				local healthPercent =  (healthRaw / maxHealth) * 100
 				local prio = Roles[tostring(Role)] * healthPercent
-				--print(UnitName(Obj.key), ' / ', healthPercent)
 				Healing.Units[#Healing.Units+1] = {
 					key = Obj.key,
 					prio = prio,
@@ -57,7 +56,7 @@ C_Timer.NewTicker(0.25, (function()
 			end
 		end
 	end
-	table.sort(NeP.Healing.Units, function(a,b) return a.prio > b.prio end)
+	table.sort(NeP.Healing.Units, function(a,b) return a.health < b.health end)
 end), nil)
 
 -- Lowest
