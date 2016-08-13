@@ -57,7 +57,7 @@ C_Timer.NewTicker(0.25, (function()
 			end
 		end
 	end
-	table.sort(NeP.Healing.Units, function(a,b) return a.prio < b.prio end)
+	table.sort(NeP.Healing.Units, function(a,b) return a.prio > b.prio end)
 end), nil)
 
 -- Lowest
