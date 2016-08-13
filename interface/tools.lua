@@ -866,6 +866,7 @@ function NeP.Interface.buildGUI(config)
 	window.parent = parent
 
 	if not config.color then config.color = "ee2200" end
+	if type(config.color) == 'function' then config.color = config.color() end
 
 	spinnerStyleSheet['bar-background']['color'] = config.color
 
