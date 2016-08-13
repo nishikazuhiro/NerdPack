@@ -297,7 +297,6 @@ function Engine.Parse(table)
 						if spell and IsSpellInRange(spell, target) ~= 0  then
 							if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
 								if sI then SpellStopCasting() end
-								print(target)
 								Cast(spell, target)
 								return true
 							end
