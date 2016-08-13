@@ -236,9 +236,9 @@ local sTriggers = {
 			if isUsable then
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 				if itemStart == 0 and GetItemCount(item) > 0 then
-					insertToLog('Item', item, target)
 					if sI then SpellStopCasting() end
 					Engine.UseItem(item, target)
+					insertToLog('Item', item, target)
 					return true
 				end
 			end
@@ -266,26 +266,29 @@ function Engine.Parse(table)
 		if Iterate then
 			local target = checkTarget(target)
 			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
-			if NeP.DSL.parse(conditions, spell) and target then
-				Debug('Engine', 'Passed conditions')
-				if tP == 'table' then
-					Debug('Engine', 'Hit Table')
-					if Engine.Parse(spell) then return true end
-				elseif tP == 'function' then
-					Debug('Engine', 'Hit Function')
-					spell()
-					return true
-				elseif tP == 'string' then
-					Debug('Engine', 'Hit String')
-					local pX = string.sub(spell, 1, 1)
-					if string.lower(spell) == 'pause' then
+			if tP == 'table' then
+				Debug('Engine', 'Hit Table')
+				if Engine.Parse(spell) then return true end
+			elseif tP == 'function' then
+				Debug('Engine', 'Hit Function')
+				spell()
+				return true
+			elseif tP == 'string' then
+				Debug('Engine', 'Hit String')
+				local pX = string.sub(spell, 1, 1)
+				if string.lower(spell) == 'pause' then
+					if NeP.DSL.parse(conditions, spell) then
 						return true
-					elseif sTriggers[pX] then
+					end
+				elseif sTriggers[pX] then
+					if NeP.DSL.parse(conditions, spell) then
 						if sTriggers[pX](spell, target, sI) then return true end
-					else
-						Debug('Engine', 'Hit Regular')
-						local spell = castSanityCheck(spell)
-						if spell and IsSpellInRange(spell, target) ~= 0  then
+					end
+				else
+					Debug('Engine', 'Hit Regular')
+					local spell = castSanityCheck(spell)
+					if spell and IsSpellInRange(spell, target) ~= 0  then
+						if NeP.DSL.parse(conditions, spell) then
 							if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
 								if sI then SpellStopCasting() end
 								Cast(spell, target)
