@@ -141,29 +141,20 @@ end
 
 local function checkTarget(target)
 	local target = target
-	-- decide a target
 	if type(target) == 'nil' then
+		target = 'player'
 		if UnitExists('target') then
 			target = 'target'
-		else
-			target = 'player'
 		end
 	end
-	-- Allow functions/conditions to force a target
-	if Engine.ForceTarget then
-		target = Engine.ForceTarget	
-	end
-	-- Ground target
+	if Engine.ForceTarget then target = Engine.ForceTarget end
 	if string.sub(target, -7) == '.ground' then
 		Engine.isGroundSpell = true
 		target = string.sub(target, 0, -8)
 	end
-	-- Fake Target
 	target = NeP.Engine.FilterUnit(target)
-	-- Sanity Checks
-	if Engine.isGroundSpell and target == 'mouseover' then
-		return target
-	elseif UnitExists(target) and Engine.LineOfSight('player', target) then
+	if (UnitExists(target) or Engine.isGroundSpell and target == 'mouseover') 
+	and Engine.LineOfSight('player', target) then
 		return target
 	end
 end
@@ -346,8 +337,11 @@ end
 local eQueue = {}
 
 function Engine.Cast_Queue(spell, target)
+	local time = GetTime()
 	if not eQueue[spell] then
-		eQueue[spell] = {s = spell, t = target}
+		eQueue[spell] = {spell = spell, target = target, time = time}
+	else
+		eQueue[spell].time = time
 	end
 end
 
@@ -357,17 +351,21 @@ end
 
 Engine.add_Sync('eQueue_parser', function()
 	for k,v in pairs(eQueue) do
-		local spell , target = v.s, v.t
-		local Iterate, spell, sI = canIterate(spell)
-		local spell = castSanityCheck(spell)
-		if spell then
-			local target = checkTarget(spell, target)
-			if Iterate and target then
-				if sI then SpellStopCasting() end
-				Cast(spell, target)
-				eQueue[k] = nil
-				break
+		local spell , target, time = v.spell, v.target, v.time
+		if time < GetTime()+5000 then
+			local Iterate, spell, sI = canIterate(spell)
+			local spell = castSanityCheck(spell)
+			if spell then
+				local target = checkTarget(spell, target)
+				if Iterate and target then
+					if sI then SpellStopCasting() end
+					eQueue[k] = nil
+					Cast(spell, target)
+					break
+				end
 			end
+		else
+			eQueue[k] = nil
 		end
 	end
 	-- Reset States
