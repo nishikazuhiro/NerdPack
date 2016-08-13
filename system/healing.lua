@@ -181,13 +181,19 @@ NeP.library.register('coreHealing', {
 })
 
 --[[ CONDITIONS ]]
-NeP.DSL.RegisterConditon('AoEHeal', function(args)
-	local health, num, distance = strsplit(',', args, 3)
-	local health, num, distance = tonumber(health or 100), tonumber(num or 3), tonumber(distance or 40)
+NeP.DSL.RegisterConditon('AoEHeal', function(target, args)
+	local target, args = target, args
+	if not args then
+		args = target
+		target = player
+	end
+	local health, num, maxDis = strsplit(',', args, 3)
+	local health, num, maxDis = tonumber(health or 100), tonumber(num or 3), tonumber(distance or 40)
 	local total = 0	
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
-		if Obj.health <= health and Obj.distance <= distance then
+		local distance = NeP.Engine.Distance(target, Obj.key)
+		if Obj.health <= health and distance <= maxDis then
 			total = total + 1
 		end
 	end
