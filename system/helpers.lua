@@ -1,43 +1,78 @@
-NeP.pHelpers = {
+NeP.Helpers = {
 	behind = true,
 	infront = true,
 	range = true,
 	range_failed = {}
 }
 
+local Helpers = NeP.Helpers
+
 local UI_Erros = {
 	[SPELL_FAILED_NOT_BEHIND] = function()
-		NeP.pHelpers.behind = false
+		Helpers.behind = false
 	end,
 	-- infront / LoS
 	[50] = function()
-		NeP.pHelpers.infront = false
+		Helpers.infront = false
 	end,
 	-- SPELL_FAILED_OUT_OF_RANGE
 	[359] = function()
-		NeP.pHelpers.range = false
+		Helpers.range = false
 	end,
 	[SPELL_FAILED_TOO_CLOSE] = function()
-		NeP.pHelpers.range = false
+		Helpers.range = false
 	end
 }
 
-function NeP.Engine.Reset_Helpers()
-	NeP.pHelpers.behind = true
-	NeP.pHelpers.infront = true
-	NeP.pHelpers.range = true
-	wipe(pHelpers.range_failed)
+function Helpers.Reset_Helpers()
+	Helpers.behind = true
+	Helpers.infront = true
+	Helpers.range = true
+	wipe(Helpers.range_failed)
 end
 
-function Engine.SpellRange(spell, target)
-	if not pHelpers.range then
-		if pHelpers.range_failed[spell] then
+function NeP.Engine.SpellRange(spell, target)
+	if not Helpers.range then
+		if Helpers.range_failed[spell] then
 			return false
 		end
-		pHelpers.range_failed[spell] = true
-		pHelpers.range  = true
+		Helpers.range_failed[spell] = true
+		Helpers.range  = true
 	end
-	return pHelpers.range and IsSpellInRange(spell, target) ~= 0
+	return Helpers.range and IsSpellInRange(spell, target) ~= 0
+end
+
+function Helpers.specInfo()
+	local Spec = GetSpecialization()
+	local localizedClass, englishClass, classIndex = UnitClass('player')
+	local SpecInfo = classIndex
+	if Spec then
+		SpecInfo = GetSpecializationInfo(Spec)
+	end
+	return SpecInfo
+end 
+
+function Helpers.GetSpecTables()
+	local SpecInfo = Helpers.specInfo()
+	if NeP.Engine.Rotations[SpecInfo] then
+		return NeP.Engine.Rotations[SpecInfo]
+	end
+end
+
+function Helpers.GetSelectedSpec()
+	local SpecInfo = Helpers.specInfo()
+	local Selected = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
+	return Helpers.GetSpecTables()[Selected]
+end
+
+function Helpers.updateSpec()
+	local SlctdCR = Helpers.GetSelectedSpec()
+	if SlctdCR then
+		NeP.Interface.ResetToggles()
+		NeP.Interface.ResetSettings()
+		NeP.Engine.SelectedCR = SlctdCR
+		SlctdCR['InitFunc']()
+	end
 end
 
 NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
@@ -45,4 +80,13 @@ NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 		UI_Erros[error]()
 		UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
 	end
+end)
+
+NeP.Listener.register("PLAYER_LOGIN", function(...)
+	Helpers.updateSpec()
+	NeP.Listener.register("PLAYER_SPECIALIZATION_CHANGED", function(unitID)
+		if unitID == 'player' then
+			Helpers.updateSpec()
+		end
+	end)
 end)
