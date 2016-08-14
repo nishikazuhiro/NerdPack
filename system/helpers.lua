@@ -26,18 +26,18 @@ function NeP.Engine.Reset_Helpers()
 	NeP.pHelpers.behind = true
 	NeP.pHelpers.infront = true
 	NeP.pHelpers.range = true
-	wipe(pHelpers.range_failed)
+	wipe(NeP.pHelpers.range_failed)
 end
 
-function Engine.SpellRange(spell, target)
-	if not pHelpers.range then
-		if pHelpers.range_failed[spell] then
+function NeP.Engine.SpellRange(spell, target)
+	if not NeP.pHelpers.range then
+		if NeP.pHelpers.range_failed[spell] then
 			return false
 		end
-		pHelpers.range_failed[spell] = true
-		pHelpers.range  = true
+		NeP.pHelpers.range_failed[spell] = true
+		NeP.pHelpers.range  = true
 	end
-	return pHelpers.range and IsSpellInRange(spell, target) ~= 0
+	return NeP.pHelpers.range and IsSpellInRange(spell, target) ~= 0
 end
 
 NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
