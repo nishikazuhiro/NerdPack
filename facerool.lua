@@ -81,7 +81,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function Engine.LineOfSight(a, b)
-		return NeP.pHelpers.infront and UnitExists(b)
+		return NeP.Helpers.infront and UnitExists(b)
 	end
 
 	-- Distance
@@ -96,7 +96,7 @@ function NeP.Engine.FaceRoll()
 
 	-- Infront
 	function Engine.Infront(a, b)
-		return NeP.pHelpers.infront
+		return NeP.Helpers.infront
 	end
 
 	local _rangeTable = {

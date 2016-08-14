@@ -40,8 +40,9 @@
 	<Script file="system\config.lua" />
 	<Script file="system\timeout.lua" />
 	<Script file="system\listener.lua" />
-	<Script file="system\helpers.lua" />
+	<Script file="system\engine.lua" />
 	<Script file="system\listeners.lua" />
+	<Script file="system\helpers.lua" />
 
 	<!-- Interface -->
 	<Script file="interface\actionLog.lua" />
@@ -60,7 +61,6 @@
 	<Script file="system\conditions\buffs.lua" />
 	<Script file="system\conditions\keybinds.lua" />
 	<Script file="system\conditions\class.lua" />
-	<Script file="system\engine.lua" />
 	<Script file="system\healing.lua" />
 	<Script file="system\ObjectManager.lua" />
 	<Script file="system\commands.lua" />

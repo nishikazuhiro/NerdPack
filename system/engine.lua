@@ -34,29 +34,6 @@ local fakeUnits = {
 	}
 }
 
-function NeP.Engine.FilterUnit(unit)
-	local unit = tostring(unit)
-	-- This is needed to reattatch to the string
-	local wT, pF = '', ''
-	local pX = string.sub(unit, 1, 1)
-	if string.find(unit, 'target') then wT = 'target' end
-	if pX == '!' then pF = pX end
-	-- Find fake units
-	for i=1, #fakeUnits do
-		local token = fakeUnits[i].token
-		if string.find(unit, token) then
-			local num = tonumber(string.match(unit, "%d+") or 1)
-			local _, x2 = string.match(unit, '(.+)%((.+)%)')
-			local unit = fakeUnits[i].unit(num, x2)
-			if unit then
-				local result = pF..unit..wT
-				return result
-			end
-		end
-	end
-	return unit
-end
-
 -- Engine will bypass IsMounted() if unit has any of this mount buff
 local ByPassMounts = {
 	[165803] = '', -- Telaari Talbuk
@@ -257,6 +234,29 @@ local sTriggers = {
 	end
 }
 
+function NeP.Engine.FilterUnit(unit)
+	local unit = tostring(unit)
+	-- This is needed to reattatch to the string
+	local wT, pF = '', ''
+	local pX = string.sub(unit, 1, 1)
+	if string.find(unit, 'target') then wT = 'target' end
+	if pX == '!' then pF = pX end
+	-- Find fake units
+	for i=1, #fakeUnits do
+		local token = fakeUnits[i].token
+		if string.find(unit, token) then
+			local num = tonumber(string.match(unit, "%d+") or 1)
+			local _, x2 = string.match(unit, '(.+)%((.+)%)')
+			local unit = fakeUnits[i].unit(num, x2)
+			if unit then
+				local result = pF..unit..wT
+				return result
+			end
+		end
+	end
+	return unit
+end
+
 -- This iterates the routine table itself.
 function Engine.Parse(table)
 	for i=1, #table do
@@ -308,81 +308,34 @@ function Engine.Parse(table)
 	Engine.isGroundSpell = false
 	Engine.Current_Spell = nil
 	Engine.ForceTarget = nil
-	NeP.Engine.Reset_Helpers()
-end
-
-function NeP.Core.updateSpec()
-	local Spec = GetSpecialization()
-	local localizedClass, englishClass, classIndex = UnitClass('player')
-	local SpecInfo = classIndex
-	if Spec then
-		SpecInfo = GetSpecializationInfo(Spec)
-	end
-	local SpecInfo = GetSpecializationInfo(Spec)
-	if NeP.Engine.Rotations[SpecInfo] then
-		local SlctdCR = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
-		if NeP.Engine.Rotations[SpecInfo][SlctdCR] then
-			NeP.Interface.ResetToggles()
-			NeP.Interface.ResetSettings()
-			NeP.Engine.SelectedCR = NeP.Engine.Rotations[SpecInfo][SlctdCR]
-			NeP.Engine.Rotations[SpecInfo][SlctdCR]['InitFunc']()
-		end
-	end
+	NeP.Helpers.Reset_Helpers()
 end
 
 local eSync = {}
 
 function Engine.add_Sync(name, callback)
 	if type(callback) == 'function' and not eSync[name] then
-		eSync[name] = callback
+		eSync[#eSync+1] = {name = name, callback = callback}
 	end
 end
 
 function Engine.remove_Sync(name)
-	eSync[name] = nil
-end
-
-local eQueue = {}
-
-function Engine.Cast_Queue(spell, target)
-	local time = GetTime()
-	if not eQueue[spell] then
-		eQueue[spell] = {spell = spell, target = target, time = time}
-	else
-		eQueue[spell].time = time
-	end
-end
-
-function Engine.clear_Cast_Queue()
-	wipe(eQueue)
-end
-
-Engine.add_Sync('eQueue_parser', function()
-	for k,v in pairs(eQueue) do
-		local spell , target, time = v.spell, v.target, v.time
-		if time < GetTime()+5000 then
-			local Iterate, spell, sI = canIterate(spell)
-			local spell = castSanityCheck(spell)
-			if spell then
-				local target = checkTarget(spell, target)
-				if Iterate and target then
-					if sI then SpellStopCasting() end
-					eQueue[k] = nil
-					Cast(spell, target)
-					break
-				end
-			end
-		else
-			eQueue[k] = nil
+	for i=1, #eSync do
+		if eSync[i].name == name then
+			table.remove(eSync, i)
 		end
 	end
-end)
+end
 
 Engine.add_Sync('nep_parser', function()
-	if Engine.SelectedCR and not Engine.forcePause and #eQueue == 0 then
-		local InCombatCheck = InCombatLockdown()
-		local table = Engine.SelectedCR[InCombatCheck]
-		Engine.Parse(table)
+	if Engine.SelectedCR then
+		if not Engine.forcePause and #eQueue == 0 then
+			local InCombatCheck = InCombatLockdown()
+			local table = Engine.SelectedCR[InCombatCheck]
+			Engine.Parse(table)
+		end
+	else
+		Core.Message(TA('Engine', 'NoCR'))
 	end
 end)
 
@@ -392,10 +345,8 @@ C_Timer.NewTicker(0.1, (function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running then
 		NeP.FaceRoll:Hide()
-		for k,v in pairs(eSync) do
-			v()
+		for i=1, #eSync do
+			eSync[i].callback()
 		end
 	end
 end), nil)
-
---Core.Message(TA('Engine', 'NoCR'))

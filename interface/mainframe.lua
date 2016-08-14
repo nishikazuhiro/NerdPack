@@ -64,27 +64,19 @@ if IsAddOnLoaded("ElvUI") then
 end
 
 local function LoadCrs(info)
-	local Spec = GetSpecialization()
-	local localizedClass, englishClass, classIndex = UnitClass('player')
-	local SpecInfo = classIndex
-	if Spec then
-		SpecInfo = GetSpecializationInfo(Spec)
-	end
-	local routinesTable = NeP.Engine.Rotations[SpecInfo]
+	local routinesTable = NeP.Helpers.GetSpecTables()
 	if routinesTable then
-		local lastCR = Config.Read('NeP_SlctdCR_'..(SpecInfo))
+		local lastCR = NeP.Helpers.GetSelectedSpec()['Name']
+		local SpecInfo = NeP.Helpers.specInfo()
 		for k,v in pairs(routinesTable) do
-			local rState = (lastCR == k) or false
 			info = UIDropDownMenu_CreateInfo()
 			info.text = v['Name']
 			info.value = k
-			info.checked = rState
+			info.checked = (lastCR == k) or false
 			info.func = function(self)
 				NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
-				Intf.ResetToggles()
-				Intf.ResetSettings()
 				Config.Write('NeP_SlctdCR_'..(SpecInfo), k)
-				NeP.Core.updateSpec()
+				NeP.Helpers.updateSpec()
 			end
 			UIDropDownMenu_AddButton(info)
 		end
