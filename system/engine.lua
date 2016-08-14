@@ -291,7 +291,7 @@ function Engine.Parse(table)
 				else
 					Debug('Engine', 'Hit Regular')
 					local spell = castSanityCheck(spell)
-					if spell and IsSpellInRange(spell, target) ~= 0  then
+					if spell and NeP.Engine.SpellRange(spell, target)  then
 						if NeP.DSL.parse(conditions, spell) then
 							if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
 								if sI then SpellStopCasting() end
@@ -308,6 +308,7 @@ function Engine.Parse(table)
 	Engine.isGroundSpell = false
 	Engine.Current_Spell = nil
 	Engine.ForceTarget = nil
+	NeP.Engine.Reset_Helpers()
 end
 
 function NeP.Core.updateSpec()
@@ -375,10 +376,14 @@ Engine.add_Sync('eQueue_parser', function()
 			eQueue[k] = nil
 		end
 	end
-	-- Reset States
-	Engine.isGroundSpell = false
-	Engine.Current_Spell = nil
-	Engine.ForceTarget = nil
+end)
+
+Engine.add_Sync('nep_parser', function()
+	if Engine.SelectedCR and not Engine.forcePause and #eQueue == 0 then
+		local InCombatCheck = InCombatLockdown()
+		local table = Engine.SelectedCR[InCombatCheck]
+		Engine.Parse(table)
+	end
 end)
 
 -- Engine Ticker
@@ -389,11 +394,6 @@ C_Timer.NewTicker(0.1, (function()
 		NeP.FaceRoll:Hide()
 		for k,v in pairs(eSync) do
 			v()
-		end
-		if Engine.SelectedCR and not Engine.forcePause and #eQueue == 0 then
-			local InCombatCheck = InCombatLockdown()
-			local table = Engine.SelectedCR[InCombatCheck]
-			Engine.Parse(table)
 		end
 	end
 end), nil)

@@ -50,14 +50,15 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-function NeP.Engine.FaceRoll()
-	local function showActiveSpell(spell)
-		local spellButton = faceroll.buttonMap[spell]
-		if spellButton and spell then
-			activeFrame:Show()
-			activeFrame:SetPoint("CENTER", spellButton, "CENTER")
-		end
+local function showActiveSpell(spell)
+	local spellButton = faceroll.buttonMap[spell]
+	if spellButton and spell then
+		activeFrame:Show()
+		activeFrame:SetPoint("CENTER", spellButton, "CENTER")
 	end
+end
+
+function NeP.Engine.FaceRoll()
 
 	-- cast on ground
 	function Engine.CastGround(spell, target)
@@ -80,10 +81,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function Engine.LineOfSight(a, b)
-		if UnitExists(b) then
-			return UnitIsVisible(b)
-		end
-		return false
+		return NeP.pHelpers.infront and UnitExists(b)
 	end
 
 	-- Distance
@@ -98,7 +96,7 @@ function NeP.Engine.FaceRoll()
 
 	-- Infront
 	function Engine.Infront(a, b)
-		return true
+		return NeP.pHelpers.infront
 	end
 
 	local _rangeTable = {
