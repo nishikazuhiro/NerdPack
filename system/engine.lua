@@ -329,7 +329,7 @@ end
 
 Engine.add_Sync('nep_parser', function()
 	if Engine.SelectedCR then
-		if not Engine.forcePause and #eQueue == 0 then
+		if not Engine.forcePause then
 			local InCombatCheck = InCombatLockdown()
 			local table = Engine.SelectedCR[InCombatCheck]
 			Engine.Parse(table)
