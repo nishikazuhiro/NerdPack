@@ -3,6 +3,12 @@ local eQueue = {}
 local Engine = NeP.Engine
 
 function Engine.Cast_Queue(spell, target)
+	-- if the spell already exists in the queue do not add it again
+	for i=1, #eQueue do
+		if eQueue[i][1] = spell then
+			return false
+		end
+	end
 	eQueue[#eQueue+1] = {spell, nil, target}
 end
 
