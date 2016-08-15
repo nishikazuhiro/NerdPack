@@ -62,7 +62,12 @@ end
 function Helpers.GetSelectedSpec()
 	local SpecInfo = Helpers.specInfo()
 	local Selected = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
-	return Helpers.GetSpecTables()[Selected]
+	return Helpers.GetSpecTables()[Selected] or { 
+			[true] = {},
+			[false] = {},
+			['InitFunc'] = (function() return end),
+			['Name'] = 'NONE'
+		}
 end
 
 function Helpers.updateSpec()
