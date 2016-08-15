@@ -20,12 +20,11 @@ end
 Engine.add_Sync('eQueue_parser', function()
 	for i=1, #eQueue do
 		local time = GetTime()
-		-- if the item in the queue has been there more than 5s, remove it
-		if ((time - eQueue[i][4]) > 5000) then
+		-- if the item in the queue has been there more than 5s,
+		-- or if the spell was successfully cast, remove it
+		if (((time - eQueue[i][4]) > 5) or Engine.Parse({eQueue[i]})) then
 			table.remove(eQueue, i)
-		end
-		if Engine.Parse({eQueue[i]}) then
-			table.remove(eQueue, i)
+			break
 		end
 	end
 end, 1)
