@@ -217,8 +217,7 @@ local sTriggers = {
 	['@'] = function(spell)
 		if sI then SpellStopCasting() end
 		local lib = string.sub(spell, 2);
-		NeP.library.parse(false, spell, lib)
-		return true
+		return NeP.library.parse(false, spell, lib)
 	end,
 	['/'] = function(spell)
 		if sI then SpellStopCasting() end
@@ -274,8 +273,7 @@ function Engine.Parse(table)
 				elseif tP == 'function' then
 					if NeP.DSL.parse(conditions, '') then
 						Debug('Engine', 'Hit Function')
-						spell()
-						return true
+						if spell() then return true end
 					end
 				elseif tP == 'string' then
 					Debug('Engine', 'Hit String')
