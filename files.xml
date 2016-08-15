@@ -64,6 +64,7 @@
 	<Script file="system\healing.lua" />
 	<Script file="system\ObjectManager.lua" />
 	<Script file="system\commands.lua" />
+	<Script file="system\queue.lua" />
 	<Script file="facerool.lua" />
 
 </Ui>

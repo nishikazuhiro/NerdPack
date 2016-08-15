@@ -234,7 +234,7 @@ local sTriggers = {
 	end
 }
 
-function NeP.Engine.FilterUnit(unit)
+function Engine.FilterUnit(unit)
 	local unit = tostring(unit)
 	-- This is needed to reattatch to the string
 	local wT, pF = '', ''
@@ -313,10 +313,12 @@ end
 
 local eSync = {}
 
-function Engine.add_Sync(name, callback)
+-- Prio is a hack so queue is 1, parser 3 and everything else goes in the middle (2)
+function Engine.add_Sync(name, callback, prio)
 	if type(callback) == 'function' and not eSync[name] then
-		eSync[#eSync+1] = {name = name, callback = callback}
+		eSync[#eSync+1] = {name = name, callback = callback, prio = (prio or 2)}
 	end
+	table.sort(eSync, function(a,b) return a.prio < b.prio end)
 end
 
 function Engine.remove_Sync(name)
@@ -337,7 +339,7 @@ Engine.add_Sync('nep_parser', function()
 	else
 		Core.Message(TA('Engine', 'NoCR'))
 	end
-end)
+end, 3)
 
 -- Engine Ticker
 local LastTimeOut = 0
