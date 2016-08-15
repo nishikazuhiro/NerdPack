@@ -78,6 +78,7 @@ Healing['lowest'] = function(num, role)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
+	return 'FUCKTHISINVALIDUNIT'
 end
 
 -- healer
@@ -100,6 +101,7 @@ Healing['healer'] = function(num)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
+	return 'FUCKTHISINVALIDUNIT'
 end
 
 -- healer
@@ -122,6 +124,7 @@ Healing['damager'] = function(num)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
+	return 'FUCKTHISINVALIDUNIT'
 end
 
 -- Tank
@@ -142,6 +145,7 @@ Healing['tank'] = function(num)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
+	return 'FUCKTHISINVALIDUNIT'
 end
 
 NeP.library.register('coreHealing', {

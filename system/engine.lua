@@ -118,18 +118,11 @@ end
 
 local function checkTarget(target)
 	local target = target
-	if type(target) == 'nil' then
-		target = 'player'
-		if UnitExists('target') then
-			target = 'target'
-		end
-	end
-	if Engine.ForceTarget then target = Engine.ForceTarget end
+	target = Engine.ForceTarget or NeP.Engine.FilterUnit(target)
 	if string.sub(target, -7) == '.ground' then
 		Engine.isGroundSpell = true
 		target = string.sub(target, 0, -8)
 	end
-	target = NeP.Engine.FilterUnit(target)
 	if (UnitExists(target) or Engine.isGroundSpell and target == 'mouseover') 
 	and Engine.LineOfSight('player', target) then
 		return target
@@ -235,7 +228,13 @@ local sTriggers = {
 }
 
 function Engine.FilterUnit(unit)
-	local unit = tostring(unit)
+	if type(unit) == 'nil' then
+		unit = 'player'
+		if UnitExists('target') then
+			unit = 'target'
+		end
+		return unit
+	end
 	-- This is needed to reattatch to the string
 	local wT, pF = '', ''
 	local pX = string.sub(unit, 1, 1)
@@ -265,38 +264,40 @@ function Engine.Parse(table)
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
 			local target = checkTarget(target)
-			Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
-			if tP == 'table' then
-				if NeP.DSL.parse(conditions, '') then
-					Debug('Engine', 'Hit Table')
-					if Engine.Parse(spell) then return true end
-				end
-			elseif tP == 'function' then
-				if NeP.DSL.parse(conditions, '') then
-					Debug('Engine', 'Hit Function')
-					spell()
-					return true
-				end
-			elseif tP == 'string' then
-				Debug('Engine', 'Hit String')
-				local pX = string.sub(spell, 1, 1)
-				if string.lower(spell) == 'pause' then
+			if UnitExists(target) then
+				Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
+				if tP == 'table' then
 					if NeP.DSL.parse(conditions, '') then
+						Debug('Engine', 'Hit Table')
+						if Engine.Parse(spell) then return true end
+					end
+				elseif tP == 'function' then
+					if NeP.DSL.parse(conditions, '') then
+						Debug('Engine', 'Hit Function')
+						spell()
 						return true
 					end
-				elseif sTriggers[pX] then
-					if NeP.DSL.parse(conditions, '') then
-						if sTriggers[pX](spell, target, sI) then return true end
-					end
-				else
-					Debug('Engine', 'Hit Regular')
-					local spell = castSanityCheck(spell)
-					if spell and NeP.Engine.SpellRange(spell, target)  then
-						if NeP.DSL.parse(conditions, spell) then
-							if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
-								if sI then SpellStopCasting() end
-								Cast(spell, target)
-								return true
+				elseif tP == 'string' then
+					Debug('Engine', 'Hit String')
+					local pX = string.sub(spell, 1, 1)
+					if string.lower(spell) == 'pause' then
+						if NeP.DSL.parse(conditions, '') then
+							return true
+						end
+					elseif sTriggers[pX] then
+						if NeP.DSL.parse(conditions, '') then
+							if sTriggers[pX](spell, target, sI) then return true end
+						end
+					else
+						Debug('Engine', 'Hit Regular')
+						local spell = castSanityCheck(spell)
+						if spell and NeP.Engine.SpellRange(spell, target)  then
+							if NeP.DSL.parse(conditions, spell) then
+								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
+									if sI then SpellStopCasting() end
+									Cast(spell, target)
+									return true
+								end
 							end
 						end
 					end
