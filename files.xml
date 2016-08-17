@@ -36,13 +36,11 @@
 
 	<!-- Core Files -->
 	<Script file="interface\debug.lua" />
+	<Script file="system\timer.lua" />
 	<Script file="system\classindex.lua" />
 	<Script file="system\config.lua" />
 	<Script file="system\timeout.lua" />
 	<Script file="system\listener.lua" />
-	<Script file="system\engine.lua" />
-	<Script file="system\listeners.lua" />
-	<Script file="system\helpers.lua" />
 
 	<!-- Interface -->
 	<Script file="interface\actionLog.lua" />
@@ -54,13 +52,16 @@
 	<Script file="system\library.lua" />
 	<Script file="system\APIs.lua" />
 	<Script file="system\dsl.lua" />
-	<Script file="system\combatLog.lua" />
-	<script file="system\ttd.lua" />
 	<Script file="system\conditions\general.lua" />
 	<Script file="system\conditions\units.lua" />
 	<Script file="system\conditions\buffs.lua" />
 	<Script file="system\conditions\keybinds.lua" />
 	<Script file="system\conditions\class.lua" />
+	<Script file="system\combatLog.lua" />
+	<script file="system\ttd.lua" />
+	<Script file="system\engine.lua" />
+	<Script file="system\listeners.lua" />
+	<Script file="system\helpers.lua" />
 	<Script file="system\healing.lua" />
 	<Script file="system\ObjectManager.lua" />
 	<Script file="system\commands.lua" />

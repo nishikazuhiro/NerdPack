@@ -17,14 +17,16 @@ function Engine.clear_Cast_Queue()
 	wipe(eQueue)
 end
 
-Engine.add_Sync('eQueue_parser', function()
-	for i=1, #eQueue do
+NeP.Timer.Register("nep_queue", function()
+	local Running = NeP.DSL.get('toggle')('mastertoggle')
+	if Running then
 		local time = GetTime()
-		-- if the item in the queue has been there more than 5s,
-		-- or if the spell was successfully cast, remove it
-		if (((time - eQueue[i][4]) > 5) or Engine.Parse({eQueue[i]})) then
-			table.remove(eQueue, i)
-			break
+		NeP.FaceRoll:Hide()
+		for i=1, #eQueue do
+			if ((time - eQueue[i][4]) > 5) or Engine.Parse({eQueue[i]}) then
+				table.remove(eQueue, i)
+				break
+			end
 		end
 	end
-end, 1)
+end, 0.1)

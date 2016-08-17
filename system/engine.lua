@@ -310,44 +310,18 @@ function Engine.Parse(table)
 	NeP.Helpers.Reset_Helpers()
 end
 
-local eSync = {}
-
--- Prio is a hack so queue is 1, parser 3 and everything else goes in the middle (2)
-function Engine.add_Sync(name, callback, prio)
-	if type(callback) == 'function' and not eSync[name] then
-		eSync[#eSync+1] = {name = name, callback = callback, prio = (prio or 2)}
-	end
-	table.sort(eSync, function(a,b) return a.prio < b.prio end)
-end
-
-function Engine.remove_Sync(name)
-	for i=1, #eSync do
-		if eSync[i].name == name then
-			table.remove(eSync, i)
-		end
-	end
-end
-
-Engine.add_Sync('nep_parser', function()
-	if Engine.SelectedCR then
-		if not Engine.forcePause then
-			local InCombatCheck = InCombatLockdown()
-			local table = Engine.SelectedCR[InCombatCheck]
-			Engine.Parse(table)
-		end
-	else
-		Core.Message(TA('Engine', 'NoCR'))
-	end
-end, 3)
-
--- Engine Ticker
-local LastTimeOut = 0
-C_Timer.NewTicker(0.1, (function()
+NeP.Timer.Register("nep_parser", function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running then
 		NeP.FaceRoll:Hide()
-		for i=1, #eSync do
-			eSync[i].callback()
+		if Engine.SelectedCR then
+			if not Engine.forcePause then
+				local InCombatCheck = InCombatLockdown()
+				local table = Engine.SelectedCR[InCombatCheck]
+				Engine.Parse(table)
+			end
+		else
+			Core.Message(TA('Engine', 'NoCR'))
 		end
 	end
-end), nil)
+end, 0.1)
