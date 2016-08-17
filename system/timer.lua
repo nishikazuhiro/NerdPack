@@ -26,6 +26,7 @@ function timer.Register(module, _event, _period)
             period = (_period / 1000),
             last = 0
         }
+        return
     end
     NeP.Core.Print('Timer Error: ' .. module .. ' has no time period.')
 end
