@@ -318,10 +318,11 @@ NeP.Timer.Register("nep_parser", function()
 			if not Engine.forcePause then
 				local InCombatCheck = InCombatLockdown()
 				local table = Engine.SelectedCR[InCombatCheck]
-				Engine.Parse(table)
+				-- Break the timers
+				if Engine.Parse(table) then return true end
 			end
 		else
 			Core.Message(TA('Engine', 'NoCR'))
 		end
 	end
-end, 0.1, 3)
+end, 0.1, 2)
