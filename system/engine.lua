@@ -324,4 +324,4 @@ NeP.Timer.Register("nep_parser", function()
 			Core.Message(TA('Engine', 'NoCR'))
 		end
 	end
-end, 0.1)
+end, 0.1, 3)

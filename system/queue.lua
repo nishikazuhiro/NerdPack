@@ -29,4 +29,4 @@ NeP.Timer.Register("nep_queue", function()
 			end
 		end
 	end
-end, 0.1)
+end, 0.1, 1)
