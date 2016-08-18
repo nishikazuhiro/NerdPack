@@ -21,7 +21,7 @@ local frame = CreateFrame('Frame')
 frame:SetScript('OnUpdate', onUpdate);
 
 function timer.Register(module, _event, _period, _prio)
-    local prio = prio or 2
+    local prio = _prio or 2
     debug('timer', 'Timer Registered: ' .. module)
     if tonumber(_period) then
         timers[#timers+1] = {
