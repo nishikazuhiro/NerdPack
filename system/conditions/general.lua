@@ -139,6 +139,10 @@ RegisterConditon('spell.charges', function(target, spell)
 	return select(1, GetSpellCharges(spell))
 end)
 
+RegisterConditon('spell.count', function(target, spell)
+	return select(1, GetSpellCount(spell))
+end)
+
 RegisterConditon('spell.cd', function(target, spell)
 	return NeP.DSL.Conditions['spell.cooldown'](target, spell)
 end)
