@@ -23,10 +23,13 @@ NeP.Timer.Register("nep_queue", function()
 		local time = GetTime()
 		NeP.FaceRoll:Hide()
 		for i=1, #eQueue do
-			if ((time - eQueue[i][4]) > 5) or Engine.Parse({eQueue[i]}) then
+			if (time - eQueue[i][4]) > 5 then
 				table.remove(eQueue, i)
 				break
+			elseif Engine.Parse({eQueue[i]}) then
+				table.remove(eQueue, i)
+				return true
 			end
 		end
 	end
-end, 0.1, 1)
+end, 0.1, 0)

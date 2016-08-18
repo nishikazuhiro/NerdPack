@@ -7,12 +7,12 @@ local timers = {}
 
 local function onUpdate(self, elapsed)
     for i=1, #timers do
-        local timer = timer[i]
+        local timer = timers[i]
         timer.last = timer.last + elapsed
         if (timer.last > timer.period) then
-            debug('timer', 'Timer Fire: ' .. timer)
-            timer.event(elapsed)
+            debug('timer', 'Timer Fire: ' .. timer.module)
             timer.last = 0
+            if timer.event(elapsed) then break end
         end
     end
 end
@@ -21,10 +21,11 @@ local frame = CreateFrame('Frame')
 frame:SetScript('OnUpdate', onUpdate);
 
 function timer.Register(module, _event, _period, _prio)
-    local prio = prio or 2
+    local prio = _prio or 1
     debug('timer', 'Timer Registered: ' .. module)
     if tonumber(_period) then
         timers[#timers+1] = {
+            module = module,
             event = _event,
             period = (_period / 1000),
             last = 0,
