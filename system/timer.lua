@@ -7,10 +7,10 @@ local timers = {}
 
 local function onUpdate(self, elapsed)
     for i=1, #timers do
-        local timer = timer[i]
-        timer.last = timer.last + elapsed
+      local timer = timers[i]
+      timer.last = timer.last + elapsed
         if (timer.last > timer.period) then
-            debug('timer', 'Timer Fire: ' .. timer)
+            --debug('timer', 'Timer Fire: ' .. timer)
             timer.event(elapsed)
             timer.last = 0
         end
