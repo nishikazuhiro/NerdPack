@@ -263,7 +263,7 @@ function Engine.Parse(table)
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
 			local target = checkTarget(target)
-			if UnitExists(target) then
+			if target then
 				Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
 				if tP == 'table' then
 					if NeP.DSL.parse(conditions, '') then
