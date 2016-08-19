@@ -124,7 +124,7 @@ local function checkTarget(target)
 		target = string.sub(target, 0, -8)
 	end
 	if (UnitExists(target) or Engine.isGroundSpell and target == 'mouseover') 
-	and Engine.LineOfSight('player', target) then
+	and UnitIsVisible(target) and Engine.LineOfSight('player', target) then
 		return target
 	end
 end
