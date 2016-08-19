@@ -14,9 +14,8 @@ function Commands.Register(name, func, ...)
 end
 
 NeP_CMDTable = {
-
-	-- Master Toggle
-	['mastertoggle'] = function(rest)
+    -- Master Toggle
+    ['mastertoggle'] = function(rest)
 		if rest == 'on' then
 			NeP.Interface.toggleToggle('MasterToggle', true)
 		elseif rest == 'off' then
@@ -28,27 +27,21 @@ NeP_CMDTable = {
 	['mt'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
 	['toggle'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
 	['tg'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
-
-  -- AoE
-  ['aoe'] = function(rest) NeP.Interface.toggleToggle('AoE') end,
-
-  -- CDs
-  ['cooldowns'] = function(rest) NeP.Interface.toggleToggle('Cooldowns') end,
-
-  -- Interrupts
-  ['interrupts'] = function(rest) NeP.Interface.toggleToggle('Interrupts') end,
-
-
-	-- Hide
-	['hide'] = function(rest) NePFrame:Hide(); NeP.Core.Print('To Display NerdPack Execute: \n/nep show') end,
-
+    -- AoE
+    ['aoe'] = function(rest) NeP.Interface.toggleToggle('AoE') end,
+    -- CDs
+    ['cooldowns'] = function(rest) NeP.Interface.toggleToggle('Cooldowns') end,
+    -- Interrupts
+    ['interrupts'] = function(rest) NeP.Interface.toggleToggle('Interrupts') end,
+    -- Hide
+    ['hide'] = function(rest) NePFrame:Hide(); NeP.Core.Print('To Display NerdPack Execute: \n/nep show') end,
 	-- Show
 	['show'] = function(rest) NePFrame:Show() end,
-
 	-- Version
 	['version'] = function(rest) NeP.Core.Print(NeP.Info.Version..' - '..NeP.Info.Branch) end,
-	['ver'] = function(rest) NeP_CMDTable['version'](rest) end
-
+	['ver'] = function(rest) NeP_CMDTable['version'](rest) end,
+    -- Drag
+    ['drag'] = function(rest) NePfDrag:Show() end
 }
 
 Commands.Register('NeP', function(msg)

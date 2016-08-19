@@ -25,7 +25,7 @@ NeP.MFrame = {
 	Plugins = {},
 	nSettings = {
 		{
-			name = 'Move '..NeP.Info.Name,
+			name = TA('mainframe', 'Drag'),
 			func = function() NePfDrag:Show() end
 		},
 		{
@@ -281,7 +281,7 @@ function Config.CreateMainFrame()
 	statusText:SetShadowColor(0,0,0, 0.8)
 	statusText:SetShadowOffset(-1,-1)
 	statusText:SetPoint("CENTER", NePfDrag)
-	statusText:SetText("|cffffffffDRAG ME!|r")
+	statusText:SetText("|cffffffff"..TA('mainframe', 'WhileDrag').."|r")
 	local texture = NePfDrag:CreateTexture()
 	texture:SetAllPoints(NePfDrag)
 	texture:SetColorTexture(0,0,0,0.9)
@@ -295,6 +295,7 @@ function Config.CreateMainFrame()
 		Config.Write('NePFrame_POS_2', x)
 		Config.Write('NePFrame_POS_3', y)
 		NePfDrag:Hide()
+		NeP.Core.Print(TA('mainframe', 'AfterDrag'))
 	end)
 	NePfDrag:Hide()
 

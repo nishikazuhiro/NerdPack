@@ -5,7 +5,7 @@ NeP.Locale['enUS'] = {
 		['OFF'] = 'OFF'
 	},
 	['mainframe'] = {
-		['MasterToggle'] = ' LeftClick: Enable/Disable\nRight Click: Open Settings',
+		['MasterToggle'] = 'LeftClick: Enable/Disable\nRight Click: Open Settings',
 		['Interrupts'] = 'Toggle Interrupts ON or OFF',
 		['Cooldowns'] = 'Toggle Cooldowns ON or OFF',
 		['AoE'] = 'Toggle AoE ON or OFF',
@@ -17,7 +17,10 @@ NeP.Locale['enUS'] = {
 		['NoCR'] = 'No Combat Routines Available',
 		['NoSepc'] = 'Cant Find User Specialization.',
 		['Donate'] = 'Donate To The Project',
-		['Forum'] = 'Visit our forum'
+		['Forum'] = 'Visit our forum',
+		['Drag'] = 'Enable Dragging',
+		['WhileDrag'] = 'DRAG ME!',
+		['AfterDrag'] = 'Saved frame position, to drag again right click the MasterToggle and choose "Enable Dragging" or execute the command "/nep drag".',
 	},
 	['Engine'] = {
 		['NoCR'] = 'Failed, No Combat Routine Selected.'
