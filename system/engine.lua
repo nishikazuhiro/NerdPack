@@ -182,11 +182,11 @@ local function castSanityCheck(spell)
 		-- Make sure we can cast the spell
 		local skillType, spellId = GetSpellBookItemInfo(spell)
 		local start, duration, enabled = GetSpellCooldown(spell)
-		local _, GCD = GetSpellCooldown(GetSpellInfo(61304))
+		local _, GCD = GetSpellCooldown(61304)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if skillType == 'FUTURESPELL' then 
 			return
-		elseif isUsable and start < GCD and not notEnoughMana then
+		elseif isUsable and (start <= GCD) and not notEnoughMana then
 			Engine.Current_Spell = spell
 			return spell
 		end
