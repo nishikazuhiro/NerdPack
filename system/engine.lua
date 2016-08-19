@@ -5,7 +5,6 @@ NeP.Engine = {
 	lastCast = nil,
 	forcePause = false,
 	Current_Spell = nil,
-	isGroundSpell = false,
 	Rotations = {},
 }
 
@@ -106,8 +105,8 @@ local function insertToLog(whatIs, spell, target)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
-local function Cast(spell, target)
-	if Engine.isGroundSpell then
+local function Cast(spell, target, isGroundCast)
+	if isGroundCast then
 		Engine.CastGround(spell, target)
 	else
 		Engine.Cast(spell, target)
@@ -118,14 +117,15 @@ end
 
 local function checkTarget(target)
 	local target = target
+	local isGroundCast = false
 	target = Engine.ForceTarget or NeP.Engine.FilterUnit(target)
 	if string.sub(target, -7) == '.ground' then
-		Engine.isGroundSpell = true
+		isGroundCast = true
 		target = string.sub(target, 0, -8)
 	end
-	if (UnitExists(target) or Engine.isGroundSpell and target == 'mouseover') 
+	if (UnitExists(target) or isGroundCast and target == 'mouseover') 
 	and UnitIsVisible(target) and Engine.LineOfSight('player', target) then
-		return target
+		return target, isGroundCast
 	end
 end
 
@@ -269,7 +269,7 @@ function Engine.Parse(table)
 		local spell, conditions, target = aR[1], aR[2], aR[3]
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
-			local target = checkTarget(target)
+			local target, isGroundCast = checkTarget(target)
 			if target then
 				Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
 				if tP == 'table' then
@@ -300,7 +300,7 @@ function Engine.Parse(table)
 							if NeP.DSL.parse(conditions, spell) then
 								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
 									if sI then SpellStopCasting() end
-									Cast(spell, target)
+									Cast(spell, target, isGroundCast)
 									return true
 								end
 							end
@@ -312,7 +312,6 @@ function Engine.Parse(table)
 	end
 	-- Reset States
 	Engine.isGroundSpell = false
-	Engine.Current_Spell = nil
 	Engine.ForceTarget = nil
 end
 
