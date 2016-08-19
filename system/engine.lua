@@ -178,7 +178,7 @@ local function canIterate(spell)
 	return Iterate, spell, sI
 end
 
-local function castSanityCheck(spell)
+local function castSanityCheck(spell, target)
 	-- Convert Ids to Names
 	if string.match(spell, '%d') then
 		spell = GetSpellInfo(tonumber(spell))
@@ -191,7 +191,8 @@ local function castSanityCheck(spell)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if skillType == 'FUTURESPELL' then 
 			return
-		elseif isUsable and (start <= GCD) and not notEnoughMana then
+		elseif isUsable and (start <= GCD) and not notEnoughMana
+		and Engine.SpellRange(spell, target) then
 			Engine.Current_Spell = spell
 			return spell
 		end
@@ -294,7 +295,7 @@ function Engine.Parse(table)
 						end
 					else
 						Debug('Engine', 'Hit Regular')
-						local spell = castSanityCheck(spell)
+						local spell = castSanityCheck(spell, target)
 						if spell and NeP.Engine.SpellRange(spell, target)  then
 							if NeP.DSL.parse(conditions, spell) then
 								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
@@ -313,7 +314,6 @@ function Engine.Parse(table)
 	Engine.isGroundSpell = false
 	Engine.Current_Spell = nil
 	Engine.ForceTarget = nil
-	NeP.Helpers.Reset_Helpers()
 end
 
 NeP.Timer.Register("nep_parser", function()
@@ -324,8 +324,7 @@ NeP.Timer.Register("nep_parser", function()
 			if not Engine.forcePause then
 				local InCombatCheck = InCombatLockdown()
 				local table = Engine.SelectedCR[InCombatCheck]
-				-- Break the timers
-				if Engine.Parse(table) then return true end
+				Engine.Parse(table)
 			end
 		else
 			Core.Message(TA('Engine', 'NoCR'))
