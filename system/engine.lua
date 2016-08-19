@@ -161,12 +161,17 @@ local function canIterate(spell)
 		end
 		if sType == 'string' then
 			local pX = string.sub(spell, 1, 1)
+			-- Interrupts current cast and cast this instead
 			if pX == '!' then
 				spell = string.sub(spell, 2);
 				if spell ~= Engine.lastCast and castingTime >= 0.5 then
 					sI = true
 					Iterate = true
 				end
+			-- Cast this along with current cast
+			elseif pX == '&' then
+				spell = string.sub(spell, 2);
+				Iterate = true
 			end
 		end
 	end
