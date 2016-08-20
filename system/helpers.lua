@@ -2,7 +2,8 @@ NeP.Helpers = {
 	behind = true,
 	infront = true,
 	range = true,
-	range_failed = {}
+	range_failed = {},
+	spellHasFailed = {}
 }
 
 local Helpers = NeP.Helpers
@@ -24,15 +25,14 @@ local UI_Erros = {
 	end
 }
 
-function NeP.Engine.SpellRange(spell, target)
-	if not Helpers.range then
-		if Helpers.range_failed[spell] then
+function NeP.Engine.SpellSanity(spell, target)
+	if not Helpers.behind or not Helpers.infront or not Helpers.range then
+		if Helpers.spellHasFailed[spell] then
 			return false
 		end
-		Helpers.range_failed[spell] = true
-		Helpers.range  = true
+		Helpers.spellHasFailed[spell] = true
 	end
-	return Helpers.range and (NeP.Engine.Distance('player', 'target') <= 40)
+	return true and (NeP.Engine.Distance('player', target) <= 40)
 end
 
 function Helpers.specInfo()
@@ -89,9 +89,9 @@ NeP.Listener.register("PLAYER_LOGIN", function(...)
 	end)
 end)
 
-NeP.Timer.Register("nep_Helpers", function()
+function ResetHelpers()
 	Helpers.behind = true
 	Helpers.infront = true
 	Helpers.range = true
 	wipe(Helpers.range_failed)
-end, 0.1, 3)
+end

@@ -193,7 +193,7 @@ local function castSanityCheck(spell, target)
 		if skillType == 'FUTURESPELL' then 
 			return
 		elseif isUsable and (start <= GCD) and not notEnoughMana
-		and Engine.SpellRange(spell, target) then
+		and Engine.SpellSanity(spell, target) then
 			Engine.Current_Spell = spell
 			return spell
 		end
@@ -297,7 +297,7 @@ function Engine.Parse(table)
 					else
 						Debug('Engine', 'Hit Regular')
 						local spell = castSanityCheck(spell, target)
-						if spell and NeP.Engine.SpellRange(spell, target)  then
+						if spell then
 							if NeP.DSL.parse(conditions, spell) then
 								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
 									if sI then SpellStopCasting() end
