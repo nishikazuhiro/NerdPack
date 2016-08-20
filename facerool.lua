@@ -43,6 +43,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 					local spell = GetSpellInfo(id)
 					if spell then
 						faceroll.buttonMap[spell] = button
+						button:SetScript("OnClick", function(self)
+							NeP.Engine.Cast_Queue(spell)
+						end)
 					end
 				end
 			end
