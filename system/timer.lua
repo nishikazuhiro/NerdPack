@@ -5,36 +5,23 @@ local debug = NeP.Core.Debug
 
 local timers = {}
 
-local function onUpdate(self, elapsed)
+C_Timer.NewTicker(0.1, (function()
     for i=1, #timers do
         local timer = timers[i]
-        timer.last = timer.last + elapsed
-        if (timer.last > timer.period) then
-            debug('timer', 'Timer Fire: ' .. timer.module)
-            timer.last = 0
-            if timer.event(elapsed) then break end
-        end
+        debug('timer', 'Timer Fire: ' .. timer.name)
+        if timer.callback() then break end
     end
-end
+end), nil)
 
-local frame = CreateFrame('Frame')
-frame:SetScript('OnUpdate', onUpdate);
-
-function timer.Register(module, _event, _period, _prio)
+function timer.Sync(_name, _callback, _prio)
     local prio = _prio or 1
-    debug('timer', 'Timer Registered: ' .. module)
-    if tonumber(_period) then
-        timers[#timers+1] = {
-            module = module,
-            event = _event,
-            period = (_period / 1000),
-            last = 0,
-            prio = prio
-        }
-        table.sort(timers, function(a,b) return a.prio < b.prio end)
-    else
-        NeP.Core.Print('Timer Error: ' .. module .. ' has no time period.')
-    end
+    debug('timer', 'Timer Registered: ' .. _name)
+    timers[#timers+1] = {
+        name = _name,
+        callback = _callback,
+        prio = _prio
+    }
+    table.sort(timers, function(a,b) return a.prio < b.prio end)
 end
 
 --function timer.Unregister(module)

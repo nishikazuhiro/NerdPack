@@ -52,7 +52,7 @@ RegisterConditon('runes', function(target, rune)
 	local next = 0
 	for i=1, 6 do
 		local start, duration, runeReady = GetRuneCooldown(i)
-		if runeReady then 
+		if runeReady then
 			count = count + 1
 		elseif duration > next then
 			next = duration

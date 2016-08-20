@@ -2,7 +2,6 @@ NeP.Helpers = {
 	behind = true,
 	infront = true,
 	range = true,
-	range_failed = {},
 	spellHasFailed = {}
 }
 
@@ -26,7 +25,9 @@ local UI_Erros = {
 }
 
 function NeP.Engine.SpellSanity(spell, target)
-	if not Helpers.behind or not Helpers.infront or not Helpers.range then
+	if not Helpers.behind
+	or not Helpers.infront
+	or not Helpers.range then
 		if Helpers.spellHasFailed[spell] then
 			return false
 		end
@@ -89,9 +90,9 @@ NeP.Listener.register("PLAYER_LOGIN", function(...)
 	end)
 end)
 
-function NeP.Engine.ResetHelpers()
+C_Timer.NewTicker(1, (function()
 	Helpers.behind = true
 	Helpers.infront = true
 	Helpers.range = true
-	wipe(Helpers.range_failed)
-end
+	wipe(Helpers.spellHasFailed)
+end), nil)

@@ -314,10 +314,9 @@ function Engine.Parse(table)
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
-	NeP.Engine.ResetHelpers()
 end
 
-NeP.Timer.Register("nep_parser", function()
+NeP.Timer.Sync("nep_parser", function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running then
 		NeP.FaceRoll:Hide()
