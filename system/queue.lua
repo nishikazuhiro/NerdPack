@@ -2,6 +2,20 @@ local eQueue = {}
 
 local Engine = NeP.Engine
 
+function OverWriteActions()
+	for k,v in pairs(NeP.Faceroll.buttonMap) do
+		v:SetScript("OnClick", function(self)
+			NeP.Engine.Cast_Queue(k)
+		end)
+	end
+	-- we also need to get keybinds!
+end
+
+C_Timer.After(10, function()
+	NeP.Core.Print("loaded queue")
+	OverWriteActions()
+end)
+
 function Engine.Cast_Queue(spell, target)
 	-- if the spell already exists in the queue do not add it again
 	for i=1, #eQueue do
