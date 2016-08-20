@@ -123,9 +123,8 @@ local function checkTarget(target)
 		isGroundCast = true
 		target = string.sub(target, 0, -8)
 	end
-	if isGroundCast and target == 'mouseover' then
-		return target, isGroundCast
-	elseif UnitExists(target) and UnitIsVisible(target)
+	if isGroundCast and target == 'mouseover'
+	or UnitExists(target) and UnitIsVisible(target)
 	and Engine.LineOfSight('player', target) then
 		return target, isGroundCast
 	end
