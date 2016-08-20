@@ -362,7 +362,7 @@ RegisterConditon("area.enemies", function(unit, distance)
 	if UnitExists(unit) then
 		for i=1, #NeP.OM.unitEnemie do
 			local Obj = NeP.OM.unitEnemie[i]
-			if UnitAffectingCombat(Obj.key)
+			if (UnitAffectingCombat(Obj.key) or isDummy(Obj.key))
 			and UnitExists(Obj.key)
 			and (NeP.Engine.Distance(unit, Obj.key) <= distance) then
 				total = total +1
