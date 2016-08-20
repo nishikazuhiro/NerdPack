@@ -314,6 +314,7 @@ function Engine.Parse(table)
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
+	NeP.Engine.ResetHelpers()
 end
 
 NeP.Timer.Register("nep_parser", function()
