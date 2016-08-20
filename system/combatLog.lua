@@ -1,8 +1,6 @@
-NeP.CombatLog = {
-	Data = {}
-}
+NeP.CombatLog = {}
 
-local Data = NeP.CombatLog.Data
+local Data = {}
 
 -- combat log events to watch for damage
 local DamageLogEvents = {
@@ -19,69 +17,72 @@ local HealingLogEvents = {
 	["SPELL_PERIODIC_HEAL"] = ''
 }
 
-local function toData(GUID)
-	if Data[GUID] == nil then
-		Data[GUID] = {
-			dmgTaken = 0,
-			hitsTaken = 0,
-			healed = 0,
-			healsTaken = 0
-		}
-	end
-end
-
 local logDamage = function(...)
 	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, _, _, _, Amount = select(1, ...)
-	toData(GUID)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
 	Data[GUID].hitsTaken = Data[GUID].hitsTaken + 1
+	Data[GUID].timestamp = GetTime() * 1000
 end
 
 local logSwing = function(...)
 	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, Amount = select(1, ...)
-	toData(GUID)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
 	Data[GUID].hitsTaken = Data[GUID].hitsTaken + 1
 end
 
 local logHealing = function(...)
 	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, _, _, _, Amount = select(1, ...)
-	toData(GUID)
 	Data[GUID].healed = Data[GUID].healed + Amount
 	Data[GUID].healsTaken = Data[GUID].healsTaken + 1
 end
 
-local logDied = function(...)
-	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, Amount = select(1, ...)
-	Data[GUID] = nil
-end
-
 -- start the combat log (when the player enters combat)
-local startLogging = function()
-	NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
-		local EVENT = select(2, ...)
-		if DamageLogEvents[EVENT] then
-			logDamage(...)
-		elseif HealingLogEvents[EVENT] then
-			logHealing(...)
-		elseif EVENT == "SWING_DAMAGE" then
-			logSwing(...)
-		elseif EVENT == 'UNIT_DIED' then
-			logDied(...)
+NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
+	local Timestamp, EVENT, _,_,_,_,_, GUID= select(1, ...)
+		
+	-- Add the unit to our data if we dont have it
+	if Data[GUID] == nil then
+		Data[GUID] = {
+			dmgTaken = 0,
+			hitsTaken = 0,
+			healed = 0,
+			healsTaken = 0,
+			timestamp = 0
+		}
+	end
+
+	-- Add a timestamp
+	Data[GUID].timestamp = GetTime()
+
+	-- add the amount of dmg/heak
+	if DamageLogEvents[EVENT] then
+		logDamage(...)
+	elseif HealingLogEvents[EVENT] then
+		logHealing(...)
+	elseif EVENT == "SWING_DAMAGE" then
+		logSwing(...)
+	elseif EVENT == 'UNIT_DIED' then
+		Data[GUID] = nil
+	end
+
+end)
+
+C_Timer.NewTicker(1, (function()
+	local cTime = GetTime()
+	for k,v in pairs(Data) do
+		local test = (cTime-v.timestamp)
+		-- remove from data
+		if v.dmgTaken < 1 then
+			Data[k] = nil
+		-- reduce
+		elseif test > 1 then
+			v.dmgTaken = v.dmgTaken/2
+			v.hitsTaken = v.hitsTaken/2
+			v.healed = v.healed/2
+			v.healsTaken = v.healsTaken/2
 		end
-	end)
-end
-
--- stop the combat log (when the player leaves combat)
-local stopLogging = function()
-	NeP.Listener.unregister('ttd', "COMBAT_LOG_EVENT_UNFILTERED", startLogging)
-	wipe(Data)
-end
-
--- register events
-NeP.Listener.register('combatlog', "PLAYER_REGEN_ENABLED", stopLogging)
-NeP.Listener.register('combatlog', "PLAYER_REGEN_DISABLED", startLogging)
-NeP.Listener.register('combatlog', "PLAYER_LOGIN", stopLogging)
+	end
+end), nil)
 
 function  NeP.CombatLog.getHeals(UNIT)
 	local total = 0
