@@ -47,28 +47,19 @@ RegisterConditon('runicpower', function(target, spell)
 	return UnitPower(target, SPELL_POWER_RUNIC_POWER)
 end)
 
-RegisterConditon('runes.count', function(target)
+RegisterConditon('runes', function(target, rune)
 	local count = 0
+	local next = 0
 	for i=1, 6 do
 		local start, duration, runeReady = GetRuneCooldown(i)
-		if runeReady then count = count+1 end
+		if runeReady then 
+			count = count + 1
+		elseif duration > next then
+			next = duration
+		end
 	end
+	if next > 0 then count = count + (next/10) end
 	return count
-end)
-
-RegisterConditon('runes.cooldown', function(target, runes)
-	local rT = {}
-	for i=1, 6 do
-		local r, d, c = GetRuneCooldown(i)
-		local cd = (r + d) - GetTime()
-		rT[#rT+1] = cd
-	end
-	table.sort(rT, function(a,b) return a < b end)
-	return rT[runes] or 0
-end)
-
-RegisterConditon('runes', function(target, rune)
-	return NeP.DSL.Conditions['runes.count'](target, rune)
 end)
 
 --------------------------------------------------- SHAMMMAN -------------------------------------------------
