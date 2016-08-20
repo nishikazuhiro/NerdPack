@@ -89,7 +89,7 @@ NeP.Listener.register("PLAYER_LOGIN", function(...)
 	end)
 end)
 
-function ResetHelpers()
+function NeP.Engine.ResetHelpers()
 	Helpers.behind = true
 	Helpers.infront = true
 	Helpers.range = true
