@@ -11,10 +11,10 @@ function OverWriteActions()
 	-- we also need to get keybinds!
 end
 
-C_Timer.After(10, function()
-	NeP.Core.Print("loaded queue")
-	OverWriteActions()
-end)
+--C_Timer.After(10, function()
+--	NeP.Core.Print("loaded queue")
+--	OverWriteActions()
+--end)
 
 function Engine.Cast_Queue(spell, target)
 	-- if the spell already exists in the queue do not add it again
