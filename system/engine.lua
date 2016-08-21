@@ -274,12 +274,12 @@ function Engine.Parse(table)
 			if target then
 				Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
 				if tP == 'table' then
-					if NeP.DSL.parse(conditions, '') then
+					if NeP.DSL.parse(conditions, spell) then
 						Debug('Engine', 'Hit Table')
 						if Engine.Parse(spell) then return true end
 					end
 				elseif tP == 'function' then
-					if NeP.DSL.parse(conditions, '') then
+					if NeP.DSL.parse(conditions, spell) then
 						Debug('Engine', 'Hit Function')
 						if spell() then return true end
 					end
@@ -287,11 +287,11 @@ function Engine.Parse(table)
 					Debug('Engine', 'Hit String')
 					local pX = string.sub(spell, 1, 1)
 					if string.lower(spell) == 'pause' then
-						if NeP.DSL.parse(conditions, '') then
+						if NeP.DSL.parse(conditions, spell) then
 							return true
 						end
 					elseif sTriggers[pX] then
-						if NeP.DSL.parse(conditions, '') then
+						if NeP.DSL.parse(conditions, spell) then
 							if sTriggers[pX](spell, target, sI) then return true end
 						end
 					else
