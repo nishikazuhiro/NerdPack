@@ -12,9 +12,8 @@ local DiesalGUI = LibStub('DiesalGUI-1.0')
 local DiesalMenu = LibStub('DiesalMenu-1.0')
 local SharedMedia = LibStub('LibSharedMedia-3.0')
 
-
-NeP.Core.testDebug = DiesalGUI:Create('Window')
-local display = NeP.Core.testDebug
+-- Work in Progress...
+local display = DiesalGUI:Create('Window')
 display:SetTitle('TeST Mode')
 display.frame:SetClampedToScreen(true)
 display.frame:SetSize(300, 400)
@@ -22,8 +21,7 @@ display.frame:SetMinResize(300, 400)
 display:Hide()
 
 -- This to put an icon on top of the spell we want
-NeP.FaceRoll = CreateFrame('Frame', 'activeCastFrame', UIParent)
-local activeFrame = NeP.FaceRoll
+local activeFrame = CreateFrame('Frame', 'activeCastFrame', UIParent)
 activeFrame:SetSize(32,32)
 activeFrame:SetPoint("CENTER", UIParent, "CENTER")
 activeFrame.texture = activeFrame:CreateTexture()
@@ -70,7 +68,7 @@ end
 
 -- Hide it
 NeP.Timer.Sync("nep_faceroll", function()
-	NeP.FaceRoll:Hide()
+	activeFrame:Hide()
 end, 0)
 
 function NeP.Engine.FaceRoll()
@@ -222,11 +220,8 @@ function NeP.Engine.FaceRoll()
 		-- Nameplate cache
 		for k,_ in pairs(nameplates) do
 			local plate = nameplates[k]
-			--local ObjDistance = Engine.Distance('player', plate)
 			if GenericFilter(plate) then
-				--if ObjDistance <= 100 then
 					NeP.OM.addToOM(plate)
-				--end
 			end
 		end
 	end
