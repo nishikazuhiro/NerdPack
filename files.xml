@@ -58,7 +58,6 @@
 	<Script file="system\conditions\keybinds.lua" />
 	<Script file="system\conditions\class.lua" />
 	<Script file="system\combatLog.lua" />
-	<script file="system\ttd.lua" />
 	<Script file="system\engine.lua" />
 	<Script file="system\listeners.lua" />
 	<Script file="system\helpers.lua" />

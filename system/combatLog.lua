@@ -20,11 +20,13 @@ local HealingLogEvents = {
 local logDamage = function(...)
 	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, _, _, _, Amount = select(1, ...)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
+	Data[GUID].Hits = Data[GUID].Hits + 1
 end
 
 local logSwing = function(...)
 	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, Amount = select(1, ...)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
+	Data[GUID].Hits = Data[GUID].Hits + 1
 end
 
 local logHealing = function(...)
@@ -40,7 +42,8 @@ NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
 	if Data[GUID] == nil then
 		Data[GUID] = {
 			dmgTaken = 0,
-			firstHit = GetTime()
+			firstHit = GetTime(),
+			Hits = 0
 		}
 	end
 
@@ -57,14 +60,29 @@ NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
 end)
 
 function NeP.CombatLog.getDMG(UNIT)
-	local total = 0
+	local total, Hits = 0, 0
 	local GUID = UnitGUID(UNIT)
 	if Data[GUID] then
 		local timePassed = (GetTime()-Data[GUID].firstHit)
 		total = Data[GUID].dmgTaken / timePassed
+		Hits = Data[GUID].Hits
 		if total < 1 then
 			Data[GUID] = nil
 		end
 	end
-	return total
+	return total, Hits
+end
+
+local fakeTTD = 99999
+NeP.TimeToDie = function(unit)
+	local ttd = fakeTTD
+
+	if not isDummy(unit) then
+		local DMG, Hits = NeP.CombatLog.getDMG(unit)
+		if DMG >= 1 and Hits > 1 then
+			ttd = UnitHealth(unit) / DMG
+		end
+	end
+
+	return ttd
 end
