@@ -204,6 +204,23 @@ NeP.DSL.RegisterConditon('AoEHeal', function(target, args)
 	return total >= num
 end)
 
+NeP.DSL.RegisterConditon('HealInfront', function(args)
+	local health, num, maxDis = strsplit(',', args, 3)
+	local health, num, maxDis = tonumber(health or 100), tonumber(num or 3), tonumber(distance or 40)
+	local total = 0	
+	for i=1, #Healing.Units do
+		local Obj = Healing.Units[i]
+		local distance = NeP.Engine.Distance('player', Obj.key)
+		if Obj.health <= health and distance <= maxDis then
+			if NeP.Engine.Infront('player', Obj.key) then
+				total = total + 1
+			end
+		end
+	end
+	return total >= num
+end)
+
+
 NeP.DSL.RegisterConditon('dispellAll', function(spell)
 	local spellID = GetSpellID(GetSpellName(spell))
 	local skip = false
