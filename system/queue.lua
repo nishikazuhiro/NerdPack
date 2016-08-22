@@ -35,7 +35,6 @@ NeP.Timer.Sync("nep_queue", function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running then
 		local time = GetTime()
-		NeP.FaceRoll:Hide()
 		for i=1, #eQueue do
 			if (time - eQueue[i][4]) > 5 then
 				table.remove(eQueue, i)
@@ -46,4 +45,4 @@ NeP.Timer.Sync("nep_queue", function()
 			end
 		end
 	end
-end, 0.1, 0)
+end, 1)

@@ -42,10 +42,13 @@ NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
 	if Data[GUID] == nil then
 		Data[GUID] = {
 			dmgTaken = 0,
+			Hits = 0,
 			firstHit = GetTime(),
-			Hits = 0
+			lastHit = 0,
 		}
 	end
+
+	Data[GUID].lastHit = GetTime()
 
 	-- Add the amount of dmg/heak
 	if DamageLogEvents[EVENT] then
@@ -63,17 +66,19 @@ function NeP.CombatLog.getDMG(UNIT)
 	local total, Hits = 0, 0
 	local GUID = UnitGUID(UNIT)
 	if Data[GUID] then
-		local timePassed = (GetTime()-Data[GUID].firstHit)
+		local time = GetTime()
+		local timePassed = (time-Data[GUID].firstHit)
 		total = Data[GUID].dmgTaken / timePassed
 		Hits = Data[GUID].Hits
-		if total < 1 then
+		-- Remove a unit if ir hasnt recived dmg for 5 sec
+		if (time-Data[GUID].lastHit) >= 5 then
 			Data[GUID] = nil
 		end
 	end
 	return total, Hits
 end
 
-local fakeTTD = 99999
+local fakeTTD = 8675309
 NeP.TimeToDie = function(unit)
 	local ttd = fakeTTD
 

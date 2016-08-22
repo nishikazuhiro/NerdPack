@@ -63,6 +63,7 @@ function NeP.Core.Debug(prefix, text)
 	end
 end
 
+-- Work in Progress..
 NeP.Core.testDebug = DiesalGUI:Create('Window')
 local debug = NeP.Core.testDebug
 debug:SetWidth(300)

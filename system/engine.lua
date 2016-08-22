@@ -319,7 +319,6 @@ end
 NeP.Timer.Sync("nep_parser", function()
 	local Running = NeP.DSL.get('toggle')('mastertoggle')
 	if Running then
-		NeP.FaceRoll:Hide()
 		if Engine.SelectedCR then
 			if not Engine.forcePause then
 				local InCombatCheck = InCombatLockdown()
@@ -330,4 +329,4 @@ NeP.Timer.Sync("nep_parser", function()
 			Core.Message(TA('Engine', 'NoCR'))
 		end
 	end
-end, 0.1, 2)
+end, 2)

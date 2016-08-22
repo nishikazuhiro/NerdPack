@@ -1,42 +1,50 @@
-local Engine = NeP.Engine
 NeP.Faceroll = {
 	buttonMap = { },
-	lastFrame = false,
-	rolling = false,
-	bars = {
-		"ActionButton",
-		"MultiBarBottomRightButton",
-		"MultiBarBottomLeftButton",
-		"MultiBarRightButton",
-		"MultiBarLeftButton"
-	}
 }
 
 local faceroll = NeP.Faceroll
+local Engine = NeP.Engine
 
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
+local DiesalTools = LibStub('DiesalTools-1.0')
+local DiesalStyle = LibStub('DiesalStyle-1.0')
+local DiesalGUI = LibStub('DiesalGUI-1.0')
+local DiesalMenu = LibStub('DiesalMenu-1.0')
+local SharedMedia = LibStub('LibSharedMedia-3.0')
 
+
+NeP.Core.testDebug = DiesalGUI:Create('Window')
+local display = NeP.Core.testDebug
+display:SetTitle('TeST Mode')
+display.frame:SetClampedToScreen(true)
+display.frame:SetSize(300, 400)
+display.frame:SetMinResize(300, 400)
+display:Hide()
+
+-- This to put an icon on top of the spell we want
 NeP.FaceRoll = CreateFrame('Frame', 'activeCastFrame', UIParent)
 local activeFrame = NeP.FaceRoll
-activeFrame:SetWidth(32)
-activeFrame:SetHeight(32)
+activeFrame:SetSize(32,32)
 activeFrame:SetPoint("CENTER", UIParent, "CENTER")
-activeFrame.glow = activeFrame:CreateTexture()
-activeFrame.glow:SetColorTexture(0,1,1,1)
-activeFrame.glow:SetAllPoints(activeFrame)
-activeFrame.glow.texture = activeFrame:CreateTexture()
-activeFrame.glow.texture:SetTexture("Interface/TARGETINGFRAME/UI-RaidTargetingIcon_8")
---activeFrame.glow.texture:SetVertexColor(0, 1, 0, 1)
-activeFrame.glow.texture:SetAllPoints(activeFrame)
+activeFrame.texture = activeFrame:CreateTexture()
+activeFrame.texture:SetTexture("Interface/TARGETINGFRAME/UI-RaidTargetingIcon_8")
+activeFrame.texture:SetAllPoints(activeFrame)
 activeFrame:SetFrameStrata('HIGH')
 activeFrame:Hide()
 
+local nBars = {
+	"ActionButton",
+	"MultiBarBottomRightButton",
+	"MultiBarBottomLeftButton",
+	"MultiBarRightButton",
+	"MultiBarLeftButton"
+}
 local frame = CreateFrame("FRAME", "FooAddonFrame");
 frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 frame:RegisterEvent("PLAYER_ENTERING_WORLD");
 frame:SetScript("OnEvent", function(self, event, ...)
 	wipe(faceroll.buttonMap)
-	for _, group in ipairs(faceroll.bars) do
+	for _, group in ipairs(nBars) do
 		for i =1, 12 do
 			local button = _G[group .. i]
 			if button then
@@ -54,11 +62,16 @@ end)
 
 local function showActiveSpell(spell)
 	local spellButton = faceroll.buttonMap[spell]
-	if spellButton and spell then
-		activeFrame:Show()
+	if spellButton then
 		activeFrame:SetPoint("CENTER", spellButton, "CENTER")
+		activeFrame:Show()
 	end
 end
+
+-- Hide it
+NeP.Timer.Sync("nep_faceroll", function()
+	NeP.FaceRoll:Hide()
+end, 0)
 
 function NeP.Engine.FaceRoll()
 

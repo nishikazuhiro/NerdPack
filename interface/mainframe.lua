@@ -135,7 +135,6 @@ local function defaultToggles()
 			UIDropDownMenu_Initialize(ST_Dropdown, dropdown, "MENU");
 			ToggleDropDownMenu(1, nil, ST_Dropdown, self, 0, 0);
 		end
-		NeP.FaceRoll:Hide()
 	end)
 	Intf.CreateToggle('Interrupts', 'Interface\\ICONS\\Ability_Kick.png', 'Interrupts', TA('mainframe', 'Interrupts'))
 	Intf.CreateToggle('Cooldowns', 'Interface\\ICONS\\Achievement_BG_winAB_underXminutes.png', 'Cooldowns', TA('mainframe', 'Cooldowns'))

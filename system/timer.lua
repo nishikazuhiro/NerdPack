@@ -9,12 +9,12 @@ C_Timer.NewTicker(0.1, (function()
     for i=1, #timers do
         local timer = timers[i]
         debug('timer', 'Timer Fire: ' .. timer.name)
-        if timer.callback() then break end
+        timer.callback()
     end
 end), nil)
 
 function timer.Sync(_name, _callback, _prio)
-    local prio = _prio or 1
+    local prio = _prio or 99
     debug('timer', 'Timer Registered: ' .. _name)
     timers[#timers+1] = {
         name = _name,
