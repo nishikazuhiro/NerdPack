@@ -24,11 +24,12 @@ function timer.Sync(_name, _callback, _prio)
     table.sort(timers, function(a,b) return a.prio < b.prio end)
 end
 
---function timer.Unregister(module)
---    debug('timer', 'Timer Unregistered: ' .. module)
---    timers[module] = nil
---end
-
---function timer.updatePeriod(module, period)
---    timers[module].period = (period / 1000)
---end
+function timer.Unregister(_name)
+    for i=1, #timers do
+        local timer = timers[i]
+        if timer.name == _name then
+            debug('timer', 'Timer Unregistered: ' .. _name)
+            timers[_name] = nil
+        end
+    end
+end
