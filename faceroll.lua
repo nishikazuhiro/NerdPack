@@ -6,29 +6,35 @@ local faceroll = NeP.Faceroll
 local Engine = NeP.Engine
 
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
-local DiesalTools = LibStub('DiesalTools-1.0')
-local DiesalStyle = LibStub('DiesalStyle-1.0')
-local DiesalGUI = LibStub('DiesalGUI-1.0')
-local DiesalMenu = LibStub('DiesalMenu-1.0')
-local SharedMedia = LibStub('LibSharedMedia-3.0')
-
--- Work in Progress...
-local display = DiesalGUI:Create('Window')
-display:SetTitle('TeST Mode')
-display.frame:SetClampedToScreen(true)
-display.frame:SetSize(300, 400)
-display.frame:SetMinResize(300, 400)
-display:Hide()
 
 -- This to put an icon on top of the spell we want
 local activeFrame = CreateFrame('Frame', 'activeCastFrame', UIParent)
-activeFrame:SetSize(32,32)
-activeFrame:SetPoint("CENTER", UIParent, "CENTER")
+activeFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+	edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+	tile = true, tileSize = 16, edgeSize = 16, 
+	insets = { left = 4, right = 4, top = 4, bottom = 4 }
+});
+activeFrame:SetBackdropColor(0,0,0,1);
 activeFrame.texture = activeFrame:CreateTexture()
 activeFrame.texture:SetTexture("Interface/TARGETINGFRAME/UI-RaidTargetingIcon_8")
 activeFrame.texture:SetAllPoints(activeFrame)
 activeFrame:SetFrameStrata('HIGH')
 activeFrame:Hide()
+
+-- Work in Progress...
+local display = CreateFrame('Frame', 'Faceroll_Info', activeFrame)
+display:SetClampedToScreen(true)
+display:SetSize(0, 0)
+display:SetPoint("TOP")
+display:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
+	edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
+	tile = true, tileSize = 16, edgeSize = 16, 
+	insets = { left = 4, right = 4, top = 4, bottom = 4 }
+});
+display:SetBackdropColor(0,0,0,1);
+display.text = display:CreateFontString('PE_StatusText')
+display.text:SetFont("Fonts\\ARIALN.TTF", 16)
+display.text:SetPoint("CENTER", display)
 
 local nBars = {
 	"ActionButton",
@@ -58,29 +64,36 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-local function showActiveSpell(spell)
+local function showActiveSpell(spell, target)
 	local spellButton = faceroll.buttonMap[spell]
+	local bSize = faceroll.buttonMap[spell]:GetWidth()
 	if spellButton then
+		activeFrame:SetSize(bSize+5, bSize+5)
+		display:SetSize(display.text:GetStringWidth()+20, display.text:GetStringHeight()+20)
 		activeFrame:SetPoint("CENTER", spellButton, "CENTER")
+		display:SetPoint("TOP", spellButton, 0, bSize*1.5)
+		display.text:SetText("|cffff0000Spell:|r "..tostring(spell).."\n|cffff0000Target:|r"..UnitName(target))
 		activeFrame:Show()
+		display:Show()
 	end
 end
 
 -- Hide it
 NeP.Timer.Sync("nep_faceroll", function()
 	activeFrame:Hide()
+	display:Hide()
 end, 0)
 
 function NeP.Engine.FaceRoll()
 
 	-- cast on ground
 	function Engine.CastGround(spell, target)
-		showActiveSpell(spell)
+		showActiveSpell(spell, target)
 	end
 
 	-- Cast
 	function Engine.Cast(spell, target)
-		showActiveSpell(spell)
+		showActiveSpell(spell, target)
 	end
 
 	-- Macro
