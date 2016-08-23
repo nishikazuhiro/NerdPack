@@ -4,6 +4,7 @@ NeP.Faceroll = {
 
 local faceroll = NeP.Faceroll
 local Engine = NeP.Engine
+local addonColor = '|cff'..NeP.Interface.addonColor
 
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 
@@ -17,7 +18,7 @@ activeFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",
 activeFrame:SetBackdropColor(0,0,0,1);
 activeFrame.texture = activeFrame:CreateTexture()
 activeFrame.texture:SetTexture("Interface/TARGETINGFRAME/UI-RaidTargetingIcon_8")
-activeFrame.texture:SetAllPoints(activeFrame)
+activeFrame.texture:SetPoint("CENTER")
 activeFrame:SetFrameStrata('HIGH')
 activeFrame:Hide()
 
@@ -70,9 +71,10 @@ local function showActiveSpell(spell, target)
 	if spellButton then
 		activeFrame:SetSize(bSize+5, bSize+5)
 		display:SetSize(display.text:GetStringWidth()+20, display.text:GetStringHeight()+20)
+		activeFrame.texture:SetSize(activeFrame:GetWidth()-5,activeFrame:GetHeight()-5)
 		activeFrame:SetPoint("CENTER", spellButton, "CENTER")
-		display:SetPoint("TOP", spellButton, 0, bSize*1.5)
-		display.text:SetText("|cffff0000Spell:|r "..tostring(spell).."\n|cffff0000Target:|r"..UnitName(target))
+		display:SetPoint("TOP", spellButton, 0, display.text:GetStringHeight()+20)
+		display.text:SetText(addonColor.."Spell:|r "..tostring(spell)..addonColor.."\nTarget:|r"..UnitName(target).."("..addonColor..tostring(UnitIsUnit("target", target)).."|r)")
 		activeFrame:Show()
 		display:Show()
 	end
