@@ -12,6 +12,13 @@ RegisterConditon('energy', function(target, spell)
 	return UnitPower(target, UnitPowerType(target))
 end)
 
+-- Returns the amount of energy you have left till max (e.g. you have a max of 100 energy and 80 energy now, so it will return 20)
+RegisterConditon('energydiff', function(target, spell)
+	local max = UnitPowerMax(target, UnitPowerType(target))
+	local curr = UnitPower(target, UnitPowerType(target))
+	return (max - curr)
+end)
+
 RegisterConditon('mana', function(target, spell)
 	if UnitExists(target) then
 		return math.floor((UnitMana(target) / UnitManaMax(target)) * 100)
