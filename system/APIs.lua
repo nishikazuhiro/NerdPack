@@ -22,10 +22,12 @@ APIs['UnitBuff'] = function(target, spell, owner)
 		buff,_,_,count,_,_,expires,caster = _G['UnitBuff'](target, spell)
 	end
 	-- This adds some random factor
-	local reactionTime = GetReactionTime()
-	expires = expires - reactionTime
-	if expires <= 0 then
-		return
+	if expires then
+		local reactionTime = GetReactionTime()
+		expires = expires - reactionTime
+		if expires <= 0 then
+			return
+		end
 	end
 	return buff, count, expires, caster
 end
@@ -50,10 +52,12 @@ APIs['UnitDebuff'] = function(target, spell, owner)
 		debuff,_,_,count,_,_,expires,caster = _G['UnitDebuff'](target, spell)
 	end
 	-- This adds some random factor
-	local reactionTime = GetReactionTime()
-	expires = expires - reactionTime
-	if expires <= 0 then
-		return
+	if expires then
+		local reactionTime = GetReactionTime()
+		expires = expires - reactionTime
+		if expires <= 0 then
+			return
+		end
 	end
 	return debuff, count, expires, caster, power
 end
