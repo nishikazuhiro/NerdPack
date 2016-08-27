@@ -2,6 +2,7 @@ NeP.Engine = {
 	Run = false,
 	SelectedCR = nil,
 	ForceTarget = nil,
+	Current_Target = nil,
 	lastCast = nil,
 	forcePause = false,
 	Current_Spell = nil,
@@ -126,6 +127,7 @@ local function checkTarget(target)
 	if isGroundCast and target == 'mouseover'
 	or UnitExists(target) and UnitIsVisible(target)
 	and Engine.LineOfSight('player', target) then
+		Engine.Current_Target = target
 		return target, isGroundCast
 	end
 end
@@ -193,7 +195,7 @@ local function castSanityCheck(spell, target)
 		if skillType == 'FUTURESPELL' then 
 			return
 		elseif isUsable and (start <= GCD) and not notEnoughMana
-		and Engine.SpellSanity(spell, target) then
+		and NeP.Helpers.SpellSanity(spell, target) then
 			Engine.Current_Spell = spell
 			return spell
 		end
@@ -314,6 +316,7 @@ function Engine.Parse(table)
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
+	Engine.Current_Target = nil
 end
 
 NeP.Timer.Sync("nep_parser", function()

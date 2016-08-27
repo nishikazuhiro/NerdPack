@@ -2,38 +2,45 @@ NeP.Helpers = {
 	behind = true,
 	infront = true,
 	range = true,
-	spellHasFailed = {}
 }
 
 local Helpers = NeP.Helpers
+local spellHasFailed = {}
+
+local function addFailedSpell(GUID, spell)
+	if spellHasFailed[GUID] == nil then
+		spellHasFailed[GUID] = {}
+	end
+	spellHasFailed[GUID][spell] = true
+end
 
 local UI_Erros = {
-	[SPELL_FAILED_NOT_BEHIND] = function()
-		Helpers.behind = false
+	[SPELL_FAILED_NOT_BEHIND] = function(GUID, spell)
+		NeP.Helpers.behind = false
+		addFailedSpell(GUID, spell)
 	end,
 	-- infront / LoS
-	[50] = function()
+	[50] = function(GUID, spell)
 		Helpers.infront = false
+		addFailedSpell(GUID, spell)
 	end,
 	-- SPELL_FAILED_OUT_OF_RANGE
-	[359] = function()
+	[359] = function(GUID, spell)
 		Helpers.range = false
+		addFailedSpell(GUID, spell)
 	end,
-	[SPELL_FAILED_TOO_CLOSE] = function()
+	[SPELL_FAILED_TOO_CLOSE] = function(GUID, spell)
 		Helpers.range = false
+		addFailedSpell(GUID, spell)
 	end
 }
 
-function NeP.Engine.SpellSanity(spell, target)
-	if not Helpers.behind
-	or not Helpers.infront
-	or not Helpers.range then
-		if Helpers.spellHasFailed[spell] then
-			return false
-		end
-		Helpers.spellHasFailed[spell] = true
+function NeP.Helpers.SpellSanity(spell, target)
+	local GUID = UnitGUID(target)
+	if spellHasFailed[GUID] then
+		return spellHasFailed[GUID][spell] == nil
 	end
-	return true and (NeP.Engine.Distance('player', target) <= 40)
+	return true
 end
 
 function Helpers.specInfo()
@@ -76,8 +83,14 @@ end
 
 NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 	if UI_Erros[error] then
-		UI_Erros[error]()
-		UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+		-- Get the target from the engine
+		local unit = NeP.Engine.Current_Target
+		local spell = NeP.Engine.lastCast
+		if unit then
+			local GUID = UnitGUID(unit)
+			UI_Erros[error](GUID, spell)
+			UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+		end
 	end
 end)
 
@@ -94,5 +107,5 @@ C_Timer.NewTicker(1, (function()
 	Helpers.behind = true
 	Helpers.infront = true
 	Helpers.range = true
-	wipe(Helpers.spellHasFailed)
+	wipe(spellHasFailed)
 end), nil)
