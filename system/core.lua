@@ -212,3 +212,10 @@ function NeP.Core.classColor(unit, _type, alpha)
 		return 'FFFFFF'
 	end
 end
+
+--[[0.101 seconds is the current fastest reaction time recorded for human beings.
+The average reaction time of human beings is around .215 seconds.
+This is determined by the amount of time it takes for people to react when given the proper signal to click]]
+function GetReactionTime()
+	return math.random(0.5, 1)
+end
