@@ -73,6 +73,15 @@ local function rFilter(expires, duration)
 	return true
 end
 
+local function SpellCanDispelType(spellID, dispellType)
+	if Spells[dispellType] then
+		for i=1, #Spells[dispellType] do
+			local tSpell = Spells[dispellType][i]
+			if spellID == tSpell return true end
+		end
+	end
+end
+
 -- Update spells
 NeP.Listener.register("PLAYER_LOGIN", function(...)
 	UpdateSpells()
@@ -109,6 +118,17 @@ function NeP.Dispells.CanDispellUnit(unit)
 					return dispellType
 				end
 			end
+		end
+	end
+end
+
+-- Returns if a unit can be dispeled with a certain spell
+function NeP.Dispells.CanDispelWith(unit, spell)
+	in spell and unit then
+		local dispellType = NeP.Dispells.CanDispellUnit(unit)
+		local spellID = GetSpellID(GetSpellName(spell))
+		if spellID and dispellType then
+			return SpellCanDispelType(spellID, dispellType)
 		end
 	end
 end
@@ -151,19 +171,8 @@ NeP.DSL.RegisterConditon('dispellAll', function(spell)
 		end
 	end
 	return false
-end)
-
-NeP.DSL.RegisterConditon("dispellable", function(target, spell)
-	local spellID = GetSpellID(GetSpellName(spell))
-	local skip = false
-	for k,v in pairs(BlackListDebuff) do 
-		local debuff = GetSpellName(tonumber(k))
-		if UnitDebuff(target, tostring(debuff)) then
-			skip = true
-		end
-	end
-	if not skip then
-		return LibDispellable:CanDispelWith(target, spellID)
-	end
-	return false
 end)]]
+
+NeP.DSL.RegisterConditon("dispellable", function(unit, spell)
+	return LibDispellable:CanDispelWith(unit, spell)
+end)
