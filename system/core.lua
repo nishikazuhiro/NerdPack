@@ -217,5 +217,6 @@ end
 The average reaction time of human beings is around .215 seconds.
 This is determined by the amount of time it takes for people to react when given the proper signal to click]]
 function GetReactionTime()
-	return math.random(0.5, 1)
+	local rnd = math.random(5, 10) / 10
+	return rnd
 end

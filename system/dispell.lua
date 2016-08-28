@@ -59,14 +59,12 @@ function UpdateSpells()
 end
 
 local function rFilter(expires, duration)
-	if expires then
+	if expires and expires ~= 0 then
 		local reactionTime = GetReactionTime()
-		expires = expires - reactionTime
+		local time = GetTime()
+		local expires = expires - time
 		-- Break if debuff is gonna end
-		if expires <= reactionTime then
-			return false
-		-- Break if faster then we can react
-		elseif expires > (duration-reactionTime) then
+		if expires < reactionTime then
 			return false
 		end
 	end
