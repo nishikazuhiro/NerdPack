@@ -224,15 +224,29 @@ local sTriggers = {
 			end
 		end
 	end,
-	['@'] = function(spell)
+	['@'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
 		local lib = string.sub(spell, 2);
 		return NeP.library.parse(false, spell, lib)
 	end,
-	['/'] = function(spell)
+	['/'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
 		Engine.Macro(spell)
 		return true
+	['%'] = function(spell, target, sI)
+		local action = string.lower(string.sub(spell, 2)=;
+		if action == 'dispelall' then
+			for i=1,#NeP.Healing.Units do
+				local Obj = NeP.Healing.Units[i]
+				local dispellType = NeP.Dispells.CanDispellUnit(unit)
+				if dispellType then
+					local spell = NeP.Dispells.GetSpell(dispellType)
+					if spell then
+						Cast(spell, Obj.key, false)
+					end
+				end
+			end
+		end
 	end
 }
 
