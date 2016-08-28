@@ -6,7 +6,7 @@ APIs['UnitBuff'] = function(target, spell, owner)
 	local buff, count, caster, expires, spellID
 	if tonumber(spell) then
 		local go, i = true, 0
-		repeat
+		while i <= 40 and go do
 			i = i + 1
 			buff,_,_,count,_,_,expires,caster,_,_,spellID = _G['UnitBuff'](target, i)
 			if not owner then
@@ -18,7 +18,7 @@ APIs['UnitBuff'] = function(target, spell, owner)
 					go = false
 				end
 			end
-		until not go
+		end
 	else
 		buff,_,_,count,_,_,expires,caster = _G['UnitBuff'](target, spell)
 	end
@@ -37,7 +37,7 @@ APIs['UnitDebuff'] = function(target, spell, owner)
 	local debuff, count, caster, expires, spellID, power
 	if tonumber(spell) then
 		local go, i = true, 0
-		repeat
+		while i <= 40 and go do
 			i = i + 1
 			debuff,_,_,count,_,_,expires,caster,_,_,spellID,_,_,_,power = _G['UnitDebuff'](target, i)
 			if not owner then
@@ -49,7 +49,7 @@ APIs['UnitDebuff'] = function(target, spell, owner)
 					go = false
 				end
 			end
-		until not go
+		end
 	else
 		debuff,_,_,count,_,_,expires,caster = _G['UnitDebuff'](target, spell)
 	end
