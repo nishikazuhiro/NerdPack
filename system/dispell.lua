@@ -24,6 +24,20 @@ local function CheckSpell(spellID, pet)
 	return spellID and IsSpellKnown(spellID, pet)
 end
 
+-- Check if a spell is usable
+local function SpellIsUsable(spell)
+	if spell and CheckSpell(spell, false)then
+		-- Make sure we can cast the spell
+		local start, duration, enabled = GetSpellCooldown(spell)
+		local _, GCD = GetSpellCooldown(61304)
+		local isUsable, notEnoughMana = IsUsableSpell(spell)
+		if isUsable and (start <= GCD) and not notEnoughMana then
+			return true
+		end
+	end
+	return false
+end
+
 -- Builds a list of all available spells
 local Spells = {}
 function UpdateSpells()
@@ -59,14 +73,19 @@ function NeP.Dispells.GetSpell(dispellType)
 			if string.match(spell, '%d') then
 				spell = GetSpellInfo(tonumber(spell))
 			end
-			if spell then
-				-- Make sure we can cast the spell
-				local start, duration, enabled = GetSpellCooldown(spell)
-				local _, GCD = GetSpellCooldown(61304)
-				local isUsable, notEnoughMana = IsUsableSpell(spell)
-				if isUsable and (start <= GCD) and not notEnoughMana then
-					return spell
-				end
+			if SpellIsUsable(spell) then
+				return spell
+			end
+		end
+	end
+end
+
+function NeP.Dispells.CanDispellUnit(unit)
+	if UnitExists(unit) then
+		for i=1, 40 do
+			local name, rank, icon, count, dispelType, duration, expires, caster, isStealable = _G["UnitDebuff"](unit, i)
+			if dispellType and Spells[dispellType] then
+				return true, dispellType
 			end
 		end
 	end
