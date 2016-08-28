@@ -41,6 +41,7 @@
 	<Script file="system\timeout.lua" />
 	<Script file="system\listener.lua" />
 	<Script file="system\tooltip.lua" />
+	<Script file="system\buttons.lua" />
 
 	<!-- Interface -->
 	<Script file="interface\actionLog.lua" />

@@ -1,11 +1,6 @@
-NeP.Faceroll = {
-	buttonMap = { },
-}
+NeP.Faceroll = {}
 
-local faceroll = NeP.Faceroll
-local Engine = NeP.Engine
 local addonColor = '|cff'..NeP.Interface.addonColor
-
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 
 -- This to put an icon on top of the spell we want
@@ -37,36 +32,8 @@ display.text = display:CreateFontString('PE_StatusText')
 display.text:SetFont("Fonts\\ARIALN.TTF", 16)
 display.text:SetPoint("CENTER", display)
 
-local nBars = {
-	"ActionButton",
-	"MultiBarBottomRightButton",
-	"MultiBarBottomLeftButton",
-	"MultiBarRightButton",
-	"MultiBarLeftButton"
-}
-local frame = CreateFrame("FRAME", "FooAddonFrame");
-frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
-frame:RegisterEvent("PLAYER_ENTERING_WORLD");
-frame:SetScript("OnEvent", function(self, event, ...)
-	wipe(faceroll.buttonMap)
-	for _, group in ipairs(nBars) do
-		for i =1, 12 do
-			local button = _G[group .. i]
-			if button then
-				local actionType, id, subType = GetActionInfo(ActionButton_CalculateAction(button, "LeftButton"))
-				if actionType == 'spell' then
-					local spell = GetSpellInfo(id)
-					if spell then
-						faceroll.buttonMap[spell] = button
-					end
-				end
-			end
-		end
-	end
-end)
-
 local function showActiveSpell(spell, target)
-	local spellButton = faceroll.buttonMap[spell]
+	local spellButton = NeP.Buttons[spell]
 	if spellButton then
 		local bSize = spellButton:GetWidth()
 		activeFrame:SetSize(bSize+5, bSize+5)
@@ -89,32 +56,32 @@ end, 0)
 function NeP.Engine.FaceRoll()
 
 	-- cast on ground
-	function Engine.CastGround(spell, target)
+	function NeP.Engine.CastGround(spell, target)
 		showActiveSpell(spell, target)
 	end
 
 	-- Cast
-	function Engine.Cast(spell, target)
+	function NeP.Engine.Cast(spell, target)
 		showActiveSpell(spell, target)
 	end
 
 	-- Macro
-	function Engine.Macro(text)
+	function NeP.Engine.Macro(text)
 	end
 
-	function Engine.UseItem(name, target)
+	function NeP.Engine.UseItem(name, target)
 	end
 
-	function Engine.UseInvItem(slot)
+	function NeP.Engine.UseInvItem(slot)
 	end
 
-	function Engine.LineOfSight(a, b)
+	function NeP.Engine.LineOfSight(a, b)
 		return NeP.Helpers.infront and UnitExists(b)
 	end
 
 	-- Distance
 	local rangeCheck = LibStub("LibRangeCheck-2.0")
-	function Engine.Distance(a, b)
+	function NeP.Engine.Distance(a, b)
 		if UnitExists(b) then
 			local minRange, maxRange = rangeCheck:GetRange(b)
 			return maxRange or minRange
@@ -123,7 +90,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	-- Infront
-	function Engine.Infront(a, b)
+	function NeP.Engine.Infront(a, b)
 		return NeP.Helpers.infront
 	end
 
@@ -132,7 +99,7 @@ function NeP.Engine.FaceRoll()
 		['ranged'] = 40,
 	}
 
-	function Engine.UnitAttackRange(unitA, unitB, rType)
+	function NeP.Engine.UnitAttackRange(unitA, unitB, rType)
 		if rType then
 			return _rangeTable[rType] + 3.5
 		end
@@ -193,7 +160,7 @@ function NeP.Engine.FaceRoll()
 		-- Mouseover
 		if UnitExists('mouseover') then
 			local object = 'mouseover'
-			local ObjDistance = Engine.Distance('player', object)
+			local ObjDistance = NeP.Engine.Distance('player', object)
 			if GenericFilter(object) then
 				if ObjDistance <= 100 then
 					NeP.OM.addToOM(object)
@@ -203,7 +170,7 @@ function NeP.Engine.FaceRoll()
 		-- Target Cache
 		if UnitExists('target') then
 			local object = 'target'
-			local ObjDistance = Engine.Distance('player', object)
+			local ObjDistance = NeP.Engine.Distance('player', object)
 			if GenericFilter(object) then
 				if ObjDistance <= 100 then
 					NeP.OM.addToOM(object)
@@ -216,7 +183,7 @@ function NeP.Engine.FaceRoll()
 			for i = 1, GetNumGroupMembers() do
 				-- Enemie
 				local target = prefix..i..'target'
-				local ObjDistance = Engine.Distance('player', target)
+				local ObjDistance = NeP.Engine.Distance('player', target)
 				if GenericFilter(target) then
 					if ObjDistance <= 100 then
 						NeP.OM.addToOM(target)
@@ -224,7 +191,7 @@ function NeP.Engine.FaceRoll()
 				end
 				-- Friendly
 				local friendly = prefix..i
-				local ObjDistance = Engine.Distance('player', friendly)
+				local ObjDistance = NeP.Engine.Distance('player', friendly)
 				if GenericFilter(friendly) then
 					if ObjDistance <= 100 then
 						NeP.OM.addToOM(friendly)
