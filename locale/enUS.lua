@@ -5,7 +5,7 @@ NeP.Locale['enUS'] = {
 		['OFF'] = 'OFF'
 	},
 	['mainframe'] = {
-		['MasterToggle'] = 'LeftClick: Enable/Disable\nRight Click: Open Settings',
+		['MasterToggle'] = 'LeftClick: Enable/Disable\nRight Click: Open Settings\nControl + Right Click: Enable Moving',
 		['Interrupts'] = 'Toggle Interrupts ON or OFF',
 		['Cooldowns'] = 'Toggle Cooldowns ON or OFF',
 		['AoE'] = 'Toggle AoE ON or OFF',

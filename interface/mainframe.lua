@@ -131,9 +131,13 @@ local function defaultToggles()
 		TA('mainframe','MasterToggle'),
 		function(self, button) 
 		if button == "RightButton" then
-			local ST_Dropdown = CreateFrame("Frame", "ST_Dropdown", self, "UIDropDownMenuTemplate");
-			UIDropDownMenu_Initialize(ST_Dropdown, dropdown, "MENU");
-			ToggleDropDownMenu(1, nil, ST_Dropdown, self, 0, 0);
+			if IsControlKeyDown() then
+				NePfDrag:Show()
+			else
+				local ST_Dropdown = CreateFrame("Frame", "ST_Dropdown", self, "UIDropDownMenuTemplate");
+				UIDropDownMenu_Initialize(ST_Dropdown, dropdown, "MENU");
+				ToggleDropDownMenu(1, nil, ST_Dropdown, self, 0, 0);
+			end
 		end
 	end)
 	Intf.CreateToggle('Interrupts', 'Interface\\ICONS\\Ability_Kick.png', 'Interrupts', TA('mainframe', 'Interrupts'))
