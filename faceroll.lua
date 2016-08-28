@@ -67,8 +67,8 @@ end)
 
 local function showActiveSpell(spell, target)
 	local spellButton = faceroll.buttonMap[spell]
-	local bSize = faceroll.buttonMap[spell]:GetWidth()
 	if spellButton then
+		local bSize = spellButton:GetWidth()
 		activeFrame:SetSize(bSize+5, bSize+5)
 		display:SetSize(display.text:GetStringWidth()+20, display.text:GetStringHeight()+20)
 		activeFrame.texture:SetSize(activeFrame:GetWidth()-5,activeFrame:GetHeight()-5)
