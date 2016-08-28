@@ -105,7 +105,7 @@ function NeP.Core.Round(num, idp)
 end
 
 function GetSpellID(spell)
-	if type(spell) == 'number' then return spell end
+	if not spell or type(spell) == 'number' then return spell end
 	local spellID = GetSpellLink(spell):match("spell:(%d+)")
 	if spellID then
 		return tonumber(spellID)
