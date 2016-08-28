@@ -74,11 +74,16 @@ RegisterConditon('casting.percent', function(target, spell)
 end)
 
 RegisterConditon('channeling', function (target, spell)
-	return checkChanneling(target)
+	local name, startTime, endTime, notInterruptible = checkChanneling(target)
+	local spell = GetSpellName(spell)
+	if spell and (name == spell) then
+		return true
+	end
+	return false
 end)
 
 RegisterConditon('casting', function(target, spell)
-	local name, startTime, endTime, notInterruptible  = checkCasting(target)
+	local name, startTime, endTime, notInterruptible = checkCasting(target)
 	local spell = GetSpellName(spell)
 	if spell and (name == spell) then
 		return true
