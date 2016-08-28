@@ -36,9 +36,11 @@ local UI_Erros = {
 }
 
 function NeP.Helpers.SpellSanity(spell, target)
-	local GUID = UnitGUID(target)
-	if GUID and spellHasFailed[GUID] then
-		return spellHasFailed[GUID][spell] == nil
+	if target and spell then
+		local GUID = UnitGUID(target)
+		if GUID and spellHasFailed[GUID] then
+			return spellHasFailed[GUID][spell] == nil
+		end
 	end
 	return true
 end
@@ -86,10 +88,12 @@ NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 		-- Get the target from the engine
 		local unit = NeP.Engine.Current_Target
 		local spell = NeP.Engine.lastCast
-		local GUID = UnitGUID(unit)
-		if GUID then
-			UI_Erros[error](GUID, spell)
-			UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+		if unit and spell then
+			local GUID = UnitGUID(unit)
+			if GUID then
+				UI_Erros[error](GUID, spell)
+				UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
+			end
 		end
 	end
 end)
