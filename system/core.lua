@@ -113,12 +113,32 @@ function GetSpellID(spell)
 end
 
 function GetSpellName(spell)
+	if spell and type(spell) == 'string' then return spell end
 	local spellID = tonumber(spell)
 	if spellID then
 		return GetSpellInfo(spellID)
 	end
-
 	return spell
+end
+
+function GetItemID(item)
+	if item and type(item) == 'number' then return item end
+	local itemID = string.match(select(2, GetItemInfo(item)) or '', 'Hitem:(%d+):')
+	if itemID then
+		return tonumber(itemID)
+	end
+end
+
+function UnitID(unit)
+	if unit and UnitExists(unit) then
+		local guid = UnitGUID(unit)
+		if guid then
+			local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-", guid)
+			if type == "Player" then return tonumber(ServerID) end
+			if npc_id then return tonumber(npc_id) end
+		end
+	end
+	return false
 end
 
 function GetSpellBookIndex(spell)

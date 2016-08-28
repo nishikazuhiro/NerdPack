@@ -206,12 +206,12 @@ local sTriggers = {
 	['#'] = function(spell, target, sI)
 		Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
-		local invItemReady = true
 		if invItems[item] then
 			item = GetInventoryItemID("player", GetInventorySlotInfo(invItems[item]))
-			invItemReady = GetItemSpell(item) ~= nil
+		elseif not tonumber(item) then
+			item = GetItemID(item)
 		end
-		if invItemReady then
+		if GetItemSpell(item) ~= nil then
 			local isUsable, notEnoughMana = IsUsableItem(item)
 			if isUsable then
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
