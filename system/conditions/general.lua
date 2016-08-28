@@ -4,15 +4,13 @@ local rangeCheck = LibStub('LibRangeCheck-2.0')
 local function checkChanneling(target)
 	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
 	if name then return name, startTime, endTime, notInterruptible end
-	return false
 end
 
 local function checkCasting(target)
 	local name, startTime, endTime, notInterruptible = checkChanneling(target)
 	if name then return name, startTime, endTime, notInterruptible end
-	local name, _, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(target)
+	local name, _,_,_, startTime, endTime, _,_, notInterruptible = UnitCastingInfo(target)
 	if name then return name, startTime, endTime, notInterruptible end
-	return false
 end
 
 RegisterConditon('timetomax', function(target, spell)
