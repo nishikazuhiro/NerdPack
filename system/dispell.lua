@@ -60,11 +60,9 @@ end
 
 local function rFilter(expires, duration)
 	if expires and expires ~= 0 then
-		local reactionTime = GetReactionTime()
-		local time = GetTime()
-		local expires = expires - time
+		local expires = expires - GetTime()
 		-- Break if debuff is gonna end
-		if expires < reactionTime then
+		if expires < GetReactionTime() then
 			return false
 		end
 	end
