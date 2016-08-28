@@ -1,17 +1,6 @@
 NeP.Dispells = {}
 
--- Check if we have a spell
-local function CheckSpell(spellID, pet)
-	return spellID and IsSpellKnown(spellID, pet)
-end
-
-
-Spells = {
-	['Debuffs'] = {},
-	['Buffs'] = {}
-}
-
-local Debuffs = {
+local SpellList = {
 	-- Druid
 	[88423] = {'Magic', 'Curse', 'Poison'}, -- Nature's Cure
 	[2782] = {'Curse', 'Poison'}, -- Remove Corruption
@@ -30,24 +19,54 @@ local Debuffs = {
 	
 }
 
-local Buffs = {
-	-- Mage
-	[30449] = {'Magic'}, -- Spellsteal
-	-- Shaman
-	[370] = {'Magic'}, -- Purge
-	-- Priest
-	[528] = {'Magic'} -- Dispel Magic
-}
+-- Check if we have a spell
+local function CheckSpell(spellID, pet)
+	return spellID and IsSpellKnown(spellID, pet)
+end
 
+-- Builds a list of all available spells
+local Spells = {}
 function UpdateSpells()
-	for k,v in pairs(Debuffs) do
+	for k,v in pairs(SpellList) do
 		if CheckSpell(k, false) then
 			for i=1, #v do
 				local dispellType = v[i]
-				if Spells['Debuffs'][dispellType] == nil then
-					Spells['Debuffs'][dispellType] = {}
+				if Spells[dispellType] == nil then
+					Spells[dispellType] = {}
 				end
-				table.insert(Spells['Debuffs'][dispellType], k)
+				table.insert(Spells[dispellType], k)
+			end
+		end
+	end
+end
+
+-- Update spells
+NeP.Listener.register("PLAYER_LOGIN", function(...)
+	UpdateSpells()
+	NeP.Listener.register("PLAYER_SPECIALIZATION_CHANGED", function(unitID)
+		if unitID == 'player' then
+			UpdateSpells()
+		end
+	end)
+end)
+
+-- Returns a usable spell
+function NeP.Dispells.GetSpell(dispellType)
+	if Spells[dispellType] then
+		for i=1, #Spells[dispellType] do
+			local spell = Spells[dispellType][i]
+			-- Convert Ids to Names
+			if string.match(spell, '%d') then
+				spell = GetSpellInfo(tonumber(spell))
+			end
+			if spell then
+				-- Make sure we can cast the spell
+				local start, duration, enabled = GetSpellCooldown(spell)
+				local _, GCD = GetSpellCooldown(61304)
+				local isUsable, notEnoughMana = IsUsableSpell(spell)
+				if isUsable and (start <= GCD) and not notEnoughMana then
+					return spell
+				end
 			end
 		end
 	end
