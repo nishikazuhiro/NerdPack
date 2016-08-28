@@ -10,10 +10,8 @@ end
 local function checkCasting(target)
 	local name, startTime, endTime, notInterruptible = checkChanneling(target)
 	if name then return name, startTime, endTime, notInterruptible end
-
 	local name, _, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(target)
 	if name then return name, startTime, endTime, notInterruptible end
-
 	return false
 end
 
@@ -82,12 +80,9 @@ RegisterConditon('channeling', function (target, spell)
 end)
 
 RegisterConditon('casting', function(target, spell)
-	local castName,_,_,_,_,endTime,_,_,notInterruptibleCast = UnitCastingInfo(target)
-	local channelName,_,_,_,_,endTime,_,notInterruptibleChannel = UnitChannelInfo(target)
+	local name, startTime, endTime, notInterruptible  = checkCasting(target)
 	local spell = GetSpellName(spell)
-	if (castName == spell or channelName == spell) and not not spell then
-		return true
-	elseif notInterruptibleCast == false or notInterruptibleChannel == false then
+	if spell and (name == spell) then
 		return true
 	end
 	return false
