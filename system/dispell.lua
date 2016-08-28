@@ -16,7 +16,11 @@ local SpellList = {
 	-- Shaman
 	[77130] = {'Magic', 'Curse'},  -- Purify Spirit
 	[51886] = {'Curse'} -- Cleanse Spirit
-	
+}
+
+-- BlackListed Debuffs
+local BlackListDebuff = {
+	[184449] = 'Mark of the Necromancer', -- Mark of the Necromancer (HC)
 }
 
 -- Check if we have a spell
@@ -80,13 +84,69 @@ function NeP.Dispells.GetSpell(dispellType)
 	end
 end
 
+-- Returns if a unit can be dispelled and what type
 function NeP.Dispells.CanDispellUnit(unit)
 	if UnitExists(unit) then
 		for i=1, 40 do
-			local name, rank, icon, count, dispelType, duration, expires, caster, isStealable = _G["UnitDebuff"](unit, i)
-			if dispellType and Spells[dispellType] then
-				return true, dispellType
+			local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID = _G["UnitDebuff"](unit, i)
+			if dispellType and Spells[dispellType] and BlackListDebuff[spellID] == nil then
+				return dispellType
 			end
 		end
 	end
 end
+
+-- TEST CRAP
+function NeP.Dispells.TEST()
+	local spellID = GetSpellID(GetSpellName(spell))
+	local skip = false
+	for i=1,#NeP.Healing.Units do
+		local Obj = NeP.Healing.Units[i]
+		local dispellType = NeP.Dispells.CanDispellUnit(unit)
+		if dispellType then
+			local spell = NeP.Dispells.GetSpell(dispellType)
+			if spell then
+				return spell, Obj.key
+			end
+		end
+	end
+end
+
+
+--[[
+local LibDispellable = LibStub("LibDispellable-1.0")
+
+NeP.DSL.RegisterConditon('dispellAll', function(spell)
+	local spellID = GetSpellID(GetSpellName(spell))
+	local skip = false
+	for i=1,#Healing.Units do
+		local Obj = Healing.Units[i]
+		-- Check if the unit dosent have a blacklisted debuff
+		for k,v in pairs(BlackListDebuff) do 
+			local debuff = GetSpellName(tonumber(k))
+			if UnitDebuff(Obj.key, tostring(debuff)) then
+				skip = true
+			end
+		end
+		if not skip and LibDispellable:CanDispelWith(Obj.key, spellID) then
+			NeP.Engine.ForceTarget = Obj.key
+			return true
+		end
+	end
+	return false
+end)
+
+NeP.DSL.RegisterConditon("dispellable", function(target, spell)
+	local spellID = GetSpellID(GetSpellName(spell))
+	local skip = false
+	for k,v in pairs(BlackListDebuff) do 
+		local debuff = GetSpellName(tonumber(k))
+		if UnitDebuff(target, tostring(debuff)) then
+			skip = true
+		end
+	end
+	if not skip then
+		return LibDispellable:CanDispelWith(target, spellID)
+	end
+	return false
+end)]]

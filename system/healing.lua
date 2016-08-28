@@ -3,7 +3,6 @@ NeP.Healing = {
 }
 
 local Healing = NeP.Healing
-local LibDispellable = LibStub("LibDispellable-1.0")
 
 local Roles = {
 	['TANK'] = 2,
@@ -15,11 +14,6 @@ local Roles = {
 -- BlackListed Units	
 local BlackListUnit = {
 	[90296] = 'Soulbound Constructor', -- HC
-}
-
--- BlackListed Debuffs
-local BlackListDebuff = {
-	[184449] = 'Mark of the Necromancer', -- Mark of the Necromancer (HC)
 }
 
 -- Build Roster
@@ -218,42 +212,6 @@ NeP.DSL.RegisterConditon('HealInfront', function(args)
 		end
 	end
 	return total >= num
-end)
-
-
-NeP.DSL.RegisterConditon('dispellAll', function(spell)
-	local spellID = GetSpellID(GetSpellName(spell))
-	local skip = false
-	for i=1,#Healing.Units do
-		local Obj = Healing.Units[i]
-		-- Check if the unit dosent have a blacklisted debuff
-		for k,v in pairs(BlackListDebuff) do 
-			local debuff = GetSpellName(tonumber(k))
-			if UnitDebuff(Obj.key, tostring(debuff)) then
-				skip = true
-			end
-		end
-		if not skip and LibDispellable:CanDispelWith(Obj.key, spellID) then
-			NeP.Engine.ForceTarget = Obj.key
-			return true
-		end
-	end
-	return false
-end)
-
-NeP.DSL.RegisterConditon("dispellable", function(target, spell)
-	local spellID = GetSpellID(GetSpellName(spell))
-	local skip = false
-	for k,v in pairs(BlackListDebuff) do 
-		local debuff = GetSpellName(tonumber(k))
-		if UnitDebuff(target, tostring(debuff)) then
-			skip = true
-		end
-	end
-	if not skip then
-		return LibDispellable:CanDispelWith(target, spellID)
-	end
-	return false
 end)
 
 NeP.DSL.RegisterConditon("health", function(target)
