@@ -242,6 +242,7 @@ local sTriggers = {
 				if dispellType then
 					local spell = NeP.Dispells.GetSpell(dispellType)
 					if spell then
+						if sI then SpellStopCasting() end
 						Cast(spell, Obj.key, false)
 					end
 				end
