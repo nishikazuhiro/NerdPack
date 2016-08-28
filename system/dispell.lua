@@ -77,7 +77,7 @@ local function SpellCanDispelType(spellID, dispellType)
 	if Spells[dispellType] then
 		for i=1, #Spells[dispellType] do
 			local tSpell = Spells[dispellType][i]
-			if spellID == tSpell return true end
+			if spellID == tSpell then return true end
 		end
 	end
 end
@@ -124,7 +124,7 @@ end
 
 -- Returns if a unit can be dispeled with a certain spell
 function NeP.Dispells.CanDispelWith(unit, spell)
-	in spell and unit then
+	if spell and unit then
 		local dispellType = NeP.Dispells.CanDispellUnit(unit)
 		local spellID = GetSpellID(GetSpellName(spell))
 		if spellID and dispellType then

@@ -233,8 +233,9 @@ local sTriggers = {
 		if sI then SpellStopCasting() end
 		Engine.Macro(spell)
 		return true
+	end,
 	['%'] = function(spell, target, sI)
-		local action = string.lower(string.sub(spell, 2)=;
+		local action = string.lower(string.sub(spell, 2));
 		if action == 'dispelall' then
 			for i=1,#NeP.Healing.Units do
 				local Obj = NeP.Healing.Units[i]
