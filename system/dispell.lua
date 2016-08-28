@@ -174,5 +174,5 @@ NeP.DSL.RegisterConditon('dispellAll', function(spell)
 end)]]
 
 NeP.DSL.RegisterConditon("dispellable", function(unit, spell)
-	return LibDispellable:CanDispelWith(unit, spell)
+	return NeP.Dispells.CanDispelWith(unit, spell)
 end)
