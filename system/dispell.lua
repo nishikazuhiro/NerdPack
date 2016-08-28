@@ -58,6 +58,21 @@ function UpdateSpells()
 	end
 end
 
+local function rFilter(expires, duration)
+	if expires then
+		local reactionTime = GetReactionTime()
+		expires = expires - reactionTime
+		-- Break if debuff is gonna end
+		if expires <= reactionTime then
+			return false
+		-- Break if faster then we can react
+		elseif expires > (duration-reactionTime) then
+			return false
+		end
+	end
+	return true
+end
+
 -- Update spells
 NeP.Listener.register("PLAYER_LOGIN", function(...)
 	UpdateSpells()
@@ -90,7 +105,9 @@ function NeP.Dispells.CanDispellUnit(unit)
 		for i=1, 40 do
 			local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID = _G["UnitDebuff"](unit, i)
 			if dispellType and Spells[dispellType] and BlackListDebuff[spellID] == nil then
-				return dispellType
+				if rFilter(expires, duration) then
+					return dispellType
+				end
 			end
 		end
 	end
