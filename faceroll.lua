@@ -109,8 +109,8 @@ function NeP.Engine.FaceRoll()
 	--[[				Generic OM
 	---------------------------------------------------]]
 	local function GenericFilter(unit)
-		local alreadyExists = false
 		if UnitExists(unit) then
+			local alreadyExists = false
 			local GUID = UnitGUID(unit)
 			-- Enemie Filter
 			if UnitCanAttack('player', unit) then
@@ -129,8 +129,8 @@ function NeP.Engine.FaceRoll()
 					end
 				end
 			end
+			return not alreadyExists
 		end
-		return not alreadyExists
 	end
 
 	local nameplates = {}
@@ -203,7 +203,7 @@ function NeP.Engine.FaceRoll()
 		for k,_ in pairs(nameplates) do
 			local plate = nameplates[k]
 			if GenericFilter(plate) then
-					NeP.OM.addToOM(plate)
+				NeP.OM.addToOM(plate)
 			end
 		end
 	end
