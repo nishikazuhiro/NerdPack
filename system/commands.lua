@@ -16,23 +16,17 @@ end
 NeP_CMDTable = {
     -- Master Toggle
     ['mastertoggle'] = function(rest)
-		if rest == 'on' then
-			NeP.Interface.toggleToggle('MasterToggle', true)
-		elseif rest == 'off' then
-			NeP.Interface.toggleToggle('MasterToggle', false)
-		else
-			NeP.Interface.toggleToggle('MasterToggle')
-		end
+        NeP.Interface.toggleToggle('MasterToggle', rest)
 	end,
 	['mt'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
 	['toggle'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
 	['tg'] = function(rest) NeP_CMDTable['mastertoggle'](rest) end,
     -- AoE
-    ['aoe'] = function(rest) NeP.Interface.toggleToggle('AoE') end,
+    ['aoe'] = function(rest) NeP.Interface.toggleToggle('AoE', rest) end,
     -- CDs
-    ['cooldowns'] = function(rest) NeP.Interface.toggleToggle('Cooldowns') end,
+    ['cooldowns'] = function(rest) NeP.Interface.toggleToggle('Cooldowns', rest) end,
     -- Interrupts
-    ['interrupts'] = function(rest) NeP.Interface.toggleToggle('Interrupts') end,
+    ['interrupts'] = function(rest) NeP.Interface.toggleToggle('Interrupts', rest) end,
     -- Hide
     ['hide'] = function(rest) NePFrame:Hide(); NeP.Core.Print('To Display NerdPack Execute: \n/nep show') end,
 	-- Show

@@ -185,7 +185,7 @@ Intf.toggleToggle = function(key, state)
 	button = _G[key]
 
 	if state ~= nil then
-		button.actv = state
+		button.actv = state == 'on'
 	else
 		button.actv = not button.actv
 	end
