@@ -180,10 +180,16 @@ Intf.CreateToggle = function(key, icon, name, tooltipz, callback)
 	Intf.RefreshToggles()
 end
 
-Intf.toggleToggle = function(key)
+Intf.toggleToggle = function(key, state)
 	local key = string.lower(key)
 	button = _G[key]
-	button.actv = not button.actv
+
+	if state ~= nil then
+		button.actv = state
+	else
+		button.actv = not button.actv
+	end
+
 	button:SetChecked(button.actv)
 	Config.Write('bStates_'..key, button.actv)	Intf.RefreshToggles()
 end
