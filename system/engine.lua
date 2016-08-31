@@ -217,7 +217,7 @@ local sTriggers = {
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 				if itemStart == 0 and GetItemCount(item) > 0 then
 					if sI then SpellStopCasting() end
-					Engine.UseItem(item, target)
+					Engine.UseItem(GetItemInfo(item)), target)
 					insertToLog('Item', item, target)
 					return true
 				end
