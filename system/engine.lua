@@ -248,7 +248,7 @@ local sTriggers = {
 		elseif not tonumber(item) then
 			item = GetItemID(item)
 		end
-		if GetItemSpell(item) ~= nil then
+		if GetItemSpell(item) then
 			local isUsable, notEnoughMana = IsUsableItem(item)
 			if isUsable then
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
@@ -265,7 +265,8 @@ local sTriggers = {
 	['@'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
 		local lib = string.sub(spell, 2);
-		return NeP.library.parse(false, spell, lib)
+		local result = NeP.library.parse(false, spell, lib)
+		if result then return result end
 	end,
 	-- Macro
 	['/'] = function(spell, target, sI)
