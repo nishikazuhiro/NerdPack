@@ -195,7 +195,7 @@ local function canIterate(spell)
 	return Iterate, spell, sI
 end
 
-local function castSanityCheck(spell, target)
+local function spellResolve(spell)
 	-- Convert Ids to Names
 	if string.match(spell, '%d') then
 		spell = GetSpellInfo(tonumber(spell))
@@ -208,8 +208,7 @@ local function castSanityCheck(spell, target)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if skillType == 'FUTURESPELL' then 
 			return
-		elseif isUsable and (start <= GCD) and not notEnoughMana
-		and NeP.Helpers.SpellSanity(spell, target) then
+		elseif isUsable and (start <= GCD) and not notEnoughMana then
 			Engine.Current_Spell = spell
 			return spell
 		end
@@ -235,6 +234,22 @@ local sActions = {
 	-- dots all units
 	['adots'] = function(spell, target, sI, args)
 		--FIXME: TODO
+	end,
+	-- Ress all dead
+	['ressdead'] = function(spell, target, sI, args)
+		local spell = spellResolve(spell)
+		if spell then
+			for i=1,#NeP.OM.unitFriend do
+				local Obj = NeP.OM.unitFriend[i]
+				if NeP.DSL.Conditions['spell.range'](Obj.key, spell) then
+					if UnitIsDeadOrGhost(Obj.key) then
+						if sI then spell = '!'..spell end
+						NeP.Engine.Cast_Queue(spell, Obj.key..'spell('..spell..').range', Obj.key)
+						return true
+					end
+				end
+			end
+		end
 	end
 }
 
@@ -340,10 +355,12 @@ function Engine.Parse(table)
 						end
 					else
 						Debug('Engine', 'Hit Regular')
-						local spell = castSanityCheck(spell, target)
+						local spell = spellResolve(spell, target)
 						if spell then
 							if NeP.DSL.parse(conditions, spell) then
-								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) then
+								-- Extra Sanity checks
+								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target))
+								and NeP.Helpers.SpellSanity(spell, target) then
 									if sI then SpellStopCasting() end
 									Cast(spell, target, isGroundCast)
 									return true
