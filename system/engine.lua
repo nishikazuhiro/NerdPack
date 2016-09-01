@@ -119,11 +119,25 @@ end
 local function checkTarget(target)
 	local target = target
 	local isGroundCast = false
-	target = Engine.ForceTarget or NeP.Engine.FilterUnit(target)
+	-- forced by external
+	if Engine.ForceTarget then
+		target = Engine.ForceTarget
+	-- none defined (decide one)
+	elseif type(target) == 'nil' then
+		target = 'player'
+		if UnitExists('target') then
+			target = 'target'
+		end
+	else
+		-- fake units
+		target = NeP.Engine.FilterUnit(target)
+	end
+	-- is it ground?
 	if string.sub(target, -7) == '.ground' then
 		isGroundCast = true
 		target = string.sub(target, 0, -8)
 	end
+	-- Sanity checks
 	if isGroundCast and target == 'mouseover'
 	or UnitExists(target) and UnitIsVisible(target)
 	and Engine.LineOfSight('player', target) then
@@ -202,7 +216,30 @@ local function castSanityCheck(spell, target)
 	end
 end
 
+local sActions = {
+	-- Dispell all
+	['dispelall'] = function(spell, target, sI, args)
+		for i=1,#NeP.Healing.Units do
+			local Obj = NeP.Healing.Units[i]
+			local dispellType = NeP.Dispells.CanDispellUnit(unit)
+			if dispellType then
+				local spell = NeP.Dispells.GetSpell(dispellType)
+				if spell then
+					if sI then SpellStopCasting() end
+					Cast(spell, Obj.key, false)
+					return true
+				end
+			end
+		end
+	end,
+	-- dots all units
+	['adots'] = function(spell, target, sI, args)
+		--FIXME: TODO
+	end
+}
+
 local sTriggers = {
+	-- Items
 	['#'] = function(spell, target, sI)
 		Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
@@ -224,42 +261,30 @@ local sTriggers = {
 			end
 		end
 	end,
+	-- Lib
 	['@'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
 		local lib = string.sub(spell, 2);
 		return NeP.library.parse(false, spell, lib)
 	end,
+	-- Macro
 	['/'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
 		Engine.Macro(spell)
 		return true
 	end,
+	-- These are special actions
 	['%'] = function(spell, target, sI)
 		local action = string.lower(string.sub(spell, 2));
-		if action == 'dispelall' then
-			for i=1,#NeP.Healing.Units do
-				local Obj = NeP.Healing.Units[i]
-				local dispellType = NeP.Dispells.CanDispellUnit(unit)
-				if dispellType then
-					local spell = NeP.Dispells.GetSpell(dispellType)
-					if spell then
-						if sI then SpellStopCasting() end
-						Cast(spell, Obj.key, false)
-					end
-				end
-			end
+		local action, args = string.match(action, '(.+)%((.+)%)')
+		if sActions[action] then
+			local result = sActions[action](spell, target, sI, args)
+			if result then return result end
 		end
 	end
 }
 
 function Engine.FilterUnit(unit)
-	if type(unit) == 'nil' then
-		unit = 'player'
-		if UnitExists('target') then
-			unit = 'target'
-		end
-		return unit
-	end
 	-- This is needed to reattatch to the string
 	local wT, pF = '', ''
 	local pX = string.sub(unit, 1, 1)
@@ -270,7 +295,7 @@ function Engine.FilterUnit(unit)
 		local token = fakeUnits[i].token
 		if string.find(unit, token) then
 			local num = tonumber(string.match(unit, "%d+") or 1)
-			local _, x2 = string.match(unit, '(.+)%((.+)%)')
+			local unit, x2 = string.match(unit, '(.+)%((.+)%)')
 			local unit = fakeUnits[i].unit(num, x2)
 			if unit then
 				local result = pF..unit..wT
