@@ -11,28 +11,19 @@ local Roles = {
 	['NONE'] = 1	 
 }
 
--- BlackListed Units	
-local BlackListUnit = {
-	[90296] = 'Soulbound Constructor', -- HC
-}
-
 -- Build Roster
 C_Timer.NewTicker(0.25, (function()
 	wipe(Healing.Units)
 	for i=1,#NeP.OM.unitFriend do
 		local Obj = NeP.OM.unitFriend[i]
 		if (UnitPlayerOrPetInParty(Obj.key) or UnitIsUnit('player', Obj.key))
-		and Obj.distance <= 40
-		and not UnitIsDeadOrGhost(Obj.key)
-		and not BlackListUnit[Obj.id] then
+		and not UnitIsDeadOrGhost(Obj.key) then
 			if UnitIsVisible(Obj.key)
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
-				local incDMG = 0
-				--local tAbsorbs = UnitGetTotalAbsorbs(Obj.key) or 0
 				local pAbsorbs = UnitGetTotalHealAbsorbs(Obj.key) or 0
 				local incHeal = UnitGetIncomingHeals(Obj.key) or 0
-				local healthRaw = UnitHealth(Obj.key) - incDMG - pAbsorbs + incHeal 
+				local healthRaw = UnitHealth(Obj.key) - pAbsorbs + incHeal 
 				local maxHealth = UnitHealthMax(Obj.key)
 				local missingHealth = maxHealth - healthRaw
 				local healthPercent =  (healthRaw / maxHealth) * 100
@@ -141,7 +132,7 @@ end
 NeP.library.register('coreHealing', {
 
 	needsHealing = function(percent, count)
-		NeP.Core.Print('@coreHealing.needsHealing has been removed, tell the author of your CR to replace it with AoEHeal.')
+		NeP.Core.Print('@coreHealing.needsHealing has been removed, tell the CR author to replace it with AoEHeal.')
 	end,
 
 	lowestDebuff = function(debuff, health)
