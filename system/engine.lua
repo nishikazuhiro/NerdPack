@@ -237,19 +237,24 @@ local sActions = {
 	end,
 	-- Ress all dead
 	['ressdead'] = function(spell, target, sI, args)
-		local spell = spellResolve(spell)
+		local spell = spellResolve(args)
 		if spell then
 			for i=1,#NeP.OM.unitFriend do
 				local Obj = NeP.OM.unitFriend[i]
 				if NeP.DSL.Conditions['spell.range'](Obj.key, spell) then
 					if UnitIsDeadOrGhost(Obj.key) then
-						if sI then spell = '!'..spell end
-						NeP.Engine.Cast_Queue(spell, Obj.key..'spell('..spell..').range', Obj.key)
+						if sI then SpellStopCasting() end
+						Cast(spell, Obj.key, false)
 						return true
 					end
 				end
 			end
 		end
+	end,
+	-- Pause
+	['pause'] = function(spell, target, sI, args)
+		if sI then SpellStopCasting() end
+		return true
 	end
 }
 
@@ -345,11 +350,7 @@ function Engine.Parse(table)
 				elseif tP == 'string' then
 					Debug('Engine', 'Hit String')
 					local pX = string.sub(spell, 1, 1)
-					if string.lower(spell) == 'pause' then
-						if NeP.DSL.parse(conditions, spell) then
-							return true
-						end
-					elseif sTriggers[pX] then
+					if sTriggers[pX] then
 						if NeP.DSL.parse(conditions, spell) then
 							if sTriggers[pX](spell, target, sI) then return true end
 						end
