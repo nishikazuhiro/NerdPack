@@ -334,20 +334,19 @@ function Engine.Parse(table)
 		local spell, conditions, target = aR[1], aR[2], aR[3]
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
-			local target, isGroundCast = checkTarget(target)
-			if target then
-				Debug('Engine', 'Can Iterate: '..tP..'_'..tostring(spell)..' With Target: '..tostring(target))
-				if tP == 'table' then
-					if NeP.DSL.parse(conditions, spell) then
-						Debug('Engine', 'Hit Table')
-						if Engine.Parse(spell) then return true end
-					end
-				elseif tP == 'function' then
-					if NeP.DSL.parse(conditions, spell) then
-						Debug('Engine', 'Hit Function')
-						if spell() then return true end
-					end
-				elseif tP == 'string' then
+			if tP == 'table' then
+				if NeP.DSL.parse(conditions, spell) then
+					Debug('Engine', 'Hit Table')
+					if Engine.Parse(spell) then return true end
+				end
+			elseif tP == 'function' then
+				if NeP.DSL.parse(conditions, spell) then
+					Debug('Engine', 'Hit Function')
+					if spell() then return true end
+				end
+			elseif tP == 'string' then
+				local target, isGroundCast = checkTarget(target)
+				if target then
 					Debug('Engine', 'Hit String')
 					local pX = string.sub(spell, 1, 1)
 					if sTriggers[pX] then
@@ -356,11 +355,11 @@ function Engine.Parse(table)
 						end
 					else
 						Debug('Engine', 'Hit Regular')
-						local spell = spellResolve(spell, target)
+						local spell = spellResolve(spell)
 						if spell then
 							if NeP.DSL.parse(conditions, spell) then
 								-- Extra Sanity checks
-								if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target))
+								if (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
 								and NeP.Helpers.SpellSanity(spell, target) then
 									if sI then SpellStopCasting() end
 									Cast(spell, target, isGroundCast)
