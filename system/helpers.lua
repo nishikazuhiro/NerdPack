@@ -86,7 +86,7 @@ end
 NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 	if UI_Erros[error] then
 		-- Get the target from the engine
-		local unit = NeP.Engine.Current_Target
+		local unit = NeP.Engine.lastTarget
 		local spell = NeP.Engine.lastCast
 		if unit and spell then
 			local GUID = UnitGUID(unit)

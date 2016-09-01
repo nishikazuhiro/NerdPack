@@ -2,7 +2,7 @@ NeP.Engine = {
 	Run = false,
 	SelectedCR = nil,
 	ForceTarget = nil,
-	Current_Target = nil,
+	lastTarget = nil,
 	lastCast = nil,
 	forcePause = false,
 	Current_Spell = nil,
@@ -141,7 +141,7 @@ local function checkTarget(target)
 	if isGroundCast and target == 'mouseover'
 	or UnitExists(target) and UnitIsVisible(target)
 	and Engine.LineOfSight('player', target) then
-		Engine.Current_Target = target
+		Engine.lastTarget = target
 		return target, isGroundCast
 	end
 end
@@ -358,7 +358,7 @@ function Engine.Parse(table)
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
-	Engine.Current_Target = nil
+	Engine.lastTarget = nil
 end
 
 NeP.Timer.Sync("nep_parser", function()
