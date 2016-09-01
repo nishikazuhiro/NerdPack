@@ -376,7 +376,6 @@ function Engine.Parse(table)
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
-	Engine.lastTarget = nil
 end
 
 NeP.Timer.Sync("nep_parser", function()
