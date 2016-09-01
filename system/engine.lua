@@ -128,8 +128,8 @@ local function checkTarget(target)
 		if UnitExists('target') then
 			target = 'target'
 		end
+	-- fake units
 	else
-		-- fake units
 		target = NeP.Engine.FilterUnit(target)
 	end
 	-- is it ground?
