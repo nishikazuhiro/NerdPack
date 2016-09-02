@@ -321,9 +321,9 @@ function Engine.FilterUnit(unit)
 			local num = tonumber(string.match(unit, "%d+") or 1)
 			local arg1, arg2 = string.match(unit, '(.+)%((.+)%)')
 			if arg2 then
-				unit, x2 = arg1, arg2
+				unit = arg1
 			end
-			local unit = fakeUnits[i].unit(num, x2)
+			local unit = fakeUnits[i].unit(num, arg2)
 			if unit then
 				local result = pF..unit..wT
 				return result
