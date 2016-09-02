@@ -296,13 +296,11 @@ local sTriggers = {
 	end,
 	-- These are special actions
 	['%'] = function(spell, target, sI)
-		local action, args = string.lower(string.sub(spell, 2)), nil;
+		local action = string.lower(string.sub(spell, 2));
 		local arg1, arg2 = string.match(action, '(.+)%((.+)%)')
-		if arg2 then
-			action, args = arg1, arg2
-		end
+		if arg2 then action = arg1 end
 		if sActions[action] then
-			local result = sActions[action](spell, target, sI, args)
+			local result = sActions[action](spell, target, sI, arg2)
 			if result then return result end
 		end
 	end
@@ -320,9 +318,7 @@ function Engine.FilterUnit(unit)
 		if string.find(unit, token) then
 			local num = tonumber(string.match(unit, "%d+") or 1)
 			local arg1, arg2 = string.match(unit, '(.+)%((.+)%)')
-			if arg2 then
-				unit = arg1
-			end
+			if arg2 then unit = arg1 end
 			local unit = fakeUnits[i].unit(num, arg2)
 			if unit then
 				local result = pF..unit..wT
