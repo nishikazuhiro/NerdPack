@@ -151,11 +151,8 @@ RegisterConditon('spell.range', function(target, spell)
 	return spellIndex and IsSpellInRange(spellIndex, spellBook, target)
 end)
 
-RegisterConditon('time', function(target, range)
-	if NeP.Listener.locals.combat then
-		return GetTime() - NeP.Listener.locals.combatTime
-	end
-	return false
+RegisterConditon('combattime', function(target)
+	return NeP.CombatLog.CombatTime(target)
 end)
 
 RegisterConditon('timeout', function(args)

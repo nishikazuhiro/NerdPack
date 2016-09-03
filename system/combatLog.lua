@@ -78,6 +78,16 @@ function NeP.CombatLog.getDMG(UNIT)
 	return total, Hits
 end
 
+function NeP.CombatLog.CombatTime(UNIT)
+	local GUID = UnitGUID(UNIT)
+	if Data[GUID] then
+		local time = GetTime()
+		local timePassed = (time-Data[GUID].firstHit)
+		return timePassed
+	end
+	return 0
+end
+
 local fakeTTD = 8675309
 NeP.TimeToDie = function(unit)
 	local ttd = fakeTTD
