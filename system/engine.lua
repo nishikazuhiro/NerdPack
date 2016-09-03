@@ -40,6 +40,10 @@ local ByPassMounts = {
 	[164222] = '', -- Frostwolf War Wolf
 	[221883] = '', -- Divine Steed (pally cd)
 	[221887] = '', -- Divine Steed (pally cd)
+	[221673] = '', -- Storm's Reach Worg
+	[221595] = '', -- Storm's Reach Cliffwalker
+	[221672] = '', -- Storm's Reach Greatstag
+	[221671] = '', -- Storm's Reach Warbear
 }
 
 local invItems = {
