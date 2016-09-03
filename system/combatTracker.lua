@@ -3,19 +3,19 @@ NeP.CombatTracker = {}
 local Data = {}
 
 local logDamage = function(...)
-	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, _, _, _, Amount = select(1, ...)
+	local Timestamp, _,_,_,_,_,_, GUID, _, UnitFlag, _,_,_,_, Amount = select(1, ...)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
 	Data[GUID].Hits = Data[GUID].Hits + 1
 end
 
 local logSwing = function(...)
-	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, Amount = select(1, ...)
+	local Timestamp, _,_,_,_,_,_, GUID, _, UnitFlag, _, Amount = select(1, ...)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
 	Data[GUID].Hits = Data[GUID].Hits + 1
 end
 
 local logHealing = function(...)
-	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, _, _, _, Amount = select(1, ...)
+	local Timestamp, _,_,_,_,_,_, GUID, _, UnitFlag, _,_,_,_, Amount = select(1, ...)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken - Amount
 end
 
@@ -75,16 +75,13 @@ function NeP.CombatTracker.CombatTime(UNIT)
 	return 0
 end
 
-local fakeTTD = 8675309
-NeP.TimeToDie = function(unit)
-	local ttd = fakeTTD
-
+function NeP.CombatTracker.TimeToDie(unit)
+	local ttd = 8675309
 	if not isDummy(unit) then
 		local DMG, Hits = NeP.CombatTracker.getDMG(unit)
 		if DMG >= 1 and Hits > 1 then
 			ttd = UnitHealth(unit) / DMG
 		end
 	end
-
 	return ttd
 end

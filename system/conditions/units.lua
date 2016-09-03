@@ -305,7 +305,7 @@ RegisterConditon("falling", function()
 end)
 
 RegisterConditon("deathin", function(target)
-	return NeP.TimeToDie(target)
+	return NeP.CombatTracker.TimeToDie(target)
 end)
 
 RegisterConditon("ttd", function(target)
