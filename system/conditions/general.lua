@@ -152,7 +152,7 @@ RegisterConditon('spell.range', function(target, spell)
 end)
 
 RegisterConditon('combattime', function(target)
-	return NeP.CombatLog.CombatTime(target)
+	return NeP.CombatTracker.CombatTime(target)
 end)
 
 RegisterConditon('timeout', function(args)

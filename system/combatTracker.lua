@@ -1,21 +1,6 @@
-NeP.CombatLog = {}
+NeP.CombatTracker = {}
 
 local Data = {}
-
--- combat log events to watch for damage
-local DamageLogEvents = {
-	["SPELL_DAMAGE"] = '',
-	["DAMAGE_SHIELD"] = '',
-	["SPELL_PERIODIC_DAMAGE"] = '',
-	["SPELL_BUILDING_DAMAGE"] = '',
-	["RANGE_DAMAGE"] = ''
-}
-
--- combat log events to watch for healing
-local HealingLogEvents = {
-	["SPELL_HEAL"] = '',
-	["SPELL_PERIODIC_HEAL"] = ''
-}
 
 local logDamage = function(...)
 	local Timestamp, _, _, _, _, _, _, GUID, _, UnitFlag, _, _, _, _, Amount = select(1, ...)
@@ -34,12 +19,23 @@ local logHealing = function(...)
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken - Amount
 end
 
+local EVENTS = {
+	["SPELL_DAMAGE"] = function(...) logDamage(...) end,
+	["DAMAGE_SHIELD"] = function(...) logDamage(...) end,
+	["SPELL_PERIODIC_DAMAGE"] = function(...) logDamage(...) end,
+	["SPELL_BUILDING_DAMAGE"] = function(...) logDamage(...) end,
+	["RANGE_DAMAGE"] = function(...) logDamage(...) end,
+	["SWING_DAMAGE"] = function(...) logSwing(...) end,
+	["SPELL_HEAL"] = function(...) logHealing(...) end,
+	["SPELL_PERIODIC_HEAL"] = function(...) logHealing(...) end,
+	["UNIT_DIED"] = function(...) Data[select(8, ...)] = nil end
+}
+
 -- start the combat log (when the player enters combat)
 NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
-	local Timestamp, EVENT, _,_,_,_,_, GUID= select(1, ...)
-		
+	local _, EVENT, _,_,_,_,_, GUID = select(1, ...)
 	-- Add the unit to our data if we dont have it
-	if Data[GUID] == nil then
+	if not Data[GUID] then
 		Data[GUID] = {
 			dmgTaken = 0,
 			Hits = 0,
@@ -47,43 +43,34 @@ NeP.Listener.register('ttd', "COMBAT_LOG_EVENT_UNFILTERED", function(...)
 			lastHit = 0,
 		}
 	end
-
+	-- Update last  hit time
 	Data[GUID].lastHit = GetTime()
-
 	-- Add the amount of dmg/heak
-	if DamageLogEvents[EVENT] then
-		logDamage(...)
-	elseif HealingLogEvents[EVENT] then
-		logHealing(...)
-	elseif EVENT == "SWING_DAMAGE" then
-		logSwing(...)
-	elseif EVENT == 'UNIT_DIED' then
-		Data[GUID] = nil
-	end
+	if EVENTS[EVENT] then EVENTS[EVENT](...) end
 end)
 
-function NeP.CombatLog.getDMG(UNIT)
+function NeP.CombatTracker.getDMG(UNIT)
 	local total, Hits = 0, 0
 	local GUID = UnitGUID(UNIT)
 	if Data[GUID] then
 		local time = GetTime()
-		local timePassed = (time-Data[GUID].firstHit)
-		total = Data[GUID].dmgTaken / timePassed
+		local combatTime = NeP.CombatTracker.CombatTime(UNIT)
+		total = Data[GUID].dmgTaken / combatTime
 		Hits = Data[GUID].Hits
-		-- Remove a unit if ir hasnt recived dmg for 5 sec
-		if (time-Data[GUID].lastHit) >= 5 then
+		-- Remove a unit if it hasnt recived dmg for more then 5 sec
+		if (time-Data[GUID].lastHit) > 5 then
 			Data[GUID] = nil
 		end
 	end
 	return total, Hits
 end
 
-function NeP.CombatLog.CombatTime(UNIT)
+function NeP.CombatTracker.CombatTime(UNIT)
 	local GUID = UnitGUID(UNIT)
 	if Data[GUID] then
 		local time = GetTime()
-		local timePassed = (time-Data[GUID].firstHit)
-		return timePassed
+		local combatTime = (time-Data[GUID].firstHit)
+		return combatTime
 	end
 	return 0
 end
@@ -93,7 +80,7 @@ NeP.TimeToDie = function(unit)
 	local ttd = fakeTTD
 
 	if not isDummy(unit) then
-		local DMG, Hits = NeP.CombatLog.getDMG(unit)
+		local DMG, Hits = NeP.CombatTracker.getDMG(unit)
 		if DMG >= 1 and Hits > 1 then
 			ttd = UnitHealth(unit) / DMG
 		end
