@@ -197,11 +197,11 @@ RegisterConditon("movingfor", function(target)
 end)
 
 RegisterConditon("friend", function(target, spell)
-	return ( UnitCanAttack("player", target) ~= 1 )
+	return UnitExists(target) and not UnitCanAttack("player", target)
 end)
 
 RegisterConditon("enemy", function(target, spell)
-	return UnitCanAttack("player", target)
+	return UnitExists(target) and UnitCanAttack("player", target)
 end)
 
 RegisterConditon("distance", function(target)
