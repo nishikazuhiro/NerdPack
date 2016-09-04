@@ -18,7 +18,7 @@ C_Timer.NewTicker(0.25, (function()
 		local Obj = NeP.OM.unitFriend[i]
 		if (UnitPlayerOrPetInParty(Obj.key) or UnitIsUnit('player', Obj.key))
 		and not UnitIsDeadOrGhost(Obj.key) then
-			if UnitIsVisible(Obj.key)
+			if UnitIsVisible(Obj.key) and Obj.distance <= 40
 			and NeP.Engine.LineOfSight('player', Obj.key) then
 				local Role = UnitGroupRolesAssigned(Obj.key) or 'NONE'
 				local pAbsorbs = UnitGetTotalHealAbsorbs(Obj.key) or 0
