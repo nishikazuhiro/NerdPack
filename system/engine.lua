@@ -210,9 +210,7 @@ local function spellResolve(spell, target, isGroundCast)
 		local start, duration, enabled = GetSpellCooldown(spell)
 		local _, GCD = GetSpellCooldown(61304)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
-		if skillType == 'FUTURESPELL' then 
-			return
-		elseif isUsable and (start <= GCD) and not notEnoughMana
+		if skillType ~= 'FUTURESPELL' and isUsable and (start <= GCD) and not notEnoughMana
 		and (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
 		and NeP.Helpers.SpellSanity(spell, target) then
 			Engine.Current_Spell = spell
