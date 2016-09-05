@@ -111,29 +111,27 @@ function NeP.OM.addToOM(Obj)
 	if not BlacklistedObject(ObjID) and not BlacklistedDebuffs(Obj) then
 		local distance = NeP.Engine.Distance('player', Obj)
 		-- Friendly
-		if UnitExists(Obj) then
-			if UnitIsFriend('player', Obj) then
-				NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
-					key = Obj,
-					name = UnitName(Obj),
-					class = Classifications[UnitClassification(Obj)],
-					distance = distance,
-					is = 'friendly',
-					id = ObjID,
-					guid = GUID,
-				}
-			-- Enemie
-			elseif UnitCanAttack('player', Obj) then
-				NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
-					key = Obj,
-					name = UnitName(Obj),
-					class = Classifications[UnitClassification(Obj)],
-					distance = distance,
-					is = isDummy(Obj) and 'dummy' or 'enemie',
-					id = ObjID,
-					guid = GUID,
-				}
-			end
+		if UnitIsFriend('player', Obj) then
+			NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
+				key = Obj,
+				name = UnitName(Obj),
+				class = Classifications[UnitClassification(Obj)],
+				distance = distance,
+				is = 'friendly',
+				id = ObjID,
+				guid = GUID,
+			}
+		-- Enemie
+		elseif UnitCanAttack('player', Obj) then
+			NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
+				key = Obj,
+				name = UnitName(Obj),
+				class = Classifications[UnitClassification(Obj)],
+				distance = distance,
+				is = isDummy(Obj) and 'dummy' or 'enemie',
+				id = ObjID,
+				guid = GUID,
+			}
 		-- Object
 		elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
 			NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {

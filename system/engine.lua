@@ -245,12 +245,10 @@ local sActions = {
 		if spell then
 			for i=1,#NeP.OM.unitFriend do
 				local Obj = NeP.OM.unitFriend[i]
-				if NeP.DSL.Conditions['spell.range'](Obj.key, spell) then
-					if UnitIsDeadOrGhost(Obj.key) then
-						if sI then SpellStopCasting() end
-						Cast(spell, Obj.key, false)
-						return true
-					end
+				if Obj.distance < 40 and UnitIsDeadOrGhost(Obj.key) then
+					if sI then SpellStopCasting() end
+					Cast(spell, Obj.key, false)
+					return true
 				end
 			end
 		end
