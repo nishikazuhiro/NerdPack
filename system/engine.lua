@@ -204,17 +204,19 @@ local function spellResolve(spell, target, isGroundCast)
 	if string.match(spell, '%d') then
 		spell = GetSpellInfo(tonumber(spell))
 	end
-	if spell then
+	if spell and target then
 		-- Make sure we can cast the spell
 		local skillType, spellId = GetSpellBookItemInfo(spell)
-		local start, duration, enabled = GetSpellCooldown(spell)
-		local _, GCD = GetSpellCooldown(61304)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
-		if skillType ~= 'FUTURESPELL' and isUsable and (start <= GCD) and not notEnoughMana
-		and (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
+		if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana
 		and NeP.Helpers.SpellSanity(spell, target) then
-			Engine.Current_Spell = spell
-			return spell
+			local start, duration, enabled = GetSpellCooldown(spell)
+			local _, GCD = GetSpellCooldown(61304)
+			local canCast = true
+			if (start <= GCD) and canCast then
+				Engine.Current_Spell = spell
+				return spell
+			end
 		end
 	end
 end
@@ -244,7 +246,8 @@ local sActions = {
 		for i=1,#NeP.OM.unitFriend do
 			local Obj = NeP.OM.unitFriend[i]
 			local spell = spellResolve(args, Obj.key, false)
-			if spell and Obj.distance < 40 and UnitIsDeadOrGhost(Obj.key) then
+			if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
+			and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
 				if sI then SpellStopCasting() end
 				Cast(spell, Obj.key, false)
 				return true
@@ -264,11 +267,10 @@ local sTriggers = {
 		Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
 		if invItems[item] then
-			item = GetInventoryItemID("player", GetInventorySlotInfo(invItems[item]))
-		elseif not tonumber(item) then
-			item = GetItemID(item)
-		end
-		if GetItemSpell(item) then
+			local invItem = GetInventorySlotInfo(invItems[item])
+			item = GetInventoryItemID("player", invItem)
+		else item = GetItemID(item) end
+		if item and GetItemSpell(item) then
 			local isUsable, notEnoughMana = IsUsableItem(item)
 			if isUsable then
 				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
@@ -358,7 +360,7 @@ function Engine.Parse(table)
 					else
 						Debug('Engine', 'Hit Regular')
 						local spell = spellResolve(spell, target, isGroundCast)
-						if spell then
+						if spell and NeP.DSL.parse(conditions, spell) then
 							if sI then SpellStopCasting() end
 							Cast(spell, target, isGroundCast)
 							return true
