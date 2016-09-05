@@ -199,7 +199,7 @@ local function canIterate(spell)
 	return Iterate, spell, sI
 end
 
-local function spellResolve(spell)
+local function spellResolve(spell, target, isGroundCast)
 	-- Convert Ids to Names
 	if string.match(spell, '%d') then
 		spell = GetSpellInfo(tonumber(spell))
@@ -212,7 +212,9 @@ local function spellResolve(spell)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if skillType == 'FUTURESPELL' then 
 			return
-		elseif isUsable and (start <= GCD) and not notEnoughMana then
+		elseif isUsable and (start <= GCD) and not notEnoughMana
+		and (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
+		and NeP.Helpers.SpellSanity(spell, target) then
 			Engine.Current_Spell = spell
 			return spell
 		end
@@ -241,15 +243,13 @@ local sActions = {
 	end,
 	-- Ress all dead
 	['ressdead'] = function(spell, target, sI, args)
-		local spell = spellResolve(args)
-		if spell then
-			for i=1,#NeP.OM.unitFriend do
-				local Obj = NeP.OM.unitFriend[i]
-				if Obj.distance < 40 and UnitIsDeadOrGhost(Obj.key) then
-					if sI then SpellStopCasting() end
-					Cast(spell, Obj.key, false)
-					return true
-				end
+		for i=1,#NeP.OM.unitFriend do
+			local Obj = NeP.OM.unitFriend[i]
+			local spell = spellResolve(args, Obj.key, false)
+			if spell and Obj.distance < 40 and UnitIsDeadOrGhost(Obj.key) then
+				if sI then SpellStopCasting() end
+				Cast(spell, Obj.key, false)
+				return true
 			end
 		end
 	end,
@@ -359,17 +359,11 @@ function Engine.Parse(table)
 						end
 					else
 						Debug('Engine', 'Hit Regular')
-						local spell = spellResolve(spell)
+						local spell = spellResolve(spell, target, isGroundCast)
 						if spell then
-							if NeP.DSL.parse(conditions, spell) then
-								-- Extra Sanity checks
-								if (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
-								and NeP.Helpers.SpellSanity(spell, target) then
-									if sI then SpellStopCasting() end
-									Cast(spell, target, isGroundCast)
-									return true
-								end
-							end
+							if sI then SpellStopCasting() end
+							Cast(spell, target, isGroundCast)
+							return true
 						end
 					end
 				end
