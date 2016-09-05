@@ -18,14 +18,6 @@ NeP.Listener.register("PLAYER_LOGIN", function(...)
 	NeP.Config.CreateOMFrame()
 end)
 
-NeP.Listener.register("UNIT_SPELLCAST_SUCCEEDED", function(...)
-	local unitID, spell, rank, lineID, spellID = ...
-	if unitID == "player" then
-		local name, _, icon, _, _, _, _, _, _ = GetSpellInfo(spell)
-		NeP.ActionLog.insert('Spell Cast Succeed', name, icon)
-	end
-end)
-
 NeP.Listener.register("PLAYER_STARTED_MOVING", function(...)
 	NeP.Listener.locals.moving = true
 	NeP.Listener.locals.movingTime = GetTime()
