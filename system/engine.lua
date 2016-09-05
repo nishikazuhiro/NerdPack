@@ -212,7 +212,7 @@ local function spellResolve(spell, target, isGroundCast)
 		and NeP.Helpers.SpellSanity(spell, target) then
 			local start, duration, enabled = GetSpellCooldown(spell)
 			local _, GCD = GetSpellCooldown(61304)
-			local canCast = true
+			local canCast = (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
 			if (start <= GCD) and canCast then
 				Engine.Current_Spell = spell
 				return spell
