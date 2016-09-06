@@ -142,16 +142,19 @@ NeP.ActionLog.update = function ()
 		else
 			local target = item.target and ' |cfffdcc00@|r (' .. item.target .. ')' or ''
 			local icon = '|T'..item.icon..':'..(log_height-3)..':'..(log_height-3)..'|t'
-			local desc = icon..'[|cfffdcc00'..item.count..'|r] '..item.description..target
+			local desc = icon..' '..item.description..target..' [|cfffdcc00x'..item.count..'|r] '
 			NeP.ActionLog.updateRow(i, "|cff85888c"..item.event.."|r", desc, "|cff85888c"..item.time.."|r")
 		end
 	end
 end
 
+-- wipe data when we enter combat
+NeP.Listener.register("PLAYER_REGEN_DISABLED", function(...)
+	wipe(NeP.ActionLog.log)
+end)
+
 C_Timer.NewTicker(0.05, (function()
-	if ActionLog.content:IsShown() then
+	if ActionLog.frame:IsShown() then
 		NeP.ActionLog.update()
-	else
-		wipe(NeP.ActionLog.log)
 	end
 end), nil)
