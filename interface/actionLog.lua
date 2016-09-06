@@ -15,9 +15,10 @@ local SharedMedia = LibStub('LibSharedMedia-3.0')
 
 PE_ActionLog = DiesalGUI:Create('Window')
 local ActionLog = PE_ActionLog
-ActionLog.frame:SetSize(450, abs_height)
+ActionLog.frame:SetSize(460, abs_height)
 ActionLog.frame:SetClampedToScreen(true)
-ActionLog.frame:SetMinResize(300, 400)
+ActionLog.frame:SetMinResize(400, abs_height)
+ActionLog.frame:SetMaxResize(700, abs_height)
 PE_ActionLog:Hide()
 
 local ActionLogHeader = CreateFrame("Frame", nil, ActionLog.frame)
@@ -38,7 +39,7 @@ ActionLogHeader.statusTextB:SetText("|cfffdcc00Description")
 
 ActionLogHeader.statusTextC = ActionLogHeader:CreateFontString('PE_ActionLogHeaderText')
 ActionLogHeader.statusTextC:SetFont("Fonts\\ARIALN.TTF", log_height-3)
-ActionLogHeader.statusTextC:SetPoint("LEFT", ActionLogHeader, 400, 0)
+ActionLogHeader.statusTextC:SetPoint("RIGHT", ActionLogHeader, -25, 0)
 ActionLogHeader.statusTextC:SetText("|cfffdcc00Time")
 
 ActionLog.frame:SetScript("OnMouseWheel", function(self, mouse)
@@ -96,7 +97,7 @@ for i = 1, (log_items) do
 	ActionLogItem[i].itemC:SetFont("Fonts\\ARIALN.TTF", log_height-3)
 	ActionLogItem[i].itemC:SetShadowColor(0,0,0, 0.8)
 	ActionLogItem[i].itemC:SetShadowOffset(-1,-1)
-	ActionLogItem[i].itemC:SetPoint("LEFT", ActionLogItem[i], 400, 0)
+	ActionLogItem[i].itemC:SetPoint("RIGHT", ActionLogItem[i], -5, 0)
 
 	local position = ((i * log_height) * -1)
 	ActionLogItem[i]:SetPoint("TOPLEFT", ActionLog.frame, "TOPLEFT", 0, position)
