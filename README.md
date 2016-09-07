@@ -14,8 +14,7 @@ The Core of NerdPack, This is needed for every other module.
 https://github.com/MrTheSoulz/NerdPack
 
 * <b>Combat Routines</b>:  
-Default Rotations  
-https://github.com/MrTheSoulz/NerdPack-Routines
+http://nerdpackaddon.site/index.php/forum/combat-routines  
 
 <h2>Protected Modules:</h2>
 * <b>NerdPack-Protected</b>:  
