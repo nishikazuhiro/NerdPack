@@ -108,10 +108,10 @@ end
 function NeP.Dispells.CanDispellUnit(unit)
 	if UnitExists(unit) then
 		for i=1, 40 do
-			local name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID = _G["UnitDebuff"](unit, i)
-			if dispellType and Spells[dispellType] and BlackListDebuff[spellID] == nil then
+			local _,_,_,_, dispelType, duration, expires, _,_,_, spellID = _G["UnitDebuff"](unit, i)
+			if dispelType and Spells[dispelType] and not BlackListDebuff[spellID] then
 				if rFilter(expires, duration) then
-					return dispellType
+					return dispelType
 				end
 			end
 		end
