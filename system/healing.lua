@@ -34,7 +34,7 @@ C_Timer.NewTicker(0.25, (function()
 					name = Obj.name,
 					id = Obj.id,
 					health = healthPercent,
-					healthRaw = health,
+					healthRaw = healthRaw,
 					distance = Obj.distance,
 					role = Role
 				}
@@ -170,7 +170,7 @@ NeP.DSL.RegisterConditon('AoEHeal', function(target, args)
 	local target, args = target, args
 	if not args then
 		args = target
-		target = player
+		target = 'player'
 	end
 	local health, num, maxDis = strsplit(',', args, 3)
 	local health, num, maxDis = tonumber(health or 100), tonumber(num or 3), tonumber(distance or 40)
