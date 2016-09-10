@@ -129,18 +129,6 @@ function GetItemID(item)
 	end
 end
 
-function UnitID(unit)
-	if unit and UnitExists(unit) then
-		local guid = UnitGUID(unit)
-		if guid then
-			local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-", guid)
-			if type == "Player" then return tonumber(ServerID) end
-			if npc_id then return tonumber(npc_id) end
-		end
-	end
-	return false
-end
-
 function GetSpellBookIndex(spell)
 	local spellName = GetSpellName(spell)
 	if not spellName then return false end
@@ -189,15 +177,18 @@ function hasTalent(row, col)
 	return active and selected
 end
 
-function UnitID(target)
-	local guid = UnitGUID(target)
-	if guid then
-		local type, zero, server_id, instance_id, zone_uid, npc_id, spawn_uid = strsplit("-", guid)
-
-		if type == "Player" then return tonumber(ServerID) end
-		if npc_id then return tonumber(npc_id) end
+function UnitID(unit)
+	if unit and UnitExists(unit) then
+		local guid = UnitGUID(unit)
+		if guid then
+			local type, _, server_id,_,_, npc_id = strsplit("-", guid)
+			if type == "Player" then 
+				return tonumber(server_id)
+			elseif npc_id then 
+				return tonumber(npc_id)
+			end
+		end
 	end
-	return false
 end
 
 local _classColors = {
