@@ -14,6 +14,7 @@ local Core = NeP.Core
 local Debug = Core.Debug
 local TA = Core.TA
 local fK = NeP.Interface.fetchKey
+local dsl_Parse = NeP.DSL.Parse
 
 local fakeUnits = {
 	{ -- Tank
@@ -336,12 +337,12 @@ function Engine.Parse(table)
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
 			if tP == 'table' then
-				if NeP.DSL.parse(conditions, spell) then
+				if dsl_Parse(conditions, spell) then
 					Debug('Engine', 'Hit Table')
 					if Engine.Parse(spell) then return true end
 				end
 			elseif tP == 'function' then
-				if NeP.DSL.parse(conditions, spell) then
+				if dsl_Parse(conditions, spell) then
 					Debug('Engine', 'Hit Function')
 					if spell() then return true end
 				end
@@ -351,14 +352,14 @@ function Engine.Parse(table)
 					Debug('Engine', 'Hit String')
 					local pX = string.sub(spell, 1, 1)
 					if sTriggers[pX] then
-						if NeP.DSL.parse(conditions, spell) then
+						if dsl_Parse(conditions, spell) then
 							if Engine.ForceTarget then target = Engine.ForceTarget end
 							if sTriggers[pX](spell, target, sI) then return true end
 						end
 					else
 						Debug('Engine', 'Hit Regular')
 						local spell = spellResolve(spell, target, isGroundCast)
-						if spell and NeP.DSL.parse(conditions, spell) then
+						if spell and dsl_Parse(conditions, spell) then
 							if Engine.ForceTarget then target = Engine.ForceTarget end
 							if sI then SpellStopCasting() end
 							Cast(spell, target, isGroundCast)

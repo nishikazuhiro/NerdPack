@@ -110,27 +110,6 @@ local conditionize = function(target, condition)
 	end
 end
 
-local function Nested(table, spell)
-	local tArray = {[1] = true}
-	for k,v in ipairs(table) do
-		if v == 'or' then
-			tArray[#tArray+1] = {}
-		else
-			if tArray[#tArray] then
-				local cD = DSL.parse(v, spell) or false
-				tArray[#tArray] = cD
-			end
-		end
-	end
-	-- search for "true"
-	for i = 1, #tArray do
-		if tArray[i] then
-			return true
-		end
-	end
-	return false
-end
-
 local parsez = function(dsl, spell)
 
 	local unitId, arg2, arg3 = strsplit('.', dsl, 3)
@@ -164,15 +143,39 @@ local parsez = function(dsl, spell)
 end
 
 local typesTable = {
-	['function'] = function(dsl, spell) return dsl() 									end,
-	['table']	 = function(dsl, spell) return Nested(dsl, spell)						end,
-	['string']	 = function(dsl, spell) return parsez(dsl, spell)						end,
-	['lib']		 = function(dsl, spell) return NeP.library.parse(false, dsl, 'target')	end,
-	['nil']		 = function(dsl, spell) return true										end,
-	['boolean']	 = function(dsl, spell) return dsl										end,
+	['function'] = function(dsl, spell) return dsl() end,
+	['table'] = function(dsl, spell)
+		local tArray = {[1] = true}
+		for k,v in ipairs(dsl) do
+			if v == 'or' then
+				tArray[#tArray+1] = {}
+			elseif tArray[#tArray] then
+				local eval = DSL.Parse(v, spell)
+				tArray[#tArray] = eval or false
+			end
+		end
+		-- search for "true"
+		for i = 1, #tArray do
+			if tArray[i] then
+				return true
+			end
+		end
+		return false
+	end,
+	['string'] = function(dsl, spell) 
+		-- Lib Call
+		if string.sub(dsl, 1, 1) == '@' then
+			return NeP.library.parse(false, dsl, 'target')
+		else
+			return parsez(dsl, spell)
+		end
+	end,
+	['lib'] = function(dsl, spell) return NeP.library.parse(false, dsl, 'target') end,
+	['nil'] = function(dsl, spell) return true end,
+	['boolean']	 = function(dsl, spell) return dsl end,
 }
 
-DSL.parse = function(dsl, spell)
+DSL.Parse = function(dsl, spell)
 	wipe(comparator_table)
 	wipe(parse_table)
 	local dslType = type(dsl)
