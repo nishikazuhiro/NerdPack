@@ -26,7 +26,8 @@ RegisterConditon('toggle', function(target, toggle)
 end)
 
 RegisterConditon('modifier.toggle', function(target, toggle)
-	local toggle = string.lower(toggle)
+	if not target then target = toggle end
+	local toggle = string.lower(target)
 	return NeP.Config.Read('bStates_'..toggle, false)
 end)
 

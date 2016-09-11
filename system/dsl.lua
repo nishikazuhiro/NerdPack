@@ -41,19 +41,23 @@ local function pString(mString, spell)
 	end
 end
 
+-- This could still be cleaner
 local function Comperatores(mString, spell)
 	for k,v in pairs(tableComparator) do
 		local comperator = ' '..k..' '
 		if mString:find(comperator) then
-			local arg1, arg2 = unpack(string.split(mString, comperator))
-			if not string.match(arg1, '%d') then
-				arg1 = pString(arg1, spell)
+			local tempT = string.split(mString, comperator)
+			for i=1, #tempT do
+				if not string.match(tempT[i], '%d') then
+					tempT[i] = pString(tempT[i], spell)
+				else
+					tempT[i] = tonumber(tempT[i])
+				end
 			end
-			if not string.match(arg2, '%d') then
-				arg2 = pString(arg2, spell)
+			if type(tempT[1]) == type(tempT[2]) then
+				local result = tableComparator[k](tempT[1], tempT[2], spell)
+				return result
 			end
-			local result = tableComparator[k](tonumber(arg1), tonumber(arg2), spell)
-			return result
 		end
 	end
 end
@@ -116,7 +120,7 @@ function DSL.Get(condition)
 	if DSL.Conditions[condition] then
 		return DSL.Conditions[condition]
 	end
-	return (function() return false end)
+	return (function() end)
 end
 
 function DSL.RegisterConditon(name, condition, overwrite)
