@@ -22,28 +22,7 @@ end)
 
 RegisterConditon('toggle', function(target, toggle)
 	local toggle = string.lower(toggle)
-	return NeP.Config.Read('bStates_'..toggle, false)
-end)
-
-RegisterConditon('modifier.toggle', function(target, toggle)
-	if not target then target = toggle end
-	local toggle = string.lower(target)
-	return NeP.Config.Read('bStates_'..toggle, false)
-end)
-
-RegisterConditon('modifier.multitarget', function()
-	return NeP.DSL.Conditions['modifier.toggle']('AoE')
-end)
-
-RegisterConditon('modifier.cooldowns', function()
-	return NeP.DSL.Conditions['modifier.toggle']('Cooldowns')
-end)
-
-RegisterConditon('modifier.interrupt', function()
-	if NeP.DSL.Conditions['modifier.toggle']('Interrupts') then
-		return NeP.DSL.Conditions['casting']('target')
-	end
-	return false
+	return NeP.Config.Read('bStates_'..tostring(toggle), false)
 end)
 
 RegisterConditon('casting.time', function(target, spell)
