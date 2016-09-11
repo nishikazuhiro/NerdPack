@@ -136,7 +136,7 @@ RegisterConditon('combopoints', function(target)
 	return GetComboPoints('player', 'target')
 end)
 
-RegisterConditon('mushrooms', function ()
+RegisterConditon('mushrooms', function()
 	local count = 0
 	for slot = 1, 3 do
 	if GetTotemInfo(slot) then
@@ -150,10 +150,6 @@ end)
 
 RegisterConditon('holypower', function(target, spell)
 	return UnitPower(target, SPELL_POWER_HOLY_POWER)
-end)
-
-RegisterConditon('seal', function(target, spell)
-	return GetShapeshiftForm()
 end)
 
 --------------------------------------------------- WARRIOR --------------------------------------------------
@@ -173,16 +169,15 @@ end)
 RegisterConditon('fury', function(target, spell)
 	return UnitPower(target, SPELL_POWER_FURY)
 end)
+-- Returns the number of fury you have left till max (e.g. you have a max of 100 fury and 80 fury now, so it will return 20)
+RegisterConditon('furydiff', function(target, spell)
+	local max = UnitPowerMax(target, SPELL_POWER_FURY)
+	local curr = UnitPower(target, SPELL_POWER_FURY)
+	return (max - curr)
+end)
 
 RegisterConditon('pain', function(target, spell)
 	return UnitPower(target, SPELL_POWER_PAIN)
-end)
-
--- Returns the number of fury you have left till max (e.g. you have a max of 100 fury and 80 fury now, so it will return 20)
-RegisterConditon('furydiff', function(target, spell)
-    local max = UnitPowerMax(target, SPELL_POWER_FURY)
-    local curr = UnitPower(target, SPELL_POWER_FURY)
-    return (max - curr)
 end)
 
 --------------------------------------------------- MAGE ----------------------------------------------

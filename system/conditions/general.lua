@@ -25,24 +25,6 @@ RegisterConditon('toggle', function(target, toggle)
 	return NeP.Config.Read('bStates_'..tostring(toggle), false)
 end)
 
-RegisterConditon('casting.time', function(target, spell)
-	local name, startTime, endTime = checkCasting(target)
-	if not endTime or not startTime then return false end
-	if name then return (endTime - startTime) / 1000 end
-	return false
-end)
-
-RegisterConditon('casting.delta', function(target, spell)
-	local name, startTime, endTime, notInterruptible = checkCasting(target)
-	if not endTime or not startTime then return false end
-	if name and not notInterruptible then
-		local castLength = (endTime - startTime) / 1000
-		local secondsLeft = endTime / 1000 - GetTime()
-		return secondsLeft, castLength
-	end
-	return false
-end)
-
 RegisterConditon('casting.percent', function(target, spell)
 	local name, startTime, endTime, notInterruptible = checkCasting(target)
 	if name and not notInterruptible then
@@ -121,17 +103,13 @@ RegisterConditon('spell.count', function(target, spell)
 	return select(1, GetSpellCount(spell))
 end)
 
-RegisterConditon('spell.cd', function(target, spell)
-	return NeP.DSL.Conditions['spell.cooldown'](target, spell)
-end)
-
 RegisterConditon('spell.range', function(target, spell)
 	local spellIndex, spellBook = GetSpellBookIndex(spell)
 	if not spellIndex then return false end
 	return spellIndex and IsSpellInRange(spellIndex, spellBook, target)
 end)
 
-RegisterConditon('combattime', function(target)
+RegisterConditon('combat.time', function(target)
 	return NeP.CombatTracker.CombatTime(target)
 end)
 
