@@ -170,7 +170,6 @@ local typesTable = {
 			return parsez(dsl, spell)
 		end
 	end,
-	['lib'] = function(dsl, spell) return NeP.library.parse(false, dsl, 'target') end,
 	['nil'] = function(dsl, spell) return true end,
 	['boolean']	 = function(dsl, spell) return dsl end,
 }

@@ -14,7 +14,6 @@ local Core = NeP.Core
 local Debug = Core.Debug
 local TA = Core.TA
 local fK = NeP.Interface.fetchKey
-local dsl_Parse = NeP.DSL.Parse
 
 local fakeUnits = {
 	{ -- Tank
@@ -335,6 +334,7 @@ function Engine.Parse(table)
 		local aR, tP = table[i], type(table[i][1])
 		local spell, conditions, target = aR[1], aR[2], aR[3]
 		local Iterate, spell, sI = canIterate(spell)
+		local dsl_Parse = NeP.DSL.Parse
 		if Iterate then
 			if tP == 'table' then
 				if dsl_Parse(conditions, spell) then
