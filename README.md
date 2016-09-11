@@ -3,12 +3,15 @@
 ---------------------------------------------------------------
 <br/>
 
-<p><b>NerdPack</b> is a framework wich aims to be light, fast and allow creating combat routines more easly.  
-NerdPack is divided by 2 kind of modules: <b>Basic</b> ("Legal") and <b>Protected</b> ("Ilegal"), While only using the Basic modules Nerdpack will only tell you what to do (placing a skull on top of the spell to cast) and you have to manualy press it, Protected modules will automate everything and therefor breaking WoW's TOS.</p>
-<p><b>Donate Link</b>: http://goo.gl/yrctPO</p>
+NerdPack is divided by 2 kind of modules: Core ("Legal") and Protected ("Ilegal").  
+> Core modules will only tell you what to do (placing a icon on top of the spell to cast) and then you have to manualy press it.  
+> Protected modules will automate everything and therefore breaks WoW's TOS.  
+> All issues reported here will be ignored, to report issues go here: Click Here  
+> For tips and documents use our wiki: Click Here or visit our Discord Channel Click Here  
+<b>Donate Link</b>: http://goo.gl/yrctPO  
 <br/>
 
-<h2>Basic Modules:</h2>
+<h2>Core Modules:</h2>
 * <b>NerdPack</b>:  
 The Core of NerdPack, This is needed for every other module.  
 https://github.com/MrTheSoulz/NerdPack
