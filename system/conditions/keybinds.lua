@@ -11,38 +11,38 @@ TODO: Find a way to add more keybinds
 --------------------------------------------------------------------------------------------------------------
 ]]
 
-RegisterConditon("modifier.shift", function()
+RegisterConditon("keybind.shift", function()
 	return IsShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.control", function()
+RegisterConditon("keybind.control", function()
 	return IsControlKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.alt", function()
+RegisterConditon("keybind.alt", function()
 	return IsAltKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.lshift", function()
+RegisterConditon("keybind.lshift", function()
 	return IsLeftShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.lcontrol", function()
+RegisterConditon("keybind.lcontrol", function()
 	return IsLeftControlKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.lalt", function()
+RegisterConditon("keybind.lalt", function()
 	return IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.rshift", function()
+RegisterConditon("keybind.rshift", function()
 	return IsRightShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.rcontrol", function()
+RegisterConditon("keybind.rcontrol", function()
 	return IsRightControlKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
 
-RegisterConditon("modifier.ralt", function()
+RegisterConditon("keybind.ralt", function()
 	return IsRightAltKeyDown() and GetCurrentKeyBoardFocus() == nil
 end)
