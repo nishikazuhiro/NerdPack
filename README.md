@@ -3,8 +3,8 @@
 ---------------------------------------------------------------
 <br/>
 
-NerdPack is divided by 2 kind of modules: Core ("Legal") and Protected ("Ilegal").  
-> Core modules will only tell you what to do (placing a icon on top of the spell to cast) and then you have to manualy press it.  
+NerdPack is divided by 2 kind of modules: **Core ("Legal")** and **Protected ("Ilegal")**.  
+> Core modules will only tell you what to do (placing a icon on top of the spell to cast).  
 > Protected modules will automate everything and therefore breaks WoW's TOS.  
 > All issues reported here will be ignored, to report issues go here: [Click Here](https://github.com/MrTheSoulz/NerdPack/issues)  
 > For tips and documents use our wiki: [Click Here](https://github.com/MrTheSoulz/NerdPack/wiki) or visit our [Discord Channel](https://discord.gg/XtSZbjM)  
