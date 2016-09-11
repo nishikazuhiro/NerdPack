@@ -184,3 +184,10 @@ RegisterConditon('furydiff', function(target, spell)
     local curr = UnitPower(target, SPELL_POWER_FURY)
     return (max - curr)
 end)
+
+--------------------------------------------------- MAGE ----------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+RegisterConditon('arcanecharges', function(target, spell)
+	return UnitPower(target, SPELL_POWER_ARCANE_CHARGES)
+end)
