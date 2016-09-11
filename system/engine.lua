@@ -376,7 +376,7 @@ function Engine.Parse(table)
 end
 
 NeP.Timer.Sync("nep_parser", function()
-	local Running = NeP.DSL.get('toggle')('mastertoggle')
+	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
 	if Running then
 		if Engine.SelectedCR then
 			if not Engine.forcePause then

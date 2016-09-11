@@ -1,4 +1,6 @@
-NeP.DSL = {}
+NeP.DSL = {
+	Conditions = {}
+}
 
 local DSL = NeP.DSL
 
@@ -26,11 +28,16 @@ local tableComparator = {
 local function pString(string, spell)
 	local args = string:match("%((%a+)%)")
 	if args then string = string:gsub('%((%a+)%)', '') end
-	local dot1, dot2 = strsplit('.', string, 2)
-	if UnitExists(dot1) then
-		return DSL.get(dot2)(dot1, args, spell)
-	elseif DSL.Conditions[string] then
-		return DSL.get(string)(nil, args, spell)
+	if DSL.Conditions[string] then
+		local result = DSL.Get(string)(nil, args, spell)
+		return result
+	else
+		local unitId, rest = strsplit('.', string, 2)
+		local unitId = NeP.Engine.FilterUnit(unitId)
+		if UnitExists(unitId) then
+			local result = DSL.Get(rest)(unitId, args, spell)
+			return result
+		end
 	end
 end
 
@@ -43,46 +50,50 @@ local function pNumber(arg1, arg2, eval, spell)
 	if not string.match(arg2, '%d') then
 		arg2 = pString(arg2, spell)
 	end
-	if arg1 and arg2 then
-		local result = tableComparator[eval](arg1, arg2, spell)
-		return result
-	end
-	return false
+	local result = tableComparator[eval](tonumber(arg1), tonumber(arg2), spell)
+	return result
 end
 
 local function Parse(dsl, spell)
-	local parse_table = string.split(dsl, ' || ')
-	local r_table = {}
-	for i=1, #parse_table do
-		local ev = parse_table[i]
-		r_table[i] = true
-		local tempT = string.split(ev, ' && ')
-		for k=1, #tempT do
-			local eva = tempT[k]
-			if r_table[i] then
-				local arg1, arg2, arg3 = unpack(string.split(eva, ' '))
-				-- Comparators
-				if tableComparator[arg2] then
-					r_table[i] = pNumber(arg1, arg3, arg2, spell)
-				else
-					local result = pString(eva, spell)
-					r_table[i] = result
-				end
-			end
-		end
+	-- Comparators
+	local modify_not = false
+	local result = false
+	if string.sub(dsl, 1, 1) == '!' then
+		dsl = string.sub(dsl, 2)
+		modify_not = true
 	end
-	for i=1, #r_table do
-		if r_table[i] then
-			return true
-		end
+	local arg1, arg2, arg3 = unpack(string.split(dsl, ' '))
+	if tableComparator[arg2] then
+		result =  pNumber(arg1, arg3, arg2, spell)
+	else
+		result = pString(dsl, spell)
 	end
+	if modify_not then
+		return not result
+	end
+	return result
 end
 
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, spell) return dsl() end,
 	['table'] = function(dsl, spell)
-		
+		local r_Tbl = {[1] = true}
+		for _,String in ipairs(dsl) do
+			if String == 'or' then
+				r_Tbl[#r_Tbl+1] = true
+			elseif r_Tbl[#r_Tbl] then
+				local eval = DSL.Parse(String, spell)
+				r_Tbl[#r_Tbl] = eval or false
+			end
+		end
+		-- search for "true"
+		for i = 1, #r_Tbl do
+			if r_Tbl[i] then
+				return true
+			end
+		end
+		return false
 	end,
 	['string'] = function(dsl, spell) 
 		-- Lib Call
@@ -97,7 +108,7 @@ local typesTable = {
 }
 
 
-function DSL.get(condition)
+function DSL.Get(condition)
 	local condition = string.lower(condition)
 	if DSL.Conditions[condition] then
 		return DSL.Conditions[condition]
@@ -105,10 +116,10 @@ function DSL.get(condition)
 	return (function() return false end)
 end
 
-function DSL.RegisterConditon(name, eval, overwrite)
+function DSL.RegisterConditon(name, condition, overwrite)
 	local name = string.lower(name)
 	if not DSL.Conditions[name] or overwrite then
-		DSL.Conditions[name] = eval
+		DSL.Conditions[name] = condition
 	end
 end
 

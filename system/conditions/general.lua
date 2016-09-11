@@ -20,12 +20,12 @@ RegisterConditon('timetomax', function(target, spell)
 	return (max - curr) * (1.0 / regen)
 end)
 
-RegisterConditon('toggle', function(toggle)
+RegisterConditon('toggle', function(target, toggle)
 	local toggle = string.lower(toggle)
 	return NeP.Config.Read('bStates_'..toggle, false)
 end)
 
-RegisterConditon('modifier.toggle', function(toggle)
+RegisterConditon('modifier.toggle', function(target, toggle)
 	local toggle = string.lower(toggle)
 	return NeP.Config.Read('bStates_'..toggle, false)
 end)
@@ -155,7 +155,7 @@ RegisterConditon('combattime', function(target)
 	return NeP.CombatTracker.CombatTime(target)
 end)
 
-RegisterConditon('timeout', function(args)
+RegisterConditon('timeout', function(target, args)
 	local name, time = strsplit(',', args, 2)
 	local time = tonumber(time)
 	if time then
@@ -167,7 +167,7 @@ RegisterConditon('timeout', function(args)
 end)
 
 local waitTable = {}
-RegisterConditon('waitfor', function(args)
+RegisterConditon('waitfor', function(target, args)
 	local name, time = strsplit(',', args, 2)
 	if time then
 		local time = tonumber(time)
@@ -185,7 +185,8 @@ RegisterConditon('waitfor', function(args)
 	return false
 end)
 
-RegisterConditon('IsNear', function(targetID, distance)
+RegisterConditon('IsNear', function(target, args)
+	local targetID, distance = strsplit(',', args, 2)
 	local targetID = tonumber(targetID) or 0
 	local distance = tonumber(distance) or 60
 		for i=1,#NeP.OM.unitEnemie do

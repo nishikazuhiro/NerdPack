@@ -10,7 +10,7 @@ local RegisterConditon = NeP.DSL.RegisterConditon
 
 local heroismBuffs = { 32182, 90355, 80353, 2825, 146555 }
 
-RegisterConditon("hashero", function(unit, spell)
+RegisterConditon("hashero", function(target, spell)
 	for i = 1, #heroismBuffs do
 		local SpellName = GetSpellName(heroismBuffs[i])
 		local buff = NeP.APIs['UnitBuff']('player', SpellName, "any")

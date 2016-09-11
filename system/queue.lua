@@ -32,7 +32,7 @@ function Engine.clear_Cast_Queue()
 end
 
 NeP.Timer.Sync("nep_queue", function()
-	local Running = NeP.DSL.get('toggle')('mastertoggle')
+	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
 	if Running then
 		local time = GetTime()
 		for i=1, #eQueue do
