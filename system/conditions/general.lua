@@ -32,7 +32,7 @@ RegisterConditon('casting.percent', function(target, spell)
 		local secondsLeft = endTime / 1000  - GetTime()
 		return ((secondsLeft/castLength)*100)
 	end
-	return false
+	return 0
 end)
 
 RegisterConditon('casting.delta', function(target, spell)		
@@ -43,7 +43,7 @@ RegisterConditon('casting.delta', function(target, spell)
 		local secondsLeft = endTime / 1000 - GetTime()		
 		return secondsLeft, castLength		
 	end		
-	return false		
+	return 0		
  end)
 
 RegisterConditon('channeling', function (target, spell)
