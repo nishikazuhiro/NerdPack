@@ -8,8 +8,8 @@ NerdPack is divided by 2 kind of modules: Core ("Legal") and Protected ("Ilegal"
 > Protected modules will automate everything and therefore breaks WoW's TOS.  
 > All issues reported here will be ignored, to report issues go here: [Click Here](https://github.com/MrTheSoulz/NerdPack/issues)  
 > For tips and documents use our wiki: [Click Here](https://github.com/MrTheSoulz/NerdPack/wiki) or visit our [Discord Channel](https://discord.gg/XtSZbjM)  
+  
 <b>Donate</b>: [Click Here](http://goo.gl/yrctPO)  
-<br/>
 
 <h2>Core Modules:</h2>
 * <b>NerdPack</b>:  
@@ -43,8 +43,7 @@ https://github.com/MrTheSoulz/NerdPack-Overlays
 * <b>BattlePet Bot</b>:  
 Requires an advanced unlocker like FireHack or EWT.  
 https://github.com/MrTheSoulz/NerdPack-PB
-
-<br/>
+  
 ---------------------------------------------------------------
 <h2>Instructions on how to install:</h2>
 * Close WoW before updating/installing.
