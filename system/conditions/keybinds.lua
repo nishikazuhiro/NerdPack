@@ -1,4 +1,3 @@
-local RegisterConditon = NeP.DSL.RegisterConditon
 --[[
 						KEYBINDS CONDITIONS!
 			Only submit keybind specific conditions here.
@@ -26,7 +25,7 @@ local KEYBINDS = {
 	['ralt'] = function() return IsRightAltKeyDown() end,
 }
 
-RegisterConditon("keybind", function(_, Arg)
+NeP.DSL.RegisterConditon("keybind", function(_, Arg)
 	if Arg and KEYBINDS[string.lower(Arg)] then
 		return KEYBINDS[string.lower(Arg)]() and not GetCurrentKeyBoardFocus()
 	end
