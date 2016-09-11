@@ -17,13 +17,13 @@ local function pString(mString, spell)
 	local _, args = mString:match('(.+)%((.+)%)')
 	if args then mString = mString:gsub('%((.+)%)', '') end
 	if DSL.Conditions[mString] then
-		local result = DSL.Get(mString)(nil, args, spell)
+		local result = DSL.Get(mString)(nil, (args or spell))
 		return result
 	else
 		local unitId, rest = strsplit('.', mString, 2)
 		local unitId = NeP.Engine.FilterUnit(unitId)
 		if UnitExists(unitId) then
-			local result = DSL.Get(rest)(unitId, args, spell)
+			local result = DSL.Get(rest)(unitId, (args or spell))
 			return result
 		end
 	end
