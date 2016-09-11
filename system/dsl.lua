@@ -25,14 +25,14 @@ local tableComparator = {
 	['!='] 	= function(value, compare_value) return value ~= compare_value 	end
 }
 
-local function pString(string, spell)
-	local args = string:match("%((%a+)%)")
-	if args then string = string:gsub('%((%a+)%)', '') end
-	if DSL.Conditions[string] then
-		local result = DSL.Get(string)(nil, args, spell)
+local function pString(mString, spell)
+	local _, args = mString:match('(.+)%((.+)%)')
+	if args then mString = mString:gsub('%((.+)%)', '') end
+	if DSL.Conditions[mString] then
+		local result = DSL.Get(mString)(nil, args, spell)
 		return result
 	else
-		local unitId, rest = strsplit('.', string, 2)
+		local unitId, rest = strsplit('.', mString, 2)
 		local unitId = NeP.Engine.FilterUnit(unitId)
 		if UnitExists(unitId) then
 			local result = DSL.Get(rest)(unitId, args, spell)
@@ -41,30 +41,33 @@ local function pString(string, spell)
 	end
 end
 
--- This runs the conditions so it returns the int
-local function pNumber(arg1, arg2, eval, spell)
-	local arg1, arg2 = arg1, arg2
-	if not string.match(arg1, '%d') then
-		arg1 = pString(arg1, spell)
+local function Comperatores(mString, spell)
+	for k,v in pairs(tableComparator) do
+		local comperator = ' '..k..' '
+		if mString:find(comperator) then
+			local arg1, arg2 = unpack(string.split(mString, comperator))
+			if not string.match(arg1, '%d') then
+				arg1 = pString(arg1, spell)
+			end
+			if not string.match(arg2, '%d') then
+				arg2 = pString(arg2, spell)
+			end
+			local result = tableComparator[k](tonumber(arg1), tonumber(arg2), spell)
+			return result
+		end
 	end
-	if not string.match(arg2, '%d') then
-		arg2 = pString(arg2, spell)
-	end
-	local result = tableComparator[eval](tonumber(arg1), tonumber(arg2), spell)
-	return result
 end
 
 local function Parse(dsl, spell)
-	-- Comparators
 	local modify_not = false
 	local result = false
 	if string.sub(dsl, 1, 1) == '!' then
 		dsl = string.sub(dsl, 2)
 		modify_not = true
 	end
-	local arg1, arg2, arg3 = unpack(string.split(dsl, ' '))
-	if tableComparator[arg2] then
-		result =  pNumber(arg1, arg3, arg2, spell)
+	local Comperatores = Comperatores(dsl)
+	if Comperatores ~= nil then
+		result =  Comperatores
 	else
 		result = pString(dsl, spell)
 	end
