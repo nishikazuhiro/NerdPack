@@ -53,7 +53,6 @@
 	<Script file="system\library.lua" />
 	<Script file="system\APIs.lua" />
 	<Script file="system\dsl.lua" />
-	<Script file="system\dsl_new.lua" />
 	<Script file="system\dispell.lua" />
 	<Script file="system\conditions\general.lua" />
 	<Script file="system\conditions\units.lua" />
