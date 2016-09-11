@@ -53,15 +53,8 @@
 	<Script file="system\library.lua" />
 	<Script file="system\APIs.lua" />
 	<Script file="system\dsl.lua" />
-	<Script file="system\dsl_new.lua" />
 	<Script file="system\dispell.lua" />
-	<Script file="system\conditions\general.lua" />
-	<Script file="system\conditions\units.lua" />
-	<Script file="system\conditions\buffs.lua" />
-	<Script file="system\conditions\keybinds.lua" />
-	<Script file="system\conditions\class.lua" />
-	<Script file="system\conditions\states.lua" />
-	<Script file="system\combatTracker.lua" />
+	<Script file="system\conditions.lua" />
 	<Script file="system\engine.lua" />
 	<Script file="system\listeners.lua" />
 	<Script file="system\helpers.lua" />

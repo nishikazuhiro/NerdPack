@@ -1,21 +1,16 @@
-NeP.DSL = {
-	Conditions = {}
-}
-
 local DSL = NeP.DSL
 
-local comparator_table = { }
-local parse_table = { }
-
-local conditionizers = {
-	['modifier'] = true,
-	['!modifier'] = true
-}
-
-local conditionizers_single = {
-	['toggle'] = true,
-	['!toggle'] = true
-}
+function string:split(delimiter)
+	local result, from = {}, 1
+	local delim_from, delim_to = string.find(self, delimiter, from)
+	while delim_from do
+		table.insert( result, string.sub(self, from , delim_from-1))
+		from = delim_to + 1
+		delim_from, delim_to = string.find(self, delimiter, from)
+	end
+	table.insert(result, string.sub(self, from))
+	return result
+end
 
 local tableComparator = {
 	['>='] 	= function(value, compare_value) return value >= compare_value 	end,
@@ -23,181 +18,104 @@ local tableComparator = {
 	['>'] 	= function(value, compare_value) return value >  compare_value 	end,
 	['<'] 	= function(value, compare_value) return value <  compare_value 	end,
 	['='] 	= function(value, compare_value) return value == compare_value 	end,
-	['=='] 	= function(value, compare_value) return value == compare_value 	end,
-	['!='] 	= function(value, compare_value) return value ~= compare_value 	end,
-	['!'] 	= function(value, compare_value) return value ~= compare_value 	end
+	['!='] 	= function(value, compare_value) return value ~= compare_value 	end
 }
 
-local getConditionalSpell = function(dsl, spell)
-	-- check if we are passing a spell with the conditional
-	if string.match(dsl, '(.+)%((.+)%)') then
-		return string.match(dsl, '(.+)%((.+)%)')
-	else
-		return dsl, spell
+local function pString(string, spell)
+	local args = string:match("%((%a+)%)")
+	if args then string = string:gsub('%((%a+)%)', '') end
+	local dot1, dot2 = strsplit('.', string, 2)
+	if UnitExists(dot1) then
+		return DSL.get(dot2)(dot1, args, spell)
+	elseif DSL.Conditions[string] then
+		return DSL.get(string)(nil, args, spell)
 	end
 end
 
-local comparator = function(condition, target, condition_spell)
-
-	if not condition then return false end
-
-	local modify_not = false
-
-	if target and type(target) == "string" then
-		if string.sub(target, 1, 1) == '!' then
-			target = string.sub(target, 2)
-			modify_not = true
-		end
+-- This runs the conditions so it returns the int
+local function pNumber(arg1, arg2, eval, spell)
+	local arg1, arg2 = arg1, arg2
+	if not string.match(arg1, '%d') then
+		arg1 = pString(arg1, spell)
 	end
-
-	if string.sub(condition, 1, 1) == '!' then
-		condition = string.sub(condition, 2)
-		modify_not = true
+	if not string.match(arg2, '%d') then
+		arg2 = pString(arg2, spell)
 	end
+	if arg1 and arg2 then
+		local result = tableComparator[eval](arg1, arg2, spell)
+		return result
+	end
+	return false
+end
 
-	local arg1, arg2, arg3 = strsplit(' ', condition, 3)
-	if arg1 then table.insert(comparator_table, arg1) end
-	if arg2 then table.insert(comparator_table, arg2) end
-	if arg3 then table.insert(comparator_table, arg3) end
-
-	local evaluation = false
-	if #comparator_table == 3 then
-
-		local compare_value = tonumber(comparator_table[3])
-		local condition_call = DSL.get(comparator_table[1])(target, condition_spell, compare_value)
-		local call_type = type(condition_call)
-
-		if call_type ~= "number" then
-			if tonumber(condition_call) then
-				call_type = "number"
-				condition_call = tonumber(condition_call)
-			end
-		end
-
-		if call_type == "number" then
-			local value = condition_call
-			
-			if compare_value == nil then
-				evaluation = comparator_table[3] == condition_call
-			else
-				local tempComp = comparator_table[2]
-				if tableComparator[tempComp] then
-					evaluation = tableComparator[tempComp](value, compare_value)
+local function Parse(dsl, spell)
+	local parse_table = string.split(dsl, ' || ')
+	local r_table = {}
+	for i=1, #parse_table do
+		local ev = parse_table[i]
+		r_table[i] = true
+		local tempT = string.split(ev, ' && ')
+		for k=1, #tempT do
+			local eva = tempT[k]
+			if r_table[i] then
+				local arg1, arg2, arg3 = unpack(string.split(eva, ' '))
+				-- Comparators
+				if tableComparator[arg2] then
+					r_table[i] = pNumber(arg1, arg3, arg2, spell)
 				else
-					evaluation = false
+					local result = pString(eva, spell)
+					r_table[i] = result
 				end
 			end
-		else
-			evaluation = condition_call
 		end
-
-	else
-		evaluation = DSL.get(condition)(target, condition_spell)
 	end
-	if modify_not then
-		return not evaluation
-	end
-	return evaluation
-end
-
-local conditionize = function(target, condition)
-	if conditionizers[target] then
-		return target..'.'..condition
-	elseif conditionizers_single[target] then
-		return target
-	else
-		return condition
-	end
-end
-
-local parsez = function(dsl, spell)
-
-	local unitId, arg2, arg3 = strsplit('.', dsl, 3)
-
-	unitId = NeP.Engine.FilterUnit(unitId)
-
-	if unitId then table.insert(parse_table, unitId) end
-	if arg2 then table.insert(parse_table, arg2) end
-	if arg3 then table.insert(parse_table, arg3) end
-
-	local size = #parse_table
-	if size == 1 then
-		local condition, spell = string.match(dsl, '(.+)%((.+)%)')
-		return comparator(condition, spell, spell)
-	elseif size == 2 then
-		local target = parse_table[1]
-		local condition, condition_spell = getConditionalSpell(parse_table[2], spell)
-		condition = conditionize(target, condition)
-		if conditionizers_single[target] then
-			return comparator(condition, parse_table[2], condition_spell)
+	for i=1, #r_table do
+		if r_table[i] then
+			return true
 		end
-		return comparator(condition, target, condition_spell)
-	elseif size == 3 then
-		local target = parse_table[1]
-		local condition, condition_spell, subcondition = getConditionalSpell(parse_table[2], spell)
-		condition = conditionize(target, condition)
-		return comparator(condition..'.'..parse_table[3], target, condition_spell)
 	end
-
-	return DSL.get(dsl)('target', spell)
 end
 
+-- Routes
 local typesTable = {
 	['function'] = function(dsl, spell) return dsl() end,
 	['table'] = function(dsl, spell)
-		local tArray = {[1] = true}
-		for k,v in ipairs(dsl) do
-			if v == 'or' then
-				tArray[#tArray+1] = {}
-			elseif tArray[#tArray] then
-				local eval = DSL.Parse(v, spell)
-				tArray[#tArray] = eval or false
-			end
-		end
-		-- search for "true"
-		for i = 1, #tArray do
-			if tArray[i] then
-				return true
-			end
-		end
-		return false
+		
 	end,
 	['string'] = function(dsl, spell) 
 		-- Lib Call
 		if string.sub(dsl, 1, 1) == '@' then
 			return NeP.library.parse(false, dsl, 'target')
 		else
-			return parsez(dsl, spell)
+			return Parse(dsl, spell)
 		end
 	end,
 	['nil'] = function(dsl, spell) return true end,
 	['boolean']	 = function(dsl, spell) return dsl end,
 }
 
-DSL.Parse = function(dsl, spell)
-	wipe(comparator_table)
-	wipe(parse_table)
-	local dslType = type(dsl)
-	if dslType == 'string' then
-		-- Lib
-		if string.sub(dsl, 1, 1) == '@' then dslType = 'lib' end
-	end
-	return typesTable[dslType](dsl, spell)
-end
+function Load_DSL_Test()
+	print('loaded experimental DSL')
 
-DSL.get = function(condition)
-	local condition = string.lower(condition)
-	if DSL.Conditions[condition] then
-		return DSL.Conditions[condition]
+	function DSL.get(condition)
+		local condition = string.lower(condition)
+		if DSL.Conditions[condition] then
+			return DSL.Conditions[condition]
+		end
+		return (function() return false end)
 	end
-	return (function() return false end)
-end
 
-DSL.RegisterConditon = function(name, eval, overwrite)
-	local name = string.lower(name)
-	if DSL.Conditions[name] or overwrite then
-		NeP.Core.Debug('DSL', 'ERROR! a condition named: '..name..' already exists, rename it!')
-	else
-		DSL.Conditions[name] = eval
+	function DSL.RegisterConditon(name, eval, overwrite)
+		local name = string.lower(name)
+		if not DSL.Conditions[name] or overwrite then
+			DSL.Conditions[name] = eval
+		end
 	end
+
+	function DSL.Parse(dsl, spell)
+		if typesTable[type(dsl)] then
+			return typesTable[type(dsl)](dsl, spell)
+		end
+	end
+
 end
