@@ -11,38 +11,24 @@ TODO: Find a way to add more keybinds
 --------------------------------------------------------------------------------------------------------------
 ]]
 
-RegisterConditon("keybind.shift", function()
-	return IsShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
+local KEYBINDS = {
+	-- Shift
+	['shift'] = function() return IsShiftKeyDown() end,
+	['lshift'] = function() return IsLeftShiftKeyDown() end,
+	['rshift'] = function() return IsRightShiftKeyDown() end,
+	-- Control
+	['control'] = function() return IsControlKeyDown() end,
+	['lcontrol'] = function() return IsLeftControlKeyDown() end,
+	['rcontrol'] = function() return IsRightControlKeyDown() end,
+	-- Alt
+	['alt'] = function() return IsAltKeyDown() end,
+	['lalt'] = function() return IsLeftAltKeyDown() end,
+	['ralt'] = function() return IsRightAltKeyDown() end,
+}
 
-RegisterConditon("keybind.control", function()
-	return IsControlKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.alt", function()
-	return IsAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.lshift", function()
-	return IsLeftShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.lcontrol", function()
-	return IsLeftControlKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.lalt", function()
-	return IsLeftAltKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.rshift", function()
-	return IsRightShiftKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.rcontrol", function()
-	return IsRightControlKeyDown() and GetCurrentKeyBoardFocus() == nil
-end)
-
-RegisterConditon("keybind.ralt", function()
-	return IsRightAltKeyDown() and GetCurrentKeyBoardFocus() == nil
+RegisterConditon("keybind", function(_, Arg)
+	if Arg and KEYBINDS[string.lower(Arg)] then
+		return KEYBINDS[string.lower(Arg)]() and not GetCurrentKeyBoardFocus()
+	end
+	return false
 end)
