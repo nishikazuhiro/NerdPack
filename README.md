@@ -1,5 +1,5 @@
-<h2 align="center"><b>NerdPack engine for World of Warcraft.</b></h2>
-<Center><img src="https://dl.dropboxusercontent.com/u/101560647/splash.png"></Center>
+<h2 align="center"><b>NerdPack engine for World of Warcraft.</b>  
+<img src="https://dl.dropboxusercontent.com/u/101560647/NEPlogo.png"></h2>
 ---------------------------------------------------------------
 <br/>
 
