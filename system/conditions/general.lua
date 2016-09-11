@@ -73,7 +73,7 @@ end)
 
 RegisterConditon('interruptAt', function (target, spell)
 	if UnitIsUnit('player', target) then return false end
-	if NeP.DSL.Conditions['modifier.toggle']('Interrupts') then
+	if NeP.DSL.Conditions['toggle'](nil, 'Interrupts') then
 		local stopAt = tonumber(spell) or 35
 		local stopAt = stopAt + math.random(-5, 5)
 		local secondsLeft, castLength = NeP.DSL.Conditions['casting.delta'](target)

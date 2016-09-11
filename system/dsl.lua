@@ -4,18 +4,6 @@ NeP.DSL = {
 
 local DSL = NeP.DSL
 
-function string:split(delimiter)
-	local result, from = {}, 1
-	local delim_from, delim_to = string.find(self, delimiter, from)
-	while delim_from do
-		table.insert( result, string.sub(self, from , delim_from-1))
-		from = delim_to + 1
-		delim_from, delim_to = string.find(self, delimiter, from)
-	end
-	table.insert(result, string.sub(self, from))
-	return result
-end
-
 local tableComparator = {
 	['>='] 	= function(value, compare_value) return value >= compare_value 	end,
 	['<='] 	= function(value, compare_value) return value <= compare_value 	end,
@@ -41,7 +29,6 @@ local function pString(mString, spell)
 	end
 end
 
--- This could still be cleaner
 local function Comperatores(mString, spell)
 	for k,v in pairs(tableComparator) do
 		local comperator = ' '..k..' '
@@ -94,7 +81,6 @@ local typesTable = {
 				r_Tbl[#r_Tbl] = eval or false
 			end
 		end
-		-- search for "true"
 		for i = 1, #r_Tbl do
 			if r_Tbl[i] then
 				return true
@@ -103,7 +89,6 @@ local typesTable = {
 		return false
 	end,
 	['string'] = function(dsl, spell) 
-		-- Lib Call
 		if string.sub(dsl, 1, 1) == '@' then
 			return NeP.library.parse(false, dsl, 'target')
 		else
