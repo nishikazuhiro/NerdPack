@@ -35,6 +35,17 @@ RegisterConditon('casting.percent', function(target, spell)
 	return false
 end)
 
+RegisterConditon('casting.delta', function(target, spell)		
+	local name, startTime, endTime, notInterruptible = checkCasting(target)		
+	if not endTime or not startTime then return false end		
+	if name and not notInterruptible then		
+		local castLength = (endTime - startTime) / 1000		
+		local secondsLeft = endTime / 1000 - GetTime()		
+		return secondsLeft, castLength		
+	end		
+	return false		
+ end)
+
 RegisterConditon('channeling', function (target, spell)
 	local name, startTime, endTime, notInterruptible = checkChanneling(target)
 	local spell = GetSpellName(spell)
