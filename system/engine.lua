@@ -242,7 +242,7 @@ local sActions = {
 	['ressdead'] = function(spell, target, sI, args)
 		for i=1,#NeP.OM.unitFriend do
 			local Obj = NeP.OM.unitFriend[i]
-			local spell = spellResolve(args, Obj.key, false)
+			local spell = spellResolve(spell, Obj.key, false)
 			if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 			and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
 				if sI then SpellStopCasting() end
