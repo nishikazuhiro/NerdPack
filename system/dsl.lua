@@ -1,3 +1,5 @@
+NeP.DSL = {}
+
 local DSL = NeP.DSL
 
 function string:split(delimiter)
@@ -94,28 +96,24 @@ local typesTable = {
 	['boolean']	 = function(dsl, spell) return dsl end,
 }
 
-function Load_DSL_Test()
-	print('loaded experimental DSL')
 
-	function DSL.get(condition)
-		local condition = string.lower(condition)
-		if DSL.Conditions[condition] then
-			return DSL.Conditions[condition]
-		end
-		return (function() return false end)
+function DSL.get(condition)
+	local condition = string.lower(condition)
+	if DSL.Conditions[condition] then
+		return DSL.Conditions[condition]
 	end
+	return (function() return false end)
+end
 
-	function DSL.RegisterConditon(name, eval, overwrite)
-		local name = string.lower(name)
-		if not DSL.Conditions[name] or overwrite then
-			DSL.Conditions[name] = eval
-		end
+function DSL.RegisterConditon(name, eval, overwrite)
+	local name = string.lower(name)
+	if not DSL.Conditions[name] or overwrite then
+		DSL.Conditions[name] = eval
 	end
+end
 
-	function DSL.Parse(dsl, spell)
-		if typesTable[type(dsl)] then
-			return typesTable[type(dsl)](dsl, spell)
-		end
+function DSL.Parse(dsl, spell)
+	if typesTable[type(dsl)] then
+		return typesTable[type(dsl)](dsl, spell)
 	end
-
 end
