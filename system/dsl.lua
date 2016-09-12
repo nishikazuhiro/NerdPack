@@ -35,7 +35,7 @@ local function Comperatores(mString, spell)
 		if mString:find(comperator) then
 			local tempT = string.split(mString, comperator)
 			for i=1, #tempT do
-				if not string.match(tempT[i], '%d') then
+				if not string.match(tempT[i], '^%d') then
 					tempT[i] = pString(tempT[i], spell)
 				else
 					tempT[i] = tonumber(tempT[i])
@@ -56,7 +56,7 @@ local function Parse(dsl, spell)
 		dsl = string.sub(dsl, 2)
 		modify_not = true
 	end
-	local Comperatores = Comperatores(dsl)
+	local Comperatores = Comperatores(dsl, spell)
 	if Comperatores ~= nil then
 		result =  Comperatores
 	else
@@ -101,7 +101,6 @@ local typesTable = {
 	['nil'] = function(dsl, spell) return true end,
 	['boolean']	 = function(dsl, spell) return dsl end,
 }
-
 
 function DSL.Get(condition)
 	if condition then
