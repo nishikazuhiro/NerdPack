@@ -7,10 +7,12 @@ local DSL = NeP.DSL
 local tableComparator = {
 	['>='] 	= function(value, compare_value) return value >= compare_value 	end,
 	['<='] 	= function(value, compare_value) return value <= compare_value 	end,
+	['!='] 	= function(value, compare_value) return value ~= compare_value 	end,
+	['~='] 	= function(value, compare_value) return value ~= compare_value 	end,
+	['=='] 	= function(value, compare_value) return value == compare_value 	end,
 	['>'] 	= function(value, compare_value) return value >  compare_value 	end,
 	['<'] 	= function(value, compare_value) return value <  compare_value 	end,
-	['='] 	= function(value, compare_value) return value == compare_value 	end,
-	['!='] 	= function(value, compare_value) return value ~= compare_value 	end
+	['='] 	= function(value, compare_value) return value == compare_value 	end
 }
 
 local function pString(mString, spell)
