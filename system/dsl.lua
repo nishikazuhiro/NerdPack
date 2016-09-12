@@ -29,11 +29,20 @@ local function pString(mString, spell)
 	end
 end
 
+local function RemoveSpaces(mString)
+	local _, args = mString:match('(.+)%((.+)%)')
+	if args then 
+		mString = mString:gsub('%((.+)%)', '')
+		args = '('..args..')'
+	end
+	mString = mString:gsub('%s', '')
+	return mString..(args or '')
+end
+
 local function Comperatores(mString, spell)
 	for k,v in pairs(tableComparator) do
-		local comperator = ' '..k..' '
-		if mString:find(comperator) then
-			local tempT = string.split(mString, comperator)
+		if mString:find(k) then
+			local tempT = string.split(mString, k)
 			for i=1, #tempT do
 				if not string.match(tempT[i], '^%d') then
 					tempT[i] = pString(tempT[i], spell)
@@ -49,22 +58,22 @@ local function Comperatores(mString, spell)
 	end
 end
 
-local function Parse(dsl, spell)
+local function Parse(mString, spell)
 	local modify_not = false
 	local result = false
-	if string.sub(dsl, 1, 1) == '!' then
-		dsl = string.sub(dsl, 2)
+	if string.sub(mString, 1, 1) == '!' then
+		mString = string.sub(mString, 2)
 		modify_not = true
 	end
-	local Comperatores = Comperatores(dsl, spell)
+	mString = RemoveSpaces(mString)
+	
+	local Comperatores = Comperatores(mString, spell)
 	if Comperatores ~= nil then
 		result =  Comperatores
 	else
-		result = pString(dsl, spell)
+		result = pString(mString, spell)
 	end
-	if result == nil then 
-		return false 
-	end
+	result = result or false
 	if modify_not then
 		return not result
 	end
