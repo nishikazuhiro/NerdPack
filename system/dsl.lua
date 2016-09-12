@@ -104,9 +104,11 @@ local typesTable = {
 
 
 function DSL.Get(condition)
-	local condition = string.lower(condition)
-	if DSL.Conditions[condition] then
-		return DSL.Conditions[condition]
+	if condition then
+		local condition = string.lower(condition)
+		if DSL.Conditions[condition] then
+			return DSL.Conditions[condition]
+		end
 	end
 	return (function() end)
 end
