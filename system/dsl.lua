@@ -62,6 +62,9 @@ local function Parse(dsl, spell)
 	else
 		result = pString(dsl, spell)
 	end
+	if result == nil then 
+		return false 
+	end
 	if modify_not then
 		return not result
 	end
