@@ -18,6 +18,7 @@ local tableComparator = {
 local function pString(mString, spell)
 	local _, args = mString:match('(.+)%((.+)%)')
 	if args then mString = mString:gsub('%((.+)%)', '') end
+	mString = mString:gsub('%s', '')
 	if DSL.Conditions[mString] then
 		local result = DSL.Get(mString)(nil, (args or spell))
 		return result
@@ -29,16 +30,6 @@ local function pString(mString, spell)
 			return result
 		end
 	end
-end
-
-local function RemoveSpaces(mString)
-	local _, args = mString:match('(.+)%((.+)%)')
-	if args then 
-		mString = mString:gsub('%((.+)%)', '')
-		args = '('..args..')'
-	end
-	mString = mString:gsub('%s', '')
-	return mString..(args or '')
 end
 
 local function Comperatores(mString, spell)
@@ -67,8 +58,6 @@ local function Parse(mString, spell)
 		mString = string.sub(mString, 2)
 		modify_not = true
 	end
-	mString = RemoveSpaces(mString)
-	
 	local Comperatores = Comperatores(mString, spell)
 	if Comperatores ~= nil then
 		result =  Comperatores
