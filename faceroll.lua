@@ -114,16 +114,16 @@ function NeP.Engine.FaceRoll()
 			local GUID = UnitGUID(unit)
 			-- Enemie Filter
 			if UnitCanAttack('player', unit) then
-				for i=1, #NeP.OM.unitEnemie do
-					local Obj = NeP.OM.unitEnemie[i]
+				for i=1, #NeP.OM['unitEnemie'] do
+					local Obj = NeP.OM['unitEnemie'][i]
 					if Obj.guid == GUID then
 						alreadyExists = true
 					end
 				end
 				-- Friendly Filter
 			elseif UnitIsFriend('player', unit) then
-				for i=1, #NeP.OM.unitFriend do
-					local Obj = NeP.OM.unitFriend[i]
+				for i=1, #NeP.OM['unitFriend'] do
+					local Obj = NeP.OM['unitFriend'][i]
 					if Obj.guid == GUID then
 						alreadyExists = true
 					end

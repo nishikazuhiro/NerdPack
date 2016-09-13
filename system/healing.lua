@@ -14,8 +14,8 @@ local Roles = {
 -- Build Roster
 C_Timer.NewTicker(0.25, (function()
 	wipe(Healing.Units)
-	for i=1,#NeP.OM.unitFriend do
-		local Obj = NeP.OM.unitFriend[i]
+	for i=1,#NeP.OM['unitFriend'] do
+		local Obj = NeP.OM['unitFriend'][i]
 		if (UnitPlayerOrPetInParty(Obj.key) or UnitIsUnit('player', Obj.key))
 		and not UnitIsDeadOrGhost(Obj.key) then
 			if UnitIsVisible(Obj.key) and Obj.distance <= 40

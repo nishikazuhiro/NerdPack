@@ -1,13 +1,15 @@
 NeP.OM = {
-	unitEnemie = {},
-	unitFriend = {},
-	GameObjects = {},
+	['unitEnemie'] = {},
+	['unitFriend'] = {},
+	['GameObjects'] = {},
+	['DeadUnits'] = {}
 }
 
 NeP.Listener.register('OM', "PLAYER_ENTERING_WORLD", function(...)
-	wipe(NeP.OM.unitEnemie)
-	wipe(NeP.OM.unitFriend)
-	wipe(NeP.OM.GameObjects)
+	wipe(NeP.OM['unitEnemie'])
+	wipe(NeP.OM['unitFriend'])
+	wipe(NeP.OM['GameObjects'])
+	wipe(NeP.OM['DeadUnits'])
 end)
 
 local Round = NeP.Core.Round
@@ -104,44 +106,35 @@ end
 	This is done in a seperate function so we dont have
 	to repeate code over and over again for all unlockers.
 ---------------------------------------------------]]
+local function InsertToOM(tableName, Obj)
+	table.insert(NeP.OM[tableName], {
+		key = Obj,
+		name = UnitName(Obj),
+		class = Classifications[UnitClassification(Obj)],
+		distance = NeP.Engine.Distance('player', Obj),
+		id = ObjID,
+		guid = GUID,
+	})
+end
+
 function NeP.OM.addToOM(Obj)
 	local GUID = UnitGUID(Obj) or '0'
 	local objectType, _, _, _, _, ObjID, _ = strsplit('-', GUID)
 	local ObjID = tonumber(ObjID) or '0'
 	if not BlacklistedObject(ObjID) and not BlacklistedDebuffs(Obj) then
 		local distance = NeP.Engine.Distance('player', Obj)
+		-- Dead Units
+		if UnitIsDeadOrGhost(Obj) then
+			InsertToOM('DeadUnits', Obj, GUID, ObjID)
 		-- Friendly
-		if UnitIsFriend('player', Obj) then
-			NeP.OM.unitFriend[#NeP.OM.unitFriend+1] = {
-				key = Obj,
-				name = UnitName(Obj),
-				class = Classifications[UnitClassification(Obj)],
-				distance = distance,
-				is = 'friendly',
-				id = ObjID,
-				guid = GUID,
-			}
+		elseif UnitIsFriend('player', Obj) then
+			InsertToOM('unitFriend', Obj, GUID, ObjID)
 		-- Enemie
 		elseif UnitCanAttack('player', Obj) then
-			NeP.OM.unitEnemie[#NeP.OM.unitEnemie+1] = {
-				key = Obj,
-				name = UnitName(Obj),
-				class = Classifications[UnitClassification(Obj)],
-				distance = distance,
-				is = isDummy(Obj) and 'dummy' or 'enemie',
-				id = ObjID,
-				guid = GUID,
-			}
+			InsertToOM('unitEnemie', Obj, GUID, ObjID)
 		-- Object
 		elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
-			NeP.OM.GameObjects[#NeP.OM.GameObjects+1] = {
-				key = Obj,
-				name = UnitName(Obj) or '',
-				distance = distance,
-				is = 'object',
-				id = ObjID,
-				guid = GUID
-			}
+			InsertToOM('GameObjects', Obj, GUID, ObjID)
 		end
 	end
 end
@@ -198,7 +191,7 @@ local buttonStyleSheet = {
 
 local statusBars = {}
 local statusBarsUsed = {}
-local tOM = NeP.OM.unitEnemie
+local tOM = NeP.OM['unitEnemie']
 
 NeP.OM.List = DiesalGUI:Create('Window')
 local OMListGUI = NeP.OM.List
@@ -222,9 +215,9 @@ end
 OMListGUI:Hide()
 
 local bt = {
-	['ENEMIE'] = {a = 'TOPLEFT', b = NeP.OM.unitEnemie},
-	['FRIENDLY'] = {a = 'TOP', b = NeP.OM.unitFriend},
-	['OBJECTS'] = {a = 'TOPRIGHT', b = NeP.OM.GameObjects}
+	['ENEMIE'] = {a = 'TOPLEFT', b = NeP.OM['unitEnemie']},
+	['FRIENDLY'] = {a = 'TOP', b = NeP.OM['unitFriend']},
+	['OBJECTS'] = {a = 'TOPRIGHT', b = NeP.OM['GameObjects']}
 }
 
 for k,v in pairs(bt) do
@@ -291,21 +284,21 @@ C_Timer.NewTicker(0.25, (function()
 	-- wait until added from unlocker.
 	if NeP.OM.Maker then
 		-- Wipe Cache
-		wipe(NeP.OM.unitEnemie)
-		wipe(NeP.OM.unitFriend)
-		wipe(NeP.OM.GameObjects)
+		wipe(NeP.OM['unitEnemie'])
+		wipe(NeP.OM['unitFriend'])
+		wipe(NeP.OM['GameObjects'])
 		-- Run OM depending on unlocker
 		NeP.OM.Maker()
 		-- Sort by distance
-		table.sort(NeP.OM.unitEnemie, function(a,b) return a.distance < b.distance end)
-		table.sort(NeP.OM.unitFriend, function(a,b) return a.distance < b.distance end)
-		table.sort(NeP.OM.GameObjects, function(a,b) return a.distance < b.distance end)
+		table.sort(NeP.OM['unitEnemie'], function(a,b) return a.distance < b.distance end)
+		table.sort(NeP.OM['unitFriend'], function(a,b) return a.distance < b.distance end)
+		table.sort(NeP.OM['GameObjects'], function(a,b) return a.distance < b.distance end)
 	end
 	-- UPDATE GUI
 	if NeP.OM.List:IsShown() then 
 		RefreshGUI()
-		bt['ENEMIE']:SetText('ENEMIE ('..#NeP.OM.unitEnemie..')')
-		bt['FRIENDLY']:SetText('FRIENDLY ('..#NeP.OM.unitFriend..')')
-		bt['OBJECTS']:SetText('OBJECTS ('..#NeP.OM.GameObjects..')')
+		bt['ENEMIE']:SetText('ENEMIE ('..#NeP.OM['unitEnemie']..')')
+		bt['FRIENDLY']:SetText('FRIENDLY ('..#NeP.OM['unitFriend']..')')
+		bt['OBJECTS']:SetText('OBJECTS ('..#NeP.OM['GameObjects']..')')
 	end
 end), nil)

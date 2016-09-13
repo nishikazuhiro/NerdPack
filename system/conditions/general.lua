@@ -158,8 +158,8 @@ RegisterConditon('IsNear', function(target, args)
 	local targetID, distance = strsplit(',', args, 2)
 	local targetID = tonumber(targetID) or 0
 	local distance = tonumber(distance) or 60
-		for i=1,#NeP.OM.unitEnemie do
-			local Obj = NeP.OM.unitEnemie[i]
+		for i=1,#NeP.OM['unitEnemie'] do
+			local Obj = NeP.OM['unitEnemie'][i]
 			if Obj.id == targetID then
 				if NeP.Engine.Distance('player', target) <= distance then
 					return true
