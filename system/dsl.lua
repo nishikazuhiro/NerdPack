@@ -10,7 +10,9 @@ local function pString(mString, spell)
 	local _, args = mString:match('(.+)%((.+)%)')
 	if args then mString = mString:gsub('%((.+)%)', '') end
 	mString = mString:gsub('%s', '')
-	if DSL.Conditions[mString] then
+	if string.find(mString, '^%d') then
+		return mString
+	elseif DSL.Conditions[mString] then
 		local result = DSL.Get(mString)(nil, (args or spell))
 		return result
 	else
@@ -23,33 +25,20 @@ local function pString(mString, spell)
 	end
 end
 
-local tableComparator = {
-	{t = '>=', f = function(value, compare_value) return value >= compare_value end},
-	{t = '<=', f = function(value, compare_value) return value <= compare_value end},
-	{t = '!=', f = function(value, compare_value) return value ~= compare_value end},
-	{t = '~=', f = function(value, compare_value) return value ~= compare_value end},
-	{t = '==', f = function(value, compare_value) return value == compare_value end},
-	{t = '>', f = function(value, compare_value) return value > compare_value end},
-	{t = '<', f = function(value, compare_value) return value < compare_value end},
-	{t = '=', f = function(value, compare_value) return value == compare_value end}
-}
-
+local tableComparator = {'>=','<=','!=','~=','==','>','<','='}
 local function Comperatores(mString, spell)
 	for i=1, #tableComparator do
 		local Comperator = tableComparator[i]
-		if string.find(mString, Comperator.t) then
-			local tempT = string.split(mString, Comperator.t)
-			for i=1, #tempT do
-				if string.find(tempT[i], '^%a') or string.find(tempT[i], ' %a') then
-					tempT[i] = pString(tempT[i], spell)
-				end
-				tempT[i] = tonumber(tempT[i])
+		if string.find(mString, Comperator) then
+			local tempT = string.split(mString, Comperator)
+			for k=1, #tempT do
+				tempT[k] = pString(tempT[k], spell)
+				tempT[k] = tonumber(tempT[k])
 			end
-			if tempT[1] and type(tempT[1]) == type(tempT[2]) then
-				local result = Comperator.f(tempT[1], tempT[2])
-				return result
-			end
-			break
+			print(tempT[1],Comperator,tempT[2])
+			local result = loadstring(" return "..tempT[1]..Comperator..tempT[2].." ")()
+			print(result)
+			return result
 		end
 	end
 end
