@@ -168,3 +168,7 @@ RegisterConditon('IsNear', function(target, args)
 		end
 	return false
 end)
+
+NeP.DSL.RegisterConditon('equipped', function(_, item)
+    return IsEquippedItem(item)
+end)
