@@ -8,9 +8,7 @@ local function pString(mString, spell)
 	local _, args = mString:match('(.+)%((.+)%)')
 	if args then mString = mString:gsub('%((.+)%)', '') end
 	mString = mString:gsub('%s', '')
-	if string.find(mString, '^%d') then
-		return mString
-	elseif DSL.Conditions[mString] then
+	if DSL.Conditions[mString] then
 		local result = DSL.Get(mString)(nil, (args or spell))
 		return result
 	else
@@ -23,17 +21,21 @@ local function pString(mString, spell)
 	end
 end
 
+local fOps = {['!='] = '~=', ['='] = '=='}
 local tableComparator = {'>=','<=','!=','~=','==','>','<','='}
 local function Comperatores(mString, spell)
 	for i=1, #tableComparator do
-		local Comperator = tableComparator[i]
-		if string.find(mString, Comperator) then
-			local tempT = string.split(mString, Comperator)
-			for k=1, #tempT do
-				tempT[k] = pString(tempT[k], spell)
-				tempT[k] = tonumber(tempT[k])
+		local op = tableComparator[i]
+		if string.find(mString, op) then
+			local tT = string.split(mString, op)
+			for k=1, #tT do
+				if string.find(tT[k], '%a') then
+					tT[k] = pString(tT[k], spell)
+				end
+				if not tT[k] then return false end
 			end
-			return loadstring(" return "..tempT[1]..Comperator..tempT[2].." ")()
+			if fOps[op] then op = fOps[op] end
+			return (#tT > 1) and loadstring(" return "..tT[1]..op..tT[2])()
 		end
 	end
 end
