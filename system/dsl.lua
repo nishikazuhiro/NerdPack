@@ -33,8 +33,7 @@ local function Comperatores(mString, spell)
 				tempT[k] = pString(tempT[k], spell)
 				tempT[k] = tonumber(tempT[k])
 			end
-			local result = loadstring(" return "..tempT[1]..Comperator..tempT[2].." ")()
-			return result
+			return loadstring(" return "..tempT[1]..Comperator..tempT[2].." ")()
 		end
 	end
 end
