@@ -5,13 +5,6 @@ NeP.OM = {
 	['DeadUnits'] = {}
 }
 
-NeP.Listener.register('OM', "PLAYER_ENTERING_WORLD", function(...)
-	wipe(NeP.OM['unitEnemie'])
-	wipe(NeP.OM['unitFriend'])
-	wipe(NeP.OM['GameObjects'])
-	wipe(NeP.OM['DeadUnits'])
-end)
-
 local Round = NeP.Core.Round
 local Classifications = {
 	['minus'] 		= 1,
@@ -279,15 +272,21 @@ local function RefreshGUI()
 	end
 end
 
+local function WipeOM()
+	wipe(NeP.OM['unitEnemie'])
+	wipe(NeP.OM['unitFriend'])
+	wipe(NeP.OM['GameObjects'])
+	wipe(NeP.OM['DeadUnits'])
+end
+
+NeP.Listener.register('OM', "PLAYER_ENTERING_WORLD", function(...)
+	WipeOM()
+end)
+
 -- Run OM
 C_Timer.NewTicker(0.25, (function()
-	-- wait until added from unlocker.
 	if NeP.OM.Maker then
-		-- Wipe Cache
-		wipe(NeP.OM['unitEnemie'])
-		wipe(NeP.OM['unitFriend'])
-		wipe(NeP.OM['GameObjects'])
-		-- Run OM depending on unlocker
+		WipeOM()
 		NeP.OM.Maker()
 		-- Sort by distance
 		table.sort(NeP.OM['unitEnemie'], function(a,b) return a.distance < b.distance end)
