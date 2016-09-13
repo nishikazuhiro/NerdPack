@@ -4,8 +4,6 @@ NeP.DSL = {
 
 local DSL = NeP.DSL
 
-
-
 local function pString(mString, spell)
 	local _, args = mString:match('(.+)%((.+)%)')
 	if args then mString = mString:gsub('%((.+)%)', '') end
@@ -35,9 +33,7 @@ local function Comperatores(mString, spell)
 				tempT[k] = pString(tempT[k], spell)
 				tempT[k] = tonumber(tempT[k])
 			end
-			print(tempT[1],Comperator,tempT[2])
 			local result = loadstring(" return "..tempT[1]..Comperator..tempT[2].." ")()
-			print(result)
 			return result
 		end
 	end
