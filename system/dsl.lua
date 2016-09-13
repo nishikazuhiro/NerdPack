@@ -35,7 +35,7 @@ local function Comperatores(mString, spell)
 				if not tT[k] then return false end
 			end
 			if fOps[op] then op = fOps[op] end
-			return (#tT > 1) and loadstring(" return "..tT[1]..op..tT[2])()
+			return loadstring(" return "..tT[1]..op..tT[2])()
 		end
 	end
 end
