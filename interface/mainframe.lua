@@ -23,36 +23,6 @@ NeP.MFrame = {
 	usedButtons = {},
 	Settings = {},
 	Plugins = {},
-	nSettings = {
-		{
-			name = TA('mainframe', 'Drag'),
-			func = function() NePfDrag:Show() end
-		},
-		{
-			name = TA('mainframe', 'OM'),
-			func = function() NeP.OM.List:Show() end
-		},
-		{
-			name = TA('mainframe', 'AL'),
-			func = function() PE_ActionLog:Show() end
-		},
-		{
-			name = TA('mainframe', 'Forum'),
-			func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end
-		},
-		{
-			name = TA('mainframe', 'HideNeP'),
-			func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end
-		},
-		{
-			name = TA('mainframe', 'Donate'),
-			func = function() OpenPage('http://goo.gl/yrctPO') end
-		},
-		{
-			name = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'),
-			func = function() NeP.Interface.ShowGUI('NePSettings') end
-		}
-	}
 }
 
 local E, _L, V, P, G
@@ -63,65 +33,59 @@ if IsAddOnLoaded("ElvUI") then
 	NeP.MFrame.buttonSize = 32
 end
 
-local function LoadCrs(info)
+local Combat_Routines = {}
+
+local function LoadCrs()
+	wipe(Combat_Routines)
 	local routinesTable = NeP.Helpers.GetSpecTables()
 	if routinesTable then
 		local lastCR = NeP.Helpers.GetSelectedSpec()['Name']
 		local SpecInfo = NeP.Helpers.specInfo()
 		for k,v in pairs(routinesTable) do
-			info = UIDropDownMenu_CreateInfo()
-			info.text = v['Name']
-			info.value = k
-			info.checked = (lastCR == k) or false
-			info.func = function(self)
-				NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
-				Config.Write('NeP_SlctdCR_'..(SpecInfo), k)
-				NeP.Helpers.updateSpec()
-			end
-			UIDropDownMenu_AddButton(info)
+			local tempT = {
+				text = v['Name'],
+				checked = (lastCR == k) or false,
+				func = function(self)
+					NeP.Core.Print(TA('mainframe', 'ChangeCR')..' ( '..v['Name']..' )')
+					Config.Write('NeP_SlctdCR_'..(SpecInfo), k)
+					NeP.Helpers.updateSpec()
+				end
+			}
+			table.insert(Combat_Routines, tempT)
 		end
-		return
 	end
-	-- No CR
-	info = UIDropDownMenu_CreateInfo()
-	info.notCheckable = 1
-	info.text = TA('mainframe', 'NoCR')
-	UIDropDownMenu_AddButton(info)
+	for i=1, #NeP.MFrame.Settings do
+		table.insert(Combat_Routines, NeP.MFrame.Settings[i])
+	end
 end
 
-local stD = {
-	{n = 'CR Settings:', t = NeP.MFrame.Settings},
-	{n = 'Modules:', t = NeP.MFrame.Plugins},
-	{n = Logo..'['..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch..']', t = NeP.MFrame.nSettings}
+local tExtras = {
+	{
+		text = TA('mainframe', 'OM'),
+		func = function() NeP.OM.List:Show() end,
+		notCheckable = 1
+	},
+	{
+		text = TA('mainframe', 'AL'),
+		func = function() PE_ActionLog:Show() end,
+		notCheckable = 1
+	},
+	{
+		text = TA('mainframe', 'Forum'),
+		func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end,
+		notCheckable = 1
+	},
 }
 
-local function dropdown(self)
-	local info = UIDropDownMenu_CreateInfo()
-	-- Routines
-	info.isTitle = 1
-	info.notCheckable = 1
-	info.text = 'Combat Routines:'
-	UIDropDownMenu_AddButton(info)
-	LoadCrs(info)
-	for k=1,#stD do
-		local v = stD[k]
-		if #v.t > 0 then
-			info.isTitle = 1
-			info.notCheckable = 1
-			info.text = v.n
-			UIDropDownMenu_AddButton(info)
-			for i=1, #v.t do
-				local z = v.t[i]
-				info = UIDropDownMenu_CreateInfo()
-				info.text = z.name
-				info.value = z.name
-				info.func = z.func
-				info.notCheckable = 1
-				UIDropDownMenu_AddButton(info)
-			end
-		end
-	end
-end
+local DropMenu = {
+	{ text = Logo..'['..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch..']', isTitle = 1 },
+	{ text = "Combat Routines:", notCheckable = 1, hasArrow = true, menuList = Combat_Routines },
+	{ text = "Modules:", notCheckable = 1, hasArrow = true, menuList = NeP.MFrame.Plugins },
+	{ text = "Extras:", notCheckable = 1, hasArrow = true, menuList = tExtras },
+	{ text = TA('mainframe', 'Donate'), notCheckable = 1, func = function() OpenPage('http://goo.gl/yrctPO') end },
+	{ text = TA('mainframe', 'HideNeP'), notCheckable = 1, func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end },
+	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, function() NeP.Interface.ShowGUI('NePSettings') end },
+}
 
 -- These are the default toggles.
 local function defaultToggles()
@@ -134,9 +98,10 @@ local function defaultToggles()
 			if IsControlKeyDown() then
 				NePfDrag:Show()
 			else
-				local ST_Dropdown = CreateFrame("Frame", "ST_Dropdown", self, "UIDropDownMenuTemplate");
-				UIDropDownMenu_Initialize(ST_Dropdown, dropdown, "MENU");
-				ToggleDropDownMenu(1, nil, ST_Dropdown, self, 0, 0);
+				LoadCrs()
+				local menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NePFrame, "UIDropDownMenuTemplate")
+				menuFrame:SetPoint("BOTTOMLEFT", NePFrame, "BOTTOMLEFT")
+				EasyMenu(DropMenu, menuFrame, menuFrame, 0 , 0, "MENU");
 			end
 		end
 	end)
@@ -147,15 +112,17 @@ end
 
 Intf.CreateSetting = function(name, func)
 	NeP.MFrame.Settings[#NeP.MFrame.Settings+1] = {
-		name = name,
-		func = func
+		text = name,
+		func = func,
+		notCheckable = 1
 	}
 end
 
 Intf.CreatePlugin = function(name, func)
 	NeP.MFrame.Plugins[#NeP.MFrame.Plugins+1] = {
-		name = tostring(name),
-		func = func
+		text = tostring(name),
+		func = func,
+		notCheckable = 1
 	}
 end
 
