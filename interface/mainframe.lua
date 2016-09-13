@@ -1,3 +1,12 @@
+NeP.MFrame = {
+	buttonPadding = 2,
+	buttonSize = 40,
+	Buttons = {},
+	usedButtons = {},
+	Settings = {},
+	Plugins = {},
+}
+
 local Intf = NeP.Interface
 local addonColor = '|cff'..Intf.addonColor
 local Tittle = addonColor..NeP.Info.Name
@@ -16,15 +25,6 @@ local function OpenPage(URL)
 	end
 end
 
-NeP.MFrame = {
-	buttonPadding = 2,
-	buttonSize = 40,
-	Buttons = {},
-	usedButtons = {},
-	Settings = {},
-	Plugins = {},
-}
-
 local E, _L, V, P, G
 if IsAddOnLoaded("ElvUI") then
 	E, _L, V, P, G = unpack(ElvUI)
@@ -33,16 +33,28 @@ if IsAddOnLoaded("ElvUI") then
 	NeP.MFrame.buttonSize = 32
 end
 
-local Combat_Routines = {}
+local DropMenu = {}
+local DropMenu_Add = {
+	{ text = "Modules:", notCheckable = 1, hasArrow = true, menuList = NeP.MFrame.Plugins },
+	{ text = TA('mainframe', 'OM'), notCheckable = 1, func = function() NeP.OM.List:Show() end },
+	{ text = TA('mainframe', 'AL'), notCheckable = 1, func = function() PE_ActionLog:Show() end },
+	{ text = TA('mainframe', 'Forum'), notCheckable = 1, func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end},
+	{ text = TA('mainframe', 'Donate'), notCheckable = 1, func = function() OpenPage('http://goo.gl/yrctPO') end },
+	{ text = TA('mainframe', 'HideNeP'), notCheckable = 1, func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end },
+	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, function() NeP.Interface.ShowGUI('NePSettings') end },
+}
 
-local function LoadCrs()
-	wipe(Combat_Routines)
+local function CreateDropMenu()
+	wipe(DropMenu)
+	-- title
+	table.insert(DropMenu, { text = Logo..'['..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch..']', isTitle = 1 })
+	-- Routines
 	local routinesTable = NeP.Helpers.GetSpecTables()
 	if routinesTable then
 		local lastCR = NeP.Helpers.GetSelectedSpec()['Name']
 		local SpecInfo = NeP.Helpers.specInfo()
 		for k,v in pairs(routinesTable) do
-			local tempT = {
+			table.insert(DropMenu, {
 				text = v['Name'],
 				checked = (lastCR == k) or false,
 				func = function(self)
@@ -50,42 +62,20 @@ local function LoadCrs()
 					Config.Write('NeP_SlctdCR_'..(SpecInfo), k)
 					NeP.Helpers.updateSpec()
 				end
-			}
-			table.insert(Combat_Routines, tempT)
+			})
 		end
+	else
+		table.insert(DropMenu, {text = TA('mainframe', 'NoCR'), notCheckable = 1})
 	end
+	-- CR settings
 	for i=1, #NeP.MFrame.Settings do
-		table.insert(Combat_Routines, NeP.MFrame.Settings[i])
+		table.insert(DropMenu, NeP.MFrame.Settings[i])
+	end
+	-- Rest
+	for i=1, #DropMenu_Add do
+		table.insert(DropMenu, DropMenu_Add[i])
 	end
 end
-
-local tExtras = {
-	{
-		text = TA('mainframe', 'OM'),
-		func = function() NeP.OM.List:Show() end,
-		notCheckable = 1
-	},
-	{
-		text = TA('mainframe', 'AL'),
-		func = function() PE_ActionLog:Show() end,
-		notCheckable = 1
-	},
-	{
-		text = TA('mainframe', 'Forum'),
-		func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end,
-		notCheckable = 1
-	},
-}
-
-local DropMenu = {
-	{ text = Logo..'['..Tittle..' |rv:'..NeP.Info.Version..' - '..NeP.Info.Branch..']', isTitle = 1 },
-	{ text = "Combat Routines:", notCheckable = 1, hasArrow = true, menuList = Combat_Routines },
-	{ text = "Modules:", notCheckable = 1, hasArrow = true, menuList = NeP.MFrame.Plugins },
-	{ text = "Extras:", notCheckable = 1, hasArrow = true, menuList = tExtras },
-	{ text = TA('mainframe', 'Donate'), notCheckable = 1, func = function() OpenPage('http://goo.gl/yrctPO') end },
-	{ text = TA('mainframe', 'HideNeP'), notCheckable = 1, func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end },
-	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, function() NeP.Interface.ShowGUI('NePSettings') end },
-}
 
 -- These are the default toggles.
 local function defaultToggles()
@@ -98,7 +88,7 @@ local function defaultToggles()
 			if IsControlKeyDown() then
 				NePfDrag:Show()
 			else
-				LoadCrs()
+				CreateDropMenu()
 				local menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NePFrame, "UIDropDownMenuTemplate")
 				menuFrame:SetPoint("BOTTOMLEFT", NePFrame, "BOTTOMLEFT")
 				EasyMenu(DropMenu, menuFrame, menuFrame, 0 , 0, "MENU");
