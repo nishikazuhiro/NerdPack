@@ -170,5 +170,10 @@ RegisterConditon('IsNear', function(target, args)
 end)
 
 NeP.DSL.RegisterConditon('equipped', function(_, item)
-    return IsEquippedItem(item)
+	return IsEquippedItem(item)
+end)
+
+NeP.DSL.RegisterConditon('gcd', function()
+	local _, GCD = GetSpellCooldown(61304)
+	return GCD
 end)
