@@ -86,6 +86,7 @@ NeP.DSL.RegisterConditon("incdmg", function(target, args)
 		local pDMG = NeP.CombatTracker.getDMG(target)
 		return pDMG * (tonumber(args)/1000)
 	end
+	return 0
 end)
 
 NeP.Listener.register('CombatTracker', 'COMBAT_LOG_EVENT_UNFILTERED', function(...)
