@@ -9,7 +9,7 @@ local function pString(mString, spell)
 	if args then mString = mString:gsub('%((.+)%)', '') end
 	mString = mString:gsub('%s', '')
 	if DSL.Conditions[mString] then
-		local result = DSL.Get(mString)(nil, (args or spell))
+		local result = DSL.Get(mString)('player', (args or spell))
 		return result
 	else
 		local unitId, rest = strsplit('.', mString, 2)
