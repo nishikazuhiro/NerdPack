@@ -80,6 +80,14 @@ function NeP.CombatTracker.TimeToDie(unit)
 	return ttd
 end
 
+NeP.DSL.RegisterConditon("incdmg", function(target, args)
+	local args = args or 1
+	if target and UnitExists(target) then
+		local pDMG = NeP.CombatTracker.getDMG(target)
+		return pDMG * (tonumber(args)/1000)
+	end
+end)
+
 NeP.Listener.register('CombatTracker', 'COMBAT_LOG_EVENT_UNFILTERED', function(...)
 	local _, EVENT, _,_,_,_,_, GUID = select(1, ...)
 	-- Add the unit to our data if we dont have it
