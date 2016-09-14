@@ -79,7 +79,7 @@ end)
 
 RegisterConditon('spell.cooldown', function(target, spell)
 	local start, duration, enabled = GetSpellCooldown(spell)
-	if not start then return false end
+	if not start then return 0 end
 	if start ~= 0 then
 		return (start + duration - GetTime())
 	end

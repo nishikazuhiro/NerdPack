@@ -23,16 +23,17 @@ end
 
 local mOps = {'+','-','*','/'}
 local function SplitMath(mString)
-	local mString, math = mString, ''
 	for i=1, #mOps do
 		local OP = mOps[i]
 		if string.find(mString, OP) then 
-			mString, math = unpack(string.split(mString, OP))
-			math = OP..math
-			break
+			print('found: ', mString, OP)
+			local mString, math = unpack(string.split(mString, OP))
+			math = OP..(math or '')
+			--print(mString, math)
+			return mString, math
 		end
 	end
-	return mString, math
+	return mString, ''
 end
 
 local fOps = {['!='] = '~=', ['='] = '=='}
@@ -43,12 +44,14 @@ local function Comperatores(mString, spell)
 		if string.find(mString, OP) then
 			local tT = string.split(mString, OP)
 			for k=1, #tT do
-				if string.find(tT[k], '%a') then
-					local mString, math = SplitMath(tT[k])
+				local mString, math = SplitMath(tT[k])
+				--print('Start:', k, tT[k], math)
+				if string.find(mString, '%a') then
 					tT[k] = pString(mString, spell)
-					tT[k] = tT[k]..math
 				end
+				--print('result:', k, tT[k], math)
 				if not tT[k] then return false end
+				tT[k] = tT[k]..math
 			end
 			if fOps[OP] then OP = fOps[OP] end
 			return loadstring(" return "..tT[1]..OP..tT[2])()
