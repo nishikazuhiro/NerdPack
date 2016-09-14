@@ -37,7 +37,7 @@ end)
 
 RegisterConditon('casting.delta', function(target, spell)		
 	local name, startTime, endTime, notInterruptible = checkCasting(target)		
-	if not endTime or not startTime then return false end		
+	if not endTime or not startTime then return 0 end		
 	if name and not notInterruptible then		
 		local castLength = (endTime - startTime) / 1000		
 		local secondsLeft = endTime / 1000 - GetTime()		
