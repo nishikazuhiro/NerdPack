@@ -107,7 +107,8 @@ RegisterConditon('spell.exists', function(target, spell)
 end)
 
 RegisterConditon('spell.charges', function(target, spell)
-	return select(1, GetSpellCharges(spell))
+	local charges, maxCharges, start, duration = GetSpellCharges(spell)
+	return count + (duration/10)
 end)
 
 RegisterConditon('spell.count', function(target, spell)
