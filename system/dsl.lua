@@ -26,7 +26,7 @@ local function SplitMath(mString)
 	for i=1, #mOps do
 		local OP = mOps[i]
 		if string.find(mString, OP) then 
-			local mString, math = unpack(string.split(mString, OP))
+			local mString, math = unpack(NeP.string_split(mString, OP))
 			if math then math = OP..math end
 			return mString, (math or '')
 		end
@@ -40,7 +40,7 @@ local function Comperatores(mString, spell)
 	for i=1, #tableComparator do
 		local OP = tableComparator[i]
 		if string.find(mString, OP) then
-			local tT = string.split(mString, OP)
+			local tT = NeP.string_split(mString, OP)
 			for k=1, #tT do
 				local mString, math = SplitMath(tT[k])
 				if string.find(mString, '%a') then
