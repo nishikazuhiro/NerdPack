@@ -26,11 +26,9 @@ local function SplitMath(mString)
 	for i=1, #mOps do
 		local OP = mOps[i]
 		if string.find(mString, OP) then 
-			print('found: ', mString, OP)
 			local mString, math = unpack(string.split(mString, OP))
-			math = OP..(math or '')
-			--print(mString, math)
-			return mString, math
+			if math then math = OP..math end
+			return mString, (math or '')
 		end
 	end
 	return mString, ''
@@ -45,11 +43,9 @@ local function Comperatores(mString, spell)
 			local tT = string.split(mString, OP)
 			for k=1, #tT do
 				local mString, math = SplitMath(tT[k])
-				--print('Start:', k, tT[k], math)
 				if string.find(mString, '%a') then
 					tT[k] = pString(mString, spell)
 				end
-				--print('result:', k, tT[k], math)
 				if not tT[k] then return false end
 				tT[k] = tT[k]..math
 			end
