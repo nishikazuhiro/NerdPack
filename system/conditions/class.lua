@@ -76,7 +76,7 @@ RegisterConditon('maelstrom', function(target, spell)
     return UnitPower(target, SPELL_POWER_MAELSTROM)
 end)
 
-RegisterConditon('totem', function(target, totem)
+RegisterConditon('totem', function(_, totem)
 	for index = 1, 4 do
 		local _, totemName, startTime, duration = GetTotemInfo(index)
 		if totemName == GetSpellName(totem) then
@@ -86,12 +86,22 @@ RegisterConditon('totem', function(target, totem)
 	return false
 end)
 
-RegisterConditon('totem.duration', function(target, totem)
+RegisterConditon('totem.duration', function(_, totem)
 	for index = 1, 4 do
-	local _, totemName, startTime, duration = GetTotemInfo(index)
-	if totemName == GetSpellName(totem) then
-		return floor(startTime + duration - GetTime())
+		local _, totemName, startTime, duration = GetTotemInfo(index)
+		if totemName == GetSpellName(totem) then
+			return floor(startTime + duration - GetTime())
+		end
 	end
+	return 0
+end)
+
+RegisterConditon('totem.time', function(_, totem)
+	for index = 1, 4 do
+		local _, totemName, startTime, duration = GetTotemInfo(index)
+		if totemName == GetSpellName(totem) then
+			return duration
+		end
 	end
 	return 0
 end)
