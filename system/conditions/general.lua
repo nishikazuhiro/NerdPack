@@ -36,14 +36,13 @@ RegisterConditon('casting.percent', function(target, spell)
 end)
 
 RegisterConditon('casting.delta', function(target, spell)		
-	local name, startTime, endTime, notInterruptible = checkCasting(target)		
-	if not endTime or not startTime then return 0 end		
-	if name and not notInterruptible then		
-		local castLength = (endTime - startTime) / 1000		
-		local secondsLeft = endTime / 1000 - GetTime()		
-		return secondsLeft, castLength		
-	end		
-	return 0		
+	local name, startTime, endTime, notInterruptible = checkCasting(target)
+	if name and not notInterruptible then	
+		local castLength = (endTime - startTime) / 1000
+		local secondsLeft = endTime / 1000 - GetTime()
+		return secondsLeft, castLength
+	end
+	return 0
  end)
 
 RegisterConditon('channeling', function (target, spell)
@@ -70,7 +69,7 @@ RegisterConditon('interruptAt', function (target, spell)
 		local stopAt = tonumber(spell) or 35
 		local stopAt = stopAt + math.random(-5, 5)
 		local secondsLeft, castLength = NeP.DSL.Conditions['casting.delta'](target)
-		if secondsLeft and 100 - (secondsLeft / castLength * 100) > stopAt then
+		if secondsLeft ~= 0 and 100 - (secondsLeft / castLength * 100) > stopAt then
 			return true
 		end
 	end
