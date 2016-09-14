@@ -21,21 +21,37 @@ local function pString(mString, spell)
 	end
 end
 
+local mOps = {'+','-','*','/'}
+local function SplitMath(mString)
+	local mString, math = mString, ''
+	for i=1, #mOps do
+		local OP = mOps[i]
+		if string.find(mString, OP) then 
+			mString, math = unpack(string.split(mString, OP))
+			math = OP..math
+			break
+		end
+	end
+	return mString, math
+end
+
 local fOps = {['!='] = '~=', ['='] = '=='}
 local tableComparator = {'>=','<=','!=','~=','==','>','<','='}
 local function Comperatores(mString, spell)
 	for i=1, #tableComparator do
-		local op = tableComparator[i]
-		if string.find(mString, op) then
-			local tT = string.split(mString, op)
+		local OP = tableComparator[i]
+		if string.find(mString, OP) then
+			local tT = string.split(mString, OP)
 			for k=1, #tT do
 				if string.find(tT[k], '%a') then
-					tT[k] = pString(tT[k], spell)
+					local mString, math = SplitMath(tT[k])
+					tT[k] = pString(mString, spell)
+					tT[k] = tT[k]..math
 				end
 				if not tT[k] then return false end
 			end
-			if fOps[op] then op = fOps[op] end
-			return loadstring(" return "..tT[1]..op..tT[2])()
+			if fOps[OP] then OP = fOps[OP] end
+			return loadstring(" return "..tT[1]..OP..tT[2])()
 		end
 	end
 end
