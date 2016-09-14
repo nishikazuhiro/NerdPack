@@ -109,7 +109,7 @@ end)
 RegisterConditon('spell.charges', function(target, spell)
 	local charges, maxCharges, start, duration = GetSpellCharges(spell)
 	if duration then charges = charges + (duration/10) end
-	return charges
+	return charges or 0
 end)
 
 RegisterConditon('spell.count', function(target, spell)
