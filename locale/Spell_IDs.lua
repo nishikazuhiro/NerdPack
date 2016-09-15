@@ -34,6 +34,8 @@ local SpellID = {
 	["Blessing of Sacrifice"] = 6940,
 	["Blessing of Protection"] = 1022,
 	["Cleanse Toxins"] = 213644,
+	["Divine Steed"] = 190784,
+	["Blessing of Freedom"] = 1044,
 
 }
 
