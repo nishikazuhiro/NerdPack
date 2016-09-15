@@ -41,7 +41,7 @@ local DropMenu_Add = {
 	{ text = TA('mainframe', 'Forum'), notCheckable = 1, func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end},
 	{ text = TA('mainframe', 'Donate'), notCheckable = 1, func = function() OpenPage('http://goo.gl/yrctPO') end },
 	{ text = TA('mainframe', 'HideNeP'), notCheckable = 1, func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end },
-	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, function() NeP.Interface.ShowGUI('NePSettings') end },
+	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, func = function() NeP.Interface.ShowGUI('NeP_Settings') end },
 }
 
 local function CreateDropMenu()
@@ -89,7 +89,7 @@ local function defaultToggles()
 				NePFrame.NePfDrag:Show()
 			else
 				CreateDropMenu()
-				EasyMenu(DropMenu, NePFrame.menuFrame, NePFrame.menuFrame, 0, 0, "MENU");
+				EasyMenu(DropMenu, NePFrame.menuFrame, "cursor", 0, 0, "MENU");
 			end
 		end
 	end)
@@ -215,7 +215,7 @@ Intf.ResetToggles = function()
 end
 
 -- Wait until saved vars are loaded
-function Config.CreateMainFrame()
+NeP.Config.WhenLoaded(function()
 
 	-- Read Saved Frame Position
 	local POS_1 = Config.Read('NePFrame_POS_1', 'CENTER')
@@ -237,7 +237,6 @@ function Config.CreateMainFrame()
 	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize, NeP.MFrame.buttonSize)
 
 	NePFrame.menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NePFrame, "UIDropDownMenuTemplate")
-	NePFrame.menuFrame:SetPoint("BOTTOMLEFT", NePFrame, "BOTTOMLEFT");
 	NePFrame.menuFrame:Hide();
 
 	NePFrame.NePfDrag = CreateFrame("Frame", 'MOVENEP', NePFrame)
@@ -275,4 +274,4 @@ function Config.CreateMainFrame()
 
 	defaultToggles()
 
-end
+end)

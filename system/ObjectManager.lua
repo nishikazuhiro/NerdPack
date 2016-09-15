@@ -196,14 +196,14 @@ OMListGUI:SetEventListener('OnDragStop', function(self, event, left, top)
 	NeP.Config.Write('OML_window', {left, top})
 end)
 
-function NeP.Config.CreateOMFrame()
+NeP.Config.WhenLoaded(function()
 	local left, top = unpack(NeP.Config.Read('OML_window', {false, false}))
 	if left and top then
 		OMListGUI.settings.left = left
 		OMListGUI.settings.top = top
 		OMListGUI:UpdatePosition()
 	end
-end
+end)
 
 OMListGUI:Hide()
 

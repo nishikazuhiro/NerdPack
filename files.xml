@@ -38,9 +38,9 @@
 	<Script file="interface\debug.lua" />
 	<Script file="system\timer.lua" />
 	<Script file="system\classindex.lua" />
+	<Script file="system\listener.lua" />
 	<Script file="system\config.lua" />
 	<Script file="system\timeout.lua" />
-	<Script file="system\listener.lua" />
 	<Script file="system\tooltip.lua" />
 	<Script file="system\buttons.lua" />
 
@@ -70,5 +70,4 @@
 	<Script file="system\commands.lua" />
 	<Script file="system\queue.lua" />
 	<Script file="faceroll.lua" />
-
 </Ui>

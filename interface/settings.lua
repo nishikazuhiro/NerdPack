@@ -1,5 +1,5 @@
 local config = {
-	key = 'NePSettings',
+	key = 'NeP_Settings',
 	profiles = true,
 	title = '|T'..NeP.Interface.Logo..':10:10|t'..' '..NeP.Info.Name,
 	subtitle = 'NerdPack Settings',
@@ -20,6 +20,6 @@ local config = {
 	}
 }
 
-function NeP.Config.CreateSettingsFrame()
+NeP.Config.WhenLoaded(function()
 	NeP.Interface.buildGUI(config)
-end
+end)

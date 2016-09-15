@@ -2,14 +2,25 @@ NeP.Config = {}
 
 local data = {}
 
-function NeP.Config.Load()
-	if nDavG == nil then
-		nDavG = {}
-		data = nDavG
-	else
-		data = nDavG
-	end
+local toLoad = {}
+function NeP.Config.WhenLoaded(func)
+	table.insert(toLoad, func)
 end
+
+NeP.Listener.register("NeP_Config", "ADDON_LOADED", function(...)
+	local addon = ...
+	if string.lower(addon) == string.lower(NeP.Info.Name) then
+		if nDavG == nil then
+			nDavG = {}
+			data = nDavG
+		else
+			data = nDavG
+		end
+	end
+	for i=1, #toLoad do
+		toLoad[i]()
+	end
+end)
 
 function NeP.Config.Read(key, ...)
 	key = tostring(key)

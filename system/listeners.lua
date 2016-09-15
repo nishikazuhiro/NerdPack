@@ -5,19 +5,6 @@ NeP.Listener.locals = {
 	combatTime = 0
 }
 
-NeP.Listener.register("ADDON_LOADED", function(...)
-	local addon = ...
-	if string.lower(addon) == string.lower(NeP.Info.Name) then
-		NeP.Config.Load()
-	end
-end)
-
-NeP.Listener.register("PLAYER_LOGIN", function(...)
-	NeP.Config.CreateMainFrame()
-	NeP.Config.CreateSettingsFrame()
-	NeP.Config.CreateOMFrame()
-end)
-
 NeP.Listener.register("PLAYER_STARTED_MOVING", function(...)
 	NeP.Listener.locals.moving = true
 	NeP.Listener.locals.movingTime = GetTime()
