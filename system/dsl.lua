@@ -6,7 +6,10 @@ local DSL = NeP.DSL
 
 local function pString(mString, spell)
 	local _, args = mString:match('(.+)%((.+)%)')
-	if args then mString = mString:gsub('%((.+)%)', '') end
+	if args then 
+		args = NeP.Locale.Spells(args) -- Translates the name to the correct locale
+		mString = mString:gsub('%((.+)%)', '') 
+	end
 	mString = mString:gsub('%s', '')
 	if DSL.Conditions[mString] then
 		local result = DSL.Get(mString)('player', (args or spell))

@@ -13,10 +13,10 @@ local SpellID = {
 	["Prowl"] = 5215
 }
 
+local GetSpellInfo = GetSpellInfo
 function NeP.Locale.Spells(spell)
-	-- Only try if the spell wont work with your locale
 	if SpellID[spell] and not GetSpellInfo(spell) then
-		return SpellID[spell]
+		return GetSpellInfo(SpellID[spell])
 	end
 	return spell
 end
