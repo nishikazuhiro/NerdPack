@@ -36,7 +36,15 @@ local SpellID = {
 	["Cleanse Toxins"] = 213644,
 	["Divine Steed"] = 190784,
 	["Blessing of Freedom"] = 1044,
-
+	["Zeal"] = 217020,
+	["Blade of Justice"] = 184575,
+	["Divine Storm"] = 53385,
+	["Templar's Verdict"] = 85256,
+	["Justicar's Vengeance"] = 215661,
+	["Greater Blessing of Wisdom"] = 203539,
+	["Greater Blessing of Might"] = 203528,
+	["Greater Blessing of Kings"] = 203538,
+	["Hand of Hindrance"] = 183218,
 }
 
 local GetSpellInfo = GetSpellInfo
