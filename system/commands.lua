@@ -35,7 +35,7 @@ NeP_CMDTable = {
 	['version'] = function(rest) NeP.Core.Print(NeP.Info.Version..' - '..NeP.Info.Branch) end,
 	['ver'] = function(rest) NeP_CMDTable['version'](rest) end,
     -- Drag
-    ['drag'] = function(rest) NePfDrag:Show() end
+    ['drag'] = function(rest) NePFrame.NePfDrag:Show() end
 }
 
 Commands.Register('NeP', function(msg)

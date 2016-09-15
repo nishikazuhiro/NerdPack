@@ -86,12 +86,10 @@ local function defaultToggles()
 		function(self, button) 
 		if button == "RightButton" then
 			if IsControlKeyDown() then
-				NePfDrag:Show()
+				NePFrame.NePfDrag:Show()
 			else
 				CreateDropMenu()
-				local menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NePFrame, "UIDropDownMenuTemplate")
-				menuFrame:SetPoint("BOTTOMLEFT", NePFrame, "BOTTOMLEFT")
-				EasyMenu(DropMenu, menuFrame, menuFrame, 0 , 0, "MENU");
+				EasyMenu(DropMenu, NePFrame.menuFrame, NePFrame.menuFrame, 0, 0, "MENU");
 			end
 		end
 	end)
@@ -201,7 +199,7 @@ Intf.RefreshToggles = function()
 		createButtons( v.key, v.icon, v.name, v.tooltip, v.func )
 	end
 	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), NeP.MFrame.buttonSize)
-	NePfDrag:SetSize((#NeP.MFrame.Buttons-1)*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), 40)
+	NePFrame.NePfDrag:SetSize((#NeP.MFrame.Buttons-1)*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), 40)
 end
 
 Intf.ResetSettings = function()
@@ -238,36 +236,40 @@ function Config.CreateMainFrame()
 	NePFrame:SetClampedToScreen(true)
 	NePFrame:SetSize(#NeP.MFrame.Buttons*NeP.MFrame.buttonSize, NeP.MFrame.buttonSize)
 
-	NePfDrag = CreateFrame("Frame", 'MOVENEP', NePFrame)
-	NePfDrag:SetPoint('Right', NePFrame)
-	NePfDrag:SetFrameLevel(2)
-	NePfDrag:EnableMouse(true)
-	local statusText = NePfDrag:CreateFontString('PE_StatusText')
+	NePFrame.menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NePFrame, "UIDropDownMenuTemplate")
+	NePFrame.menuFrame:SetPoint("BOTTOMLEFT", NePFrame, "BOTTOMLEFT");
+	NePFrame.menuFrame:Hide();
+
+	NePFrame.NePfDrag = CreateFrame("Frame", 'MOVENEP', NePFrame)
+	NePFrame.NePfDrag:SetPoint('Right', NePFrame)
+	NePFrame.NePfDrag:SetFrameLevel(2)
+	NePFrame.NePfDrag:EnableMouse(true)
+	local statusText = NePFrame.NePfDrag:CreateFontString('PE_StatusText')
 	statusText:SetFont("Fonts\\ARIALN.TTF", 16)
 	statusText:SetShadowColor(0,0,0, 0.8)
 	statusText:SetShadowOffset(-1,-1)
-	statusText:SetPoint("CENTER", NePfDrag)
+	statusText:SetPoint("CENTER", NePFrame.NePfDrag)
 	statusText:SetText("|cffffffff"..TA('mainframe', 'WhileDrag').."|r")
-	local texture = NePfDrag:CreateTexture()
-	texture:SetAllPoints(NePfDrag)
+	local texture = NePFrame.NePfDrag:CreateTexture()
+	texture:SetAllPoints(NePFrame.NePfDrag)
 	texture:SetColorTexture(0,0,0,0.9)
-	NePfDrag:SetSize((#NeP.MFrame.Buttons-1)*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), NeP.MFrame.buttonSize)
-	NePfDrag:RegisterForDrag('LeftButton', 'RightButton')
-	NePfDrag:SetScript('OnDragStart', function() NePFrame:StartMoving() end)
-	NePfDrag:SetScript('OnDragStop', function(self)
+	NePFrame.NePfDrag:SetSize((#NeP.MFrame.Buttons-1)*NeP.MFrame.buttonSize+(NeP.MFrame.buttonPadding*#NeP.MFrame.Buttons), NeP.MFrame.buttonSize)
+	NePFrame.NePfDrag:RegisterForDrag('LeftButton', 'RightButton')
+	NePFrame.NePfDrag:SetScript('OnDragStart', function() NePFrame:StartMoving() end)
+	NePFrame.NePfDrag:SetScript('OnDragStop', function(self)
 		local from, _, to, x, y = NePFrame:GetPoint()
 		NePFrame:StopMovingOrSizing()
 		Config.Write('NePFrame_POS_1', from)
 		Config.Write('NePFrame_POS_2', x)
 		Config.Write('NePFrame_POS_3', y)
-		NePfDrag:Hide()
+		NePFrame.NePfDrag:Hide()
 		NeP.Core.Print(TA('mainframe', 'AfterDrag'))
 	end)
-	NePfDrag:Hide()
+	NePFrame.NePfDrag:Hide()
 
 	-- Show on 1st run
 	if not Config.Read('NePranOnce', false) then
-		NePfDrag:Show()
+		NePFrame.NePfDrag:Show()
 		Config.Write('NePranOnce', true)
 	end
 
