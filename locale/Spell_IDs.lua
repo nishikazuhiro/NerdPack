@@ -73,7 +73,7 @@ local SpellID = {
 	["Fiery Brand"] = {204021},
 }
 
-local GetSpellInfo = {GetSpellInfo
+local GetSpellInfo = GetSpellInfo
 function NeP.Locale.Spells(spell)
 	if SpellID[spell] and not GetSpellInfo(spell) then
 		for i=1, #SpellID[spell] do
