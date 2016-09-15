@@ -17,6 +17,9 @@ NeP.Listener.register("NeP_Config", "ADDON_LOADED", function(...)
 			data = nDavG
 		end
 	end
+end)
+
+NeP.Listener.register("NeP_Config", "PLAYER_LOGIN", function(...)
 	for i=1, #toLoad do
 		toLoad[i]()
 	end
