@@ -21,6 +21,20 @@ local SpellID = {
 	["Shield of the Righteous"] = 53600,
 	["Consecration"] = 26573,
 	["Avenging Wrath"] = 31884,
+	["Bastion of Light"] = 204035,
+	["Rebuke"] = 96231,
+	["Hammer of Justice"] = 853,
+	["Divine Shield"] = 642,
+	["Flash of Light"] = 19750,
+	["Lay on Hands"] = 633,
+	["Ardent Defender"] = 31850,
+	["Light of the Protector"] = 184092,
+	["Redemption"] = 7328,
+	["Blinding Light"] = 115750,
+	["Blessing of Sacrifice"] = 6940,
+	["Blessing of Protection"] = 1022,
+	["Cleanse Toxins"] = 213644,
+
 }
 
 local GetSpellInfo = GetSpellInfo
