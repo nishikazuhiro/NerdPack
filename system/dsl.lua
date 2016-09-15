@@ -46,17 +46,16 @@ end
 
 local function ProcessString(Strg)
 	local Strg = Strg;
-	if Strg:find('%a') then 
-		local args = Strg:match('(.+)%((.+)%)');
-		if args then 
-			args = NeP.Locale.Spells(args); -- Translates the name to the correct locale
-			Strg = Strg:gsub('%((.+)%)', '');
+	if Strg:find('%a') then
+		local Strg2,Args = Strg:match('(.+)%((.+)%)');
+		if Args then 
+			Args = NeP.Locale.Spells(Args); -- Translates the name to the correct locale
+			Strg = Strg2;
 		end
 		Strg = Strg:gsub('%s', '');
-		return ProcessCondition(Strg, args, spell)
+		return ProcessCondition(Strg, Args, spell)
 	end
-	Strg = Strg:gsub('%s', '');
-	return Strg, args
+	return Strg:gsub('%s', '');
 end
 
 local function Comperatores(Strg, spell)
@@ -94,7 +93,7 @@ local typesTable = {
 		return false
 	end,
 	['string'] = function(Strg, spell)
-		if Strg:sub(1, 1) == '!' then
+		if string.sub(Strg, 1, 1) == '!' then
 			local Strg = string.sub(Strg, 2);
 			return not DSL.Parse(Strg, spell)
 		elseif Strg:find('[|&]') then
