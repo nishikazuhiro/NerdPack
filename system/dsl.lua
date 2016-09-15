@@ -43,9 +43,7 @@ local function ProcessString(Strg, spell)
 		Strg = Strg:gsub('%((.+)%)', '') 
 	end
 	Strg = Strg:gsub('%s', '')
-	print(Strg, args)
 	if DSL.Conditions[Strg] then
-		print('Hit: ', DSL.Get(Strg)('player', (args or spell)))
 		return DSL.Get(Strg)('player', (args or spell))
 	end
 	local unitId, rest = strsplit('.', Strg, 2)
@@ -91,7 +89,6 @@ local typesTable = {
 		return false
 	end,
 	['string'] = function(Strg, spell)
-		print(Strg)
 		if Strg:sub(1, 1) == '!' then
 			local Strg = string.sub(Strg, 2);
 			return not DSL.Parse(Strg, spell)
