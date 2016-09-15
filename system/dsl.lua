@@ -4,76 +4,68 @@ NeP.DSL = {
 
 local DSL = NeP.DSL
 
-local function pString(mString, spell)
-	local _, args = mString:match('(.+)%((.+)%)')
+local MathOPs = '[><=!~%+%-%*%/]'
+local fOps = {['!='] = '~=', ['='] = '=='}
+local function FindOperator(Strg)
+	local Strg, StringOP = Strg, ''
+	local OP = Strg:match(MathOPs);
+	Strg = Strg:gsub(OP, '');
+	local OP2 = Strg:match(MathOPs);
+	if OP2 then Strg = Strg:gsub(OP2, '') end
+	local OP = OP..(OP2 or '');
+	StringOP = OP
+	if fOps[OP] then OP = fOps[OP] end
+	return StringOP, OP
+end
+
+local function ProcessString(Strg, spell)
+	local Strg = Strg
+	local _, args = Strg:match('(.+)%((.+)%)')
 	if args then 
 		args = NeP.Locale.Spells(args) -- Translates the name to the correct locale
-		mString = mString:gsub('%((.+)%)', '') 
+		Strg = Strg:gsub('%((.+)%)', '') 
 	end
-	mString = mString:gsub('%s', '')
-	if DSL.Conditions[mString] then
-		local result = DSL.Get(mString)('player', (args or spell))
-		return result
+	Strg = Strg:gsub('%s', '')
+	if DSL.Conditions[Strg] then
+		return DSL.Get(Strg)('player', (args or spell))
 	else
-		local unitId, rest = strsplit('.', mString, 2)
+		local unitId, rest = strsplit('.', Strg, 2)
 		local unitId = NeP.Engine.FilterUnit(unitId)
 		if UnitExists(unitId) then
-			local result = DSL.Get(rest)(unitId, (args or spell))
-			return result
+			return DSL.Get(rest)(unitId, (args or spell))
 		end
 	end
+	return Strg
 end
 
-local mOps = {'+','-','*','/'}
-local function SplitMath(mString)
-	for i=1, #mOps do
-		local OP = mOps[i]
-		if string.find(mString, OP) then 
-			local mString, math = unpack(NeP.string_split(mString, OP))
-			if math then math = OP..math end
-			return mString, (math or '')
-		end
-	end
-	return mString, ''
+local function Comperatores(Strg, spell)
+	local StringOP, OP = FindOperator(Strg)
+	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP))
+	local Strg1, Strg2 = DSL.Eval(Strg1), DSL.Eval(Strg2)
+	return loadstring(" return "..(Strg1 or 0)..OP..(Strg2 or 0))()
 end
 
-local fOps = {['!='] = '~=', ['='] = '=='}
-local tableComparator = {'>=','<=','!=','~=','==','>','<','='}
-local function Comperatores(mString, spell)
-	for i=1, #tableComparator do
-		local OP = tableComparator[i]
-		if string.find(mString, OP) then
-			local tT = NeP.string_split(mString, OP)
-			for k=1, #tT do
-				local mString, math = SplitMath(tT[k])
-				if string.find(mString, '%a') then
-					tT[k] = pString(mString, spell)
-				end
-				if not tT[k] then return false end
-				tT[k] = tT[k]..math
-			end
-			if fOps[OP] then OP = fOps[OP] end
-			return loadstring(" return "..tT[1]..OP..tT[2])()
-		end
-	end
+local function StringMath(Strg)
+	local StringOP, OP = FindOperator(Strg)
+	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP))
+	local Strg1, Strg2 = DSL.Eval(Strg1), DSL.Eval(Strg2)
+	return loadstring(" return "..(Strg1 or 0)..OP..(Strg2 or 0))()
 end
 
-local function Parse(mString, spell)
-	local modify_not = false
-	local result = false
-	if string.sub(mString, 1, 1) == '!' then
-		mString = string.sub(mString, 2)
-		modify_not = true
+function DSL.Eval(Strg, spell)
+	local Strg, Modify, result = Strg, false, false
+	if Strg:sub(1, 1) == '!' then
+		Modify = true
+		Strg = Strg:sub(2);
 	end
-	if string.find(mString, '[><=!]') then
-		result =  Comperatores(mString, spell)
+	if Strg:find('[><=!~]') then
+		result = Comperatores(Strg, spell)
+	elseif Strg:find("[%+%-%*%/]") then
+		result = SplitMath(Strg)
 	else
-		result = pString(mString, spell)
+		result = ProcessString(Strg)
 	end
-	result = result or false
-	if modify_not then
-		return not result
-	end
+	if Modify then return not result end
 	return result
 end
 
@@ -97,12 +89,8 @@ local typesTable = {
 		end
 		return false
 	end,
-	['string'] = function(dsl, spell) 
-		if string.sub(dsl, 1, 1) == '@' then
-			return NeP.library.parse(false, dsl, 'target')
-		else
-			return Parse(dsl, spell)
-		end
+	['string'] = function(dsl, spell)
+		return DSL.Eval(dsl, spell)
 	end,
 	['nil'] = function(dsl, spell) return true end,
 	['boolean']	 = function(dsl, spell) return dsl end,
