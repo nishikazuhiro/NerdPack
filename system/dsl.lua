@@ -7,64 +7,69 @@ local DSL = NeP.DSL
 local OPs = '[><=!~%+%-%*%/]'
 local fOps = {['!='] = '~=',['='] = '=='}
 local function FindOperator(Strg)
-	local Strg, StringOP = Strg, ''
+	local Strg, StringOP = Strg, '';
 	local OP = Strg:match(OPs);
 	Strg = Strg:gsub(OP, '');
 	local OP2 = Strg:match(OPs);
 	if OP2 then Strg = Strg:gsub(OP2, '') end
 	local OP = OP..(OP2 or '');
-	StringOP = OP
+	StringOP = OP;
 	if fOps[OP] then OP = fOps[OP] end
 	return StringOP, OP
 end
 
---/dump NeP.DSL.Parse('keybind(control)&{keybind(shift)|keybind(alt)}')
-
 local function Iterate(Strg, spell)
-	local OP = Strg:match('[|&]')
-	local Strg1, Strg2 = unpack(NeP.string_split(Strg, OP))
-	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2)
+	local OP = Strg:match('[|&]');
+	local Strg1, Strg2 = unpack(NeP.string_split(Strg, OP));
+	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2);
 	if OP == '|' then return Strg1 or Strg2 end
 	return Strg1 and Strg2
 end
 
 local function Nest(Strg, spell)
-	local result = true
-	local Nest = Strg:match('{(.-)}')
+	local result = true;
+	local Nest = Strg:match('{(.-)}');
 	if not Nest then Nest = Strg:gsub('[{}]', '') end
 	return DSL.Parse(Nest, spell)
 end
 
-local function ProcessString(Strg, spell)
-	local Strg = Strg
-	local _, args = Strg:match('(.+)%((.+)%)')
-	if args then 
-		args = NeP.Locale.Spells(args) -- Translates the name to the correct locale
-		Strg = Strg:gsub('%((.+)%)', '') 
-	end
-	Strg = Strg:gsub('%s', '')
+local function ProcessCondition(Strg, args, spell)
 	if DSL.Conditions[Strg] then
 		return DSL.Get(Strg)('player', (args or spell))
 	end
-	local unitId, rest = strsplit('.', Strg, 2)
-	local unitId = NeP.Engine.FilterUnit(unitId)
+	local unitId, rest = strsplit('.', Strg, 2);
+	local unitId = NeP.Engine.FilterUnit(unitId);
 	if UnitExists(unitId) then
 		return DSL.Get(rest)(unitId, (args or spell))
 	end
-	return Strg
+end
+
+local function ProcessString(Strg)
+	local Strg = Strg;
+	if Strg:find('%a') then 
+		local args = Strg:match('(.+)%((.+)%)');
+		if args then 
+			args = NeP.Locale.Spells(args); -- Translates the name to the correct locale
+			Strg = Strg:gsub('%((.+)%)', '');
+		end
+		Strg = Strg:gsub('%s', '');
+		return ProcessCondition(Strg, args, spell)
+	end
+	Strg = Strg:gsub('%s', '');
+	return Strg, args
 end
 
 local function Comperatores(Strg, spell)
-	local StringOP, OP = FindOperator(Strg)
-	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP))
-	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2)
+	local StringOP, OP = FindOperator(Strg);
+	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP));
+	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2);
 	return loadstring(" return "..(Strg1 or 0)..OP..(Strg2 or 0))()
 end
 
 local function StringMath(Strg)
-	local StringOP, OP = FindOperator(Strg)
-	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP))
-	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2)
+	local StringOP, OP = FindOperator(Strg);
+	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP));
+	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2);
 	return loadstring(" return "..(Strg1 or 0)..OP..(Strg2 or 0))()
 end
 
