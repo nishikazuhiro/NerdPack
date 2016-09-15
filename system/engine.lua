@@ -197,6 +197,7 @@ local function canIterate(spell)
 end
 
 local function spellResolve(spell, target, isGroundCast)
+	local spell = NeP.Locale.Spells(spell)
 	-- Convert Ids to Names
 	if string.match(spell, '%d') then
 		spell = GetSpellInfo(tonumber(spell))
