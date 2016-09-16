@@ -50,7 +50,7 @@ local function ProcessCondition(Strg, args, spell)
 	end
 end
 
-local function ProcessString(Strg)
+local function ProcessString(Strg, spell)
 	local Strg = Strg
 	if Strg:find('%a') then
 		local Args = Strg:match('%((.+)%)')
