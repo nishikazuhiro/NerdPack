@@ -39,10 +39,8 @@ RegisterConditon("buff.count", function(target, spell)
 end)
 
 RegisterConditon("buff.duration", function(target, spell)
-	print('hit')
 	local buff,_,expires,caster = NeP.APIs['UnitBuff'](target, spell)
 	if buff and (caster == 'player' or caster == 'pet') then
-		print((expires - GetTime()))
 		return (expires - GetTime())
 	end
 	return 0
