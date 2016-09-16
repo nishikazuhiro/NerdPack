@@ -285,8 +285,8 @@ end)
 
 -- Run OM
 C_Timer.NewTicker(0.25, (function()
+	WipeOM()
 	if NeP.OM.Maker then
-		WipeOM()
 		NeP.OM.Maker()
 		-- Sort by distance
 		table.sort(NeP.OM['unitEnemie'], function(a,b) return a.distance < b.distance end)
