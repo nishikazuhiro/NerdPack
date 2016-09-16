@@ -47,10 +47,10 @@ end
 local function ProcessString(Strg)
 	local Strg = Strg;
 	if Strg:find('%a') then
-		local Strg2,Args = Strg:match('(.+)%((.+)%)');
+		local Args = Strg:match('%((.+)%)');
 		if Args then 
 			Args = NeP.Locale.Spells(Args); -- Translates the name to the correct locale
-			Strg = Strg2;
+			Strg = Strg:gsub('%((.+)%)', '');
 		end
 		Strg = Strg:gsub('%s', '');
 		return ProcessCondition(Strg, Args, spell)
