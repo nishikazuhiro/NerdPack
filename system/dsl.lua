@@ -27,7 +27,7 @@ end
 local function Iterate(Strg, spell)
 	local OP = Strg:match('[|&]')
 	local Strg1, Strg2 = unpack(NeP.string_split(Strg, OP))
-	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2)
+	local Strg1, Strg2 = DSL.Parse(Strg1, spell), DSL.Parse(Strg2, spell)
 	if OP == '|' then return Strg1 or Strg2 end
 	return Strg1 and Strg2
 end
@@ -80,7 +80,7 @@ end
 local function Comperatores(Strg, spell)
 	local StringOP, OP = FindComparator(Strg)
 	local arg1, arg2 = unpack(NeP.string_split(Strg, StringOP))
-	local arg1, arg2 = DSL.Parse(arg1), DSL.Parse(arg2)
+	local arg1, arg2 = DSL.Parse(arg1, spell), DSL.Parse(arg2, spell)
 	return DoMath(arg1, arg2, OP)
 end
 
