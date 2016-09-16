@@ -99,7 +99,7 @@ end
 	This is done in a seperate function so we dont have
 	to repeate code over and over again for all unlockers.
 ---------------------------------------------------]]
-local function InsertToOM(tableName, Obj, ObjID, GUID)
+local function InsertToOM(tableName, Obj, GUID, ObjID)
 	table.insert(NeP.OM[tableName], {
 		key = Obj,
 		name = UnitName(Obj),
