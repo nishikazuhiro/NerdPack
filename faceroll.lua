@@ -1,6 +1,6 @@
 NeP.Faceroll = {}
 
-local aC = '|cff'..NeP.Interface.aC
+local aC = '|cff'..NeP.Interface.addonColor
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 
 -- This to put an icon on top of the spell we want
@@ -42,9 +42,9 @@ local function showActiveSpell(spell, target)
 		activeFrame:SetPoint("CENTER", spellButton, "CENTER")
 		display:SetPoint("TOP", spellButton, 0, display.text:GetStringHeight()+20)
 		local spell = aC.."Spell:|r "..spell
-		local isTargeting = aC..tostring(UnitIsUnit("target", target)))
+		local isTargeting = aC..tostring(UnitIsUnit("target", target))
 		local target = aC.."\nTarget:|r"..(UnitName(target) or '')
-		display.text:SetText(spell..target.."("..isTargeting..")"
+		display.text:SetText(spell..target.."("..isTargeting..")")
 		activeFrame:Show()
 		display:Show()
 	end
