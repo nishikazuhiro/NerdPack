@@ -24,33 +24,39 @@ local function DoMath(arg1, arg2, token)
 	end
 end
 
+local AndOrs = {
+	['|'] = function(arg1, arg2) return arg1 or arg2 end,
+	['&'] = function(arg1, arg2) return arg1 and arg2 end
+}
+
 local function Iterate(Strg, spell)
 	local OP = Strg:match('[|&]')
-	local Strg1, Strg2 = unpack(NeP.string_split(Strg, OP))
-	local Strg1, Strg2 = DSL.Parse(Strg1, spell), DSL.Parse(Strg2, spell)
-	if OP == '|' then return Strg1 or Strg2 end
-	return Strg1 and Strg2
+	local arg1, arg2 = unpack(NeP.string_split(Strg, OP))
+	local arg1 = DSL.Parse(arg1, spell)
+	local arg2 = DSL.Parse(arg2, spell)
+	return AndOrs[OP](arg1, arg2)
 end
 
 local function Nest(Strg, spell)
-	local result = true
 	local Nest = Strg:match('{(.-)}')
 	if not Nest then Nest = Strg:gsub('[{}]', '') end
 	return DSL.Parse(Nest, spell)
 end
 
-local function ProcessCondition(Strg, args, spell)
+local function ProcessCondition(Strg, Args)
+	print(Strg, Args)
 	if DSL.Conditions[Strg] then
-		return DSL.Get(Strg)('player', (args or spell))
+		return DSL.Get(Strg)('player', Args)
 	end
 	local unitId, rest = strsplit('.', Strg, 2)
 	local unitId = NeP.Engine.FilterUnit(unitId)
 	if UnitExists(unitId) then
-		return DSL.Get(rest)(unitId, (args or spell))
+		return DSL.Get(rest)(unitId, Args)
 	end
 end
 
 local function ProcessString(Strg, spell)
+	print(Strg, spell)
 	local Strg = Strg
 	if Strg:find('%a') then
 		local Args = Strg:match('%((.+)%)')
@@ -59,17 +65,16 @@ local function ProcessString(Strg, spell)
 			Strg = Strg:gsub('%((.+)%)', '')
 		end
 		Strg = Strg:gsub('%s', '')
-		return ProcessCondition(Strg, Args, spell)
+		return ProcessCondition(Strg, (Args or spell))
 	end
 	return Strg:gsub('%s', '')
 end
 
-local OPs = '[><=!~]'
 local fOps = {['!='] = '~=',['='] = '=='}
 local function FindComparator(Strg)
-	local OP = Strg:match(OPs)
+	local OP = Strg:match('[><=!~]')
 	local Strg = Strg:gsub(OP, '')
-	local OP2 = Strg:match(OPs)
+	local OP2 = Strg:match('[><=!~]')
 	if OP2 then Strg = Strg:gsub(OP2, '') end
 	local OP = OP..(OP2 or '')
 	local StringOP = OP
@@ -127,7 +132,7 @@ local typesTable = {
 		elseif Strg:find("[%+%-%*%/]") then
 			return StringMath(Strg)
 		else
-			return ProcessString(Strg)
+			return ProcessString(Strg, spell)
 		end
 	end,
 	['nil'] = function(dsl, spell) return true end,
