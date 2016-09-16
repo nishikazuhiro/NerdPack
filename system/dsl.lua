@@ -5,16 +5,16 @@ NeP.DSL = {
 local DSL = NeP.DSL
 
 local ExecuteMath = {
-	['>='] = function(arg1, arg2) return arg1 >= arg2 end,
-	['<='] = function(arg1, arg2) return arg1 <= arg2 end,
-	['=='] = function(arg1, arg2) return arg1 == arg2 end,
-	['~='] = function(arg1, arg2) return arg1 ~= arg2 end,
-	['>'] = function(arg1, arg2) return arg1 > arg2 end,
-	['<'] = function(arg1, arg2) return arg1 < arg2 end,
-	['+'] = function(arg1, arg2) return arg1 + arg2 end,
-	['-'] = function(arg1, arg2) return arg1 - arg2 end,
-	['/'] = function(arg1, arg2) return arg1 / arg2 end,
-	['*'] = function(arg1, arg2) return arg1 * arg2 end
+	['>='] = function(arg1, arg2) return tonumber(arg1) >= tonumber(arg2) end,
+	['<='] = function(arg1, arg2) return tonumber(arg1) <= tonumber(arg2) end,
+	['=='] = function(arg1, arg2) return tonumber(arg1) == tonumber(arg2) end,
+	['~='] = function(arg1, arg2) return tonumber(arg1) ~= tonumber(arg2) end,
+	['>'] = function(arg1, arg2) return tonumber(arg1) > tonumber(arg2) end,
+	['<'] = function(arg1, arg2) return tonumber(arg1) < tonumber(arg2) end,
+	['+'] = function(arg1, arg2) return tonumber(arg1) + tonumber(arg2) end,
+	['-'] = function(arg1, arg2) return tonumber(arg1) - tonumber(arg2) end,
+	['/'] = function(arg1, arg2) return tonumber(arg1) / tonumber(arg2) end,
+	['*'] = function(arg1, arg2) return tonumber(arg1) * tonumber(arg2) end
 }
 
 local OPs = '[><=!~%+%-%*%/]'
