@@ -4,6 +4,17 @@ NeP.DSL = {
 
 local DSL = NeP.DSL
 
+local function ExecuteMath = {
+	['>='] = function(arg1, arg2) return (arg1 >= arg2) end,
+	['<='] = function(arg1, arg2) return (arg1 <= arg2) end,
+	['=='] = function(arg1, arg2) return (arg1 == arg2) end,
+	['~='] = function(arg1, arg2) return (arg1 ~= arg2) end,
+	['+'] = function(arg1, arg2) return (arg1 + arg2) end,
+	['-'] = function(arg1, arg2) return (arg1 - arg2) end,
+	['/'] = function(arg1, arg2) return (arg1 / arg2) end,
+	['*'] = function(arg1, arg2) return (arg1 * arg2) end
+}
+
 local OPs = '[><=!~%+%-%*%/]'
 local fOps = {['!='] = '~=',['='] = '=='}
 local function FindOperator(Strg)
@@ -62,14 +73,14 @@ local function Comperatores(Strg, spell)
 	local StringOP, OP = FindOperator(Strg);
 	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP));
 	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2);
-	return loadstring(" return "..(Strg1 or 0)..OP..(Strg2 or 0))()
+	return ExecuteMath[OP](Strg1, Strg2)
 end
 
 local function StringMath(Strg)
 	local StringOP, OP = FindOperator(Strg);
 	local Strg1, Strg2 = unpack(NeP.string_split(Strg, StringOP));
 	local Strg1, Strg2 = DSL.Parse(Strg1), DSL.Parse(Strg2);
-	return loadstring(" return "..(Strg1 or 0)..OP..(Strg2 or 0))()
+	return ExecuteMath[OP](Strg1, Strg2)
 end
 
 -- Routes
