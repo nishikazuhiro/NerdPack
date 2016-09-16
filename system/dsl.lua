@@ -24,23 +24,32 @@ local function DoMath(arg1, arg2, token)
 	end
 end
 
-local AndOrs = {
-	['|'] = function(arg1, arg2) return arg1 or arg2 end,
-	['&'] = function(arg1, arg2) return arg1 and arg2 end
-}
+local function _AND(Strg, spell)
+	local result = true
+	local tempT = NeP.string_split(Strg, '&')
+	for i=1, #tempT do
+		local tResult = DSL.Parse(tempT[1], spell)
+		if result then
+			result = tResult
+		end
+	end
+	return result
+end
 
-local function Iterate(Strg, spell)
-	local OP = Strg:match('[|&]')
-	local arg1, arg2 = unpack(NeP.string_split(Strg, OP))
-	local arg1 = DSL.Parse(arg1, spell)
-	local arg2 = DSL.Parse(arg2, spell)
-	return AndOrs[OP](arg1, arg2)
+local function _OR(Strg, spell)
+	local result = true
+	local tempT = NeP.string_split(Strg, '|')
+	for i=1, #tempT do
+		local tResult = DSL.Parse(tempT[1], spell)
+		if not result then
+			result = tResult
+		end
+	end
+	return result
 end
 
 local function Nest(Strg, spell)
-	local Nest = Strg:match('{(.-)}')
-	if not Nest then Nest = Strg:gsub('[{}]', '') end
-	return DSL.Parse(Nest, spell)
+	--WIP
 end
 
 local function ProcessCondition(Strg, Args)
@@ -92,7 +101,7 @@ local function StringMath(Strg, spell)
 	local tempT = NeP.string_split(Strg, OP)
 	for i=1, #tempT do
 		local Strg = DSL.Parse(tempT[i], spell)
-		total = DoMath(total, tempT[i], OP)
+		total = DoMath(total, Strg, OP)
 	end
 	return total
 end
@@ -121,10 +130,12 @@ local typesTable = {
 		if string.sub(Strg, 1, 1) == '!' then
 			local Strg = string.sub(Strg, 2)
 			return not DSL.Parse(Strg, spell)
-		elseif Strg:find('[|&]') then
-			return Iterate(Strg, spell)
-		elseif Strg:find('[{}]') then
-			return Nest(Strg, spell)
+		elseif Strg:find('{(.-)}') then
+			--WIP
+		elseif Strg:find('|') then
+			return _OR(Strg, spell)
+		elseif Strg:find('&') then
+			return _AND(Strg, spell)
 		elseif Strg:find('[><=!~]') then
 			return Comperatores(Strg, spell)
 		elseif Strg:find("[%+%-%*%/]") then
