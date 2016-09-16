@@ -1,6 +1,6 @@
 NeP.Faceroll = {}
 
-local addonColor = '|cff'..NeP.Interface.addonColor
+local aC = '|cff'..NeP.Interface.aC
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 
 -- This to put an icon on top of the spell we want
@@ -34,14 +34,17 @@ display.text:SetPoint("CENTER", display)
 
 local function showActiveSpell(spell, target)
 	local spellButton = NeP.Buttons[spell]
-	if spellButton then
+	if spell and spellButton then
 		local bSize = spellButton:GetWidth()
 		activeFrame:SetSize(bSize+5, bSize+5)
 		display:SetSize(display.text:GetStringWidth()+20, display.text:GetStringHeight()+20)
 		activeFrame.texture:SetSize(activeFrame:GetWidth()-5,activeFrame:GetHeight()-5)
 		activeFrame:SetPoint("CENTER", spellButton, "CENTER")
 		display:SetPoint("TOP", spellButton, 0, display.text:GetStringHeight()+20)
-		display.text:SetText(addonColor.."Spell:|r "..tostring(spell)..addonColor.."\nTarget:|r"..UnitName(target).."("..addonColor..tostring(UnitIsUnit("target", target)).."|r)")
+		local spell = aC.."Spell:|r "..spell
+		local isTargeting = aC..tostring(UnitIsUnit("target", target)))
+		local target = aC.."\nTarget:|r"..(UnitName(target) or '')
+		display.text:SetText(spell..target.."("..isTargeting..")"
 		activeFrame:Show()
 		display:Show()
 	end
