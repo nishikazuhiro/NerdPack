@@ -24,20 +24,6 @@ local function DoMath(arg1, arg2, token)
 	end
 end
 
-local OPs = '[><=!~%+%-%*%/]'
-local fOps = {['!='] = '~=',['='] = '=='}
-local function FindOperator(Strg)
-	local Strg, StringOP = Strg, ''
-	local OP = Strg:match(OPs)
-	Strg = Strg:gsub(OP, '')
-	local OP2 = Strg:match(OPs)
-	if OP2 then Strg = Strg:gsub(OP2, '') end
-	local OP = OP..(OP2 or '')
-	StringOP = OP
-	if fOps[OP] then OP = fOps[OP] end
-	return StringOP, OP
-end
-
 local function Iterate(Strg, spell)
 	local OP = Strg:match('[|&]')
 	local Strg1, Strg2 = unpack(NeP.string_split(Strg, OP))
@@ -78,17 +64,29 @@ local function ProcessString(Strg)
 	return Strg:gsub('%s', '')
 end
 
+local OPs = '[><=!~]'
+local fOps = {['!='] = '~=',['='] = '=='}
+local function FindComparator(Strg)
+	local OP = Strg:match(OPs)
+	local Strg = Strg:gsub(OP, '')
+	local OP2 = Strg:match(OPs)
+	if OP2 then Strg = Strg:gsub(OP2, '') end
+	local OP = OP..(OP2 or '')
+	local StringOP = OP
+	if fOps[OP] then OP = fOps[OP] end
+	return StringOP, OP
+end
+
 local function Comperatores(Strg, spell)
-	local StringOP, OP = FindOperator(Strg)
+	local StringOP, OP = FindComparator(Strg)
 	local arg1, arg2 = unpack(NeP.string_split(Strg, StringOP))
 	local arg1, arg2 = DSL.Parse(arg1), DSL.Parse(arg2)
 	return DoMath(arg1, arg2, OP)
 end
 
 local function StringMath(Strg, spell)
-	local total = 0
-	local StringOP, OP = FindOperator(Strg)
-	local tempT = NeP.string_split(Strg, StringOP)
+	local OP, total = Strg:match('[%+%-%*%/]'), 0
+	local tempT = NeP.string_split(Strg, OP)
 	for i=1, #tempT do
 		local Strg = DSL.Parse(tempT[i], spell)
 		total = DoMath(total, tempT[i], OP)
