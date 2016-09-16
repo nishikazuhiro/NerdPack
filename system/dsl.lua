@@ -44,7 +44,6 @@ local function Nest(Strg, spell)
 end
 
 local function ProcessCondition(Strg, Args)
-	print(Strg, Args)
 	if DSL.Conditions[Strg] then
 		return DSL.Get(Strg)('player', Args)
 	end
@@ -56,7 +55,6 @@ local function ProcessCondition(Strg, Args)
 end
 
 local function ProcessString(Strg, spell)
-	print(Strg, spell)
 	local Strg = Strg
 	if Strg:find('%a') then
 		local Args = Strg:match('%((.+)%)')
