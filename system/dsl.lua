@@ -159,8 +159,8 @@ function DSL.Get(condition)
 			return DSL.Conditions[condition]
 		end
 		if Deprecated_Warn[name] then
+			NeP.Core.Print(name..' Was deprecated, use: '..Deprecated_Warn[name].replace..'instead.')
 			Deprecated_Warn[name] = nil
-			NeP.Core.Print(name..' Was deprecated, use: '..replace..'instead.')
 		end
 	end
 	return (function() end)
@@ -177,7 +177,8 @@ function DSL.RegisterConditon_Deprecated(name, replace, condition, overwrite)
 	local name = string.lower(name)
 	DSL.RegisterConditon(name, condition, overwrite)
 	if not Deprecated_Warn[name] then
-		Deprecated_Warn[name] = true
+		Deprecated_Warn[name] = {}
+		Deprecated_Warn[name].replace = replace
 	end
 end
 
