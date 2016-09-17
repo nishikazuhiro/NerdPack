@@ -172,3 +172,8 @@ function DSL.Parse(dsl, spell)
 		return typesTable[type(dsl)](dsl, spell)
 	end
 end
+
+-- FFS, lets make old crs work again...
+-- At some point this will be removed, do not use it!
+DSL.parse = DSL.Parse
+DSL.get = DSL.Get
