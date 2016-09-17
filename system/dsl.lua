@@ -175,9 +175,7 @@ end
 
 function DSL.RegisterConditon_Deprecated(name, replace, condition, overwrite)
 	local name = string.lower(name)
-	if not DSL.Conditions[name] or overwrite then
-		DSL.Conditions[name] = condition
-	end
+	DSL.RegisterConditon(name, condition, overwrite)
 	if not Deprecated_Warn[name] then
 		Deprecated_Warn[name] = true
 	end
