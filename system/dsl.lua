@@ -29,28 +29,32 @@ local function DoMath(arg1, arg2, token)
 end
 
 local function _AND(Strg, spell)
-	local Arg1, Arg2 = Strg:match('(.-)&(.+)')
-	--print('AND 0',Arg1, Arg2)
+	local Arg1, Arg2 = Strg:match('(.*)&(.*)')
+	print('AND 0',Arg1, Arg2)
 	local Arg1 = DSL.Parse(Arg1, spell)
-	--print('AND 1', Arg1)
+	print('AND 1', Arg1)
 	if not Arg1 then return false end -- Dont process anything in front sence we already failed
 	local Arg2 = DSL.Parse(Arg2, spell)
-	--print('AND 2', Arg1, Arg2)
+	print('AND 2', Arg1, Arg2)
 	return Arg1 and Arg2
 end
 
 local function _OR(Strg, spell)
-	local Arg1, Arg2 = Strg:match('(.-)|(.+)')
+	local Arg1, Arg2 = Strg:match('(.*)%|(.*)')
+	print('OR 0',Arg1, Arg2)
 	local Arg1 = DSL.Parse(Arg1, spell)
-	if Arg1 then return false end -- Dont process anything in front sence we already hit
+	print('OR 1',Arg1)
+	if Arg1 then return true end -- Dont process anything in front sence we already hit
 	local Arg2 = DSL.Parse(Arg2, spell)
+	print('OR 2',Arg1, Arg2)
 	return Arg1 or Arg2
 end
 
 local function Nest(Strg, spell)
-	local first, second = Strg:find('({.-})')
+	local first, second = Strg:find('({.*})')
 	local Result = DSL.Parse(Strg:sub(first + 1, second - 1) , spell)
 	Strg = Strg:sub(1, first - 1) .. tostring(Result or false) .. Strg:sub(second + 1)
+	print(Strg)
 	return DSL.Parse(Strg, spell)
 end
 
@@ -137,7 +141,7 @@ local typesTable = {
 			return not DSL.Parse(Strg, spell)
 		elseif Strg:find('{(.-)}') then
 			return Nest(Strg, spell)
-		elseif Strg:find('|') then
+		elseif Strg:find('%|') then
 			return _OR(Strg, spell)
 		elseif Strg:find('&') then
 			return _AND(Strg, spell)
