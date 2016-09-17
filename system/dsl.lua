@@ -126,8 +126,10 @@ local typesTable = {
 		return false
 	end,
 	['string'] = function(Strg, spell)
-		if OPs[string.sub(Strg, 1, 1)] then
-			return OPs[Strg](Strg, spell)
+		local pX = string.sub(Strg, 1, 1)
+		if OPs[pX] then
+			local Strg = string.sub(Strg, 2);
+			return OPs[pX](Strg, spell)
 		elseif OPs[Strg] or OPs[Strg] then
 			return OPs[Strg](Strg, spell)
 		elseif Strg:find('{(.-)}') then
