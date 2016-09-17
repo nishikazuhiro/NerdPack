@@ -2,8 +2,8 @@ local RegisterConditon = NeP.DSL.RegisterConditon_Deprecated
 
 -- FFS, lets make old crs work again...
 -- At some point this will be removed, do not use it!
-DSL.parse = DSL.Parse
-DSL.get = DSL.Get
+NeP.DSL.parse = NeP.DSL.Parse
+NeP.DSL.get = NeP.DSL.Get
 
 RegisterConditon("modifier.multitarget", "toggle(aoe)", function(target, spell)
 	return NeP.DSL.Get("toggle")(nil, "aoe")
