@@ -20,7 +20,7 @@ RegisterConditon('timetomax', function(target, spell)
 	return (max - curr) * (1.0 / regen)
 end)
 
-RegisterConditon('toggle', function(target, toggle)
+RegisterConditon('toggle', function(toggle, toggle)
 	local toggle = string.lower(toggle)
 	return NeP.Config.Read('bStates_'..tostring(toggle), false)
 end)
