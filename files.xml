@@ -21,7 +21,6 @@
 	<Script file="system\core.lua" />
 
 	<!-- Locale -->
-	<Script file="locale\Spell_IDs.lua" />
 	<Script file="locale\enUS.lua" />
 	<Script file="locale\ptBR.lua" />
 	<Script file="locale\frFR.lua" />
@@ -39,6 +38,7 @@
 	<Script file="system\timer.lua" />
 	<Script file="system\classindex.lua" />
 	<Script file="system\listener.lua" />
+	<Script file="locale\Spell_IDs.lua" />
 	<Script file="system\config.lua" />
 	<Script file="system\timeout.lua" />
 	<Script file="system\tooltip.lua" />

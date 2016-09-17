@@ -525,15 +525,32 @@ local SpellID = {
 	["Enveloping Shadows"] = {206237},
 	["Cavalier"] = {230332},
 	["Fel Fury"] = {1000008},
+	["Hammer of the Righteous"] = {53595},
+	["Avenger\'s Shield"] = {31935}
 }
 
 local GetSpellInfo = GetSpellInfo
-function NeP.Locale.Spells(spell)
-	if SpellID[spell] and not GetSpellInfo(spell) then
-		for i=1, #SpellID[spell] do
-			local spell = GetSpellInfo(SpellID[spell][i])
-			if spell then return spell end
+
+local SpellsTable = {}
+local function FilterSpells()
+	for k,v in pairs(SpellID) do
+		for i=1, #v do
+			local native_spell = GetSpellInfo(v[i])
+			if native_spell then
+				SpellsTable[k] = native_spell
+			end
 		end
+	end
+	wipe(SpellID)
+end
+
+NeP.Listener.register("Spell_IDS", "PLAYER_LOGIN", function(...)
+	FilterSpells()
+end)
+
+function NeP.Locale.Spells(spell)
+	if SpellsTable[spell] and not GetSpellInfo(spell) then
+		return SpellsTable[spell]
 	end
 	return spell
 end
