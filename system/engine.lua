@@ -285,7 +285,7 @@ local sTriggers = {
 	['@'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
 		local lib = string.sub(spell, 2);
-		local result = NeP.library.parse(false, spell, lib)
+		local result = NeP.library.parse(false, lib, target)
 		if result then return result end
 	end,
 	-- Macro

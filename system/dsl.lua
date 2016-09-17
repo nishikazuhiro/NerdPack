@@ -18,7 +18,7 @@ local OPs = {
 	['true'] = function() return true end,
 	['false'] = function() return false end,
 	['!'] = function(arg1, arg2) return not DSL.Parse(arg1, arg2) end,
-	['@'] = function(arg1, arg2) return NeP.library.parse(false, arg2, arg1) end,
+	['@'] = function(arg1, arg2) return NeP.library.parse(false, arg1, 'target') end,
 }
 
 local function DoMath(arg1, arg2, token)
