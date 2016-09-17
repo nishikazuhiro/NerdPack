@@ -156,11 +156,11 @@ function DSL.Get(condition)
 	if condition then
 		local condition = string.lower(condition)
 		if DSL.Conditions[condition] then
+			if Deprecated_Warn[condition] then
+				NeP.Core.Print(condition..' Was deprecated, use: '..Deprecated_Warn[condition].replace..'instead.')
+				Deprecated_Warn[condition] = nil
+			end
 			return DSL.Conditions[condition]
-		end
-		if Deprecated_Warn[name] then
-			NeP.Core.Print(name..' Was deprecated, use: '..Deprecated_Warn[name].replace..'instead.')
-			Deprecated_Warn[name] = nil
 		end
 	end
 	return (function() end)
