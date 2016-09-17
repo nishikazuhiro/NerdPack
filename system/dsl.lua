@@ -4,7 +4,7 @@ NeP.DSL = {
 
 local DSL = NeP.DSL
 
-local ExecuteMath = {
+local OPs = {
 	['>='] = function(arg1, arg2) return arg1 >= arg2 end,
 	['<='] = function(arg1, arg2) return arg1 <= arg2 end,
 	['=='] = function(arg1, arg2) return arg1 == arg2 end,
@@ -14,42 +14,44 @@ local ExecuteMath = {
 	['+'] = function(arg1, arg2) return arg1 + arg2 end,
 	['-'] = function(arg1, arg2) return arg1 - arg2 end,
 	['/'] = function(arg1, arg2) return arg1 / arg2 end,
-	['*'] = function(arg1, arg2) return arg1 * arg2 end
+	['*'] = function(arg1, arg2) return arg1 * arg2 end,
+	['true'] = function() return true end,
+	['false'] = function() return false end,
 }
 
 local function DoMath(arg1, arg2, token)
 	local arg1, arg2 = tonumber(arg1), tonumber(arg2)
+	--print(arg1, arg2)
 	if arg1 ~= nil and arg2 ~= nil then
-		return ExecuteMath[token](arg1, arg2)
+		--print(OPs[token](arg1, arg2))
+		return OPs[token](arg1, arg2)
 	end
 end
 
 local function _AND(Strg, spell)
-	local result = true
-	local tempT = NeP.string_split(Strg, '&')
-	for i=1, #tempT do
-		local tResult = DSL.Parse(tempT[1], spell)
-		if result then
-			result = tResult
-		end
-	end
-	return result
+	local Arg1, Arg2 = Strg:match('(.-)&(.+)')
+	--print('AND 0',Arg1, Arg2)
+	local Arg1 = DSL.Parse(Arg1, spell)
+	--print('AND 1', Arg1)
+	if not Arg1 then return false end -- Dont process anything in front sence we already failed
+	local Arg2 = DSL.Parse(Arg2, spell)
+	--print('AND 2', Arg1, Arg2)
+	return Arg1 and Arg2
 end
 
 local function _OR(Strg, spell)
-	local result = true
-	local tempT = NeP.string_split(Strg, '|')
-	for i=1, #tempT do
-		local tResult = DSL.Parse(tempT[1], spell)
-		if not result then
-			result = tResult
-		end
-	end
-	return result
+	local Arg1, Arg2 = Strg:match('(.-)|(.+)')
+	local Arg1 = DSL.Parse(Arg1, spell)
+	if Arg1 then return false end -- Dont process anything in front sence we already hit
+	local Arg2 = DSL.Parse(Arg2, spell)
+	return Arg1 or Arg2
 end
 
 local function Nest(Strg, spell)
-	--WIP
+	local first, second = Strg:find('({.-})')
+	local Result = DSL.Parse(Strg:sub(first + 1, second - 1) , spell)
+	Strg = Strg:sub(1, first - 1) .. tostring(Result or false) .. Strg:sub(second + 1)
+	return DSL.Parse(Strg, spell)
 end
 
 local function ProcessCondition(Strg, Args)
@@ -98,11 +100,14 @@ end
 
 local function StringMath(Strg, spell)
 	local OP, total = Strg:match('[%+%-%*%/]'), 0
+	--print('MATH 0', Strg)
 	local tempT = NeP.string_split(Strg, OP)
 	for i=1, #tempT do
 		local Strg = DSL.Parse(tempT[i], spell)
+		--print('MATH 1', Strg)
 		total = DoMath(total, Strg, OP)
 	end
+	--print('MATH 2', Strg)
 	return total
 end
 
@@ -131,7 +136,7 @@ local typesTable = {
 			local Strg = string.sub(Strg, 2)
 			return not DSL.Parse(Strg, spell)
 		elseif Strg:find('{(.-)}') then
-			--WIP
+			return Nest(Strg, spell)
 		elseif Strg:find('|') then
 			return _OR(Strg, spell)
 		elseif Strg:find('&') then
@@ -140,6 +145,8 @@ local typesTable = {
 			return Comperatores(Strg, spell)
 		elseif Strg:find("[%+%-%*%/]") then
 			return StringMath(Strg)
+		elseif OPs[Strg] then
+			return OPs[Strg](Strg, spell)
 		else
 			return ProcessString(Strg, spell)
 		end
@@ -166,6 +173,7 @@ function DSL.RegisterConditon(name, condition, overwrite)
 end
 
 function DSL.Parse(dsl, spell)
+	--print(dsl)
 	if typesTable[type(dsl)] then
 		return typesTable[type(dsl)](dsl, spell)
 	end
