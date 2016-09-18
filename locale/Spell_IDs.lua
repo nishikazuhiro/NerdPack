@@ -2282,7 +2282,7 @@ local function FilterSpells()
 		for _, id in pairs(SpellID[class_id]) do
 			local native_spell = GetSpellInfo(v)
 			if native_spell then
-				LocalizedSpellsTable[native_spell] = v
+				LocalizedSpellsTable[native_spell] = id
 			end
 		end
 		SpellsTable = LocalizedSpellsTable
