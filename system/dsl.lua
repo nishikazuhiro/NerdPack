@@ -46,9 +46,20 @@ end
 
 local function Nest(Strg, spell)
 	local first, second = Strg:find('({.*})')
-	local Result = DSL.Parse(Strg:sub(first + 1, second - 1) , spell)
-	Strg = Strg:sub(1, first - 1) .. tostring(Result or false) .. Strg:sub(second + 1)
-	return DSL.Parse(Strg, spell)
+	local count1, count2 = 0, 0
+	for i=first, second do
+		local temp = Strg:sub(i, i)
+		if temp == "{" then
+			count1 = count1 + 1
+		elseif temp == "}" then
+			count2 = count2 + 1
+		end
+		if count1 == count2 then
+			local Result = DSL.Parse(Strg:sub(first+1, i-1), spell)
+			local Strg = Strg:sub(1, first-1)..tostring(Result or false)..Strg:sub(i+1)
+			return DSL.Parse(Strg, spell)
+		end
+	end
 end
 
 local function ProcessCondition(Strg, Args)
