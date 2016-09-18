@@ -2275,18 +2275,22 @@ local UnitClass = UnitClass
 local SpellsTable = {}
 local function FilterSpells()
 	local _, _, class_id = UnitClass("player")
-	SpellsTable = SpellID[class_id]
-	wipe(SpellID)
-
+	
 	local locale = GetLocale()
 	if locale ~= "enUS" then
-		for _, id in pairs(SpellsTable) do
+		local LocalizedSpellsTable = {}
+		for _, id in pairs(SpellID[class_id]) do
 			local native_spell = GetSpellInfo(v)
 			if native_spell then
-				SpellsTable[native_spell] = v
+				LocalizedSpellsTable[native_spell] = v
 			end
 		end
+		SpellsTable = LocalizedSpellsTable
+	else
+		SpellsTable = SpellID[class_id]
 	end
+
+	wipe(SpellID)
 end
 
 NeP.Listener.register("Spell_IDS", "PLAYER_LOGIN", function(...)
