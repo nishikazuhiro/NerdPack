@@ -49,8 +49,10 @@ function Helpers.specInfo()
 	local Spec = GetSpecialization()
 	local localizedClass, englishClass, classIndex = UnitClass('player')
 	local SpecInfo = classIndex
-	if Spec then
+	if Spec and (hasTalent(1, 1) or hasTalent(1, 2) or hasTalent(1, 3)) then
 		SpecInfo = GetSpecializationInfo(Spec)
+	else
+		SpecInfo = classIndex
 	end
 	return SpecInfo
 end 
