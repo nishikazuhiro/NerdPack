@@ -15,10 +15,10 @@ local OPs = {
 	['-'] = function(arg1, arg2) return arg1 - arg2 end,
 	['/'] = function(arg1, arg2) return arg1 / arg2 end,
 	['*'] = function(arg1, arg2) return arg1 * arg2 end,
-	['true'] = function() return true end,
-	['false'] = function() return false end,
 	['!'] = function(arg1, arg2) return not DSL.Parse(arg1, arg2) end,
 	['@'] = function(arg1, arg2) return NeP.library.parse(false, arg1, 'target') end,
+	['true'] = function() return true end,
+	['false'] = function() return false end,
 }
 
 local function DoMath(arg1, arg2, token)
@@ -116,22 +116,25 @@ end
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
+	-- This is backwards compatibility
 	['table'] = function(dsl, Spell)
-		local r_Tbl = {[1] = true}
-		for _,String in ipairs(dsl) do
-			if String == 'or' then
-				r_Tbl[#r_Tbl+1] = true
-			elseif r_Tbl[#r_Tbl] then
-				local eval = DSL.Parse(String, Spell)
-				r_Tbl[#r_Tbl] = eval or false
+		local final_Strg = ''
+		for i=1, #dsl do
+			local temp = dsl[i]
+			if type(temp) == 'table' then
+				local Result = DSL.Parse(temp, Spell)
+				final_Strg = final_Strg..tostring(Result)
+			elseif type(temp) == 'function' then
+				final_Strg = final_Strg..'&'..tostring(temp())
+			elseif final_Strg == '' then
+				final_Strg = temp
+			elseif temp == 'or' then
+				final_Strg = final_Strg..'||'
+			else
+				final_Strg = final_Strg..'&'..temp
 			end
 		end
-		for i = 1, #r_Tbl do
-			if r_Tbl[i] then
-				return true
-			end
-		end
-		return false
+		return DSL.Parse(final_Strg, Spell)
 	end,
 	['string'] = function(Strg, Spell)
 		local pX = string.sub(Strg, 1, 1)
