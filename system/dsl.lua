@@ -28,26 +28,26 @@ local function DoMath(arg1, arg2, token)
 	end
 end
 
-local function _AND(Strg, spell)
+local function _AND(Strg, Spell)
 	local Arg1, Arg2 = Strg:match('(.*)&(.*)')
-	local Arg1 = DSL.Parse(Arg1, spell)
+	local Arg1 = DSL.Parse(Arg1, Spell)
 	if not Arg1 then return false end -- Dont process anything in front sence we already failed
-	local Arg2 = DSL.Parse(Arg2, spell)
+	local Arg2 = DSL.Parse(Arg2, Spell)
 	return Arg1 and Arg2
 end
 
-local function _OR(Strg, spell)
+local function _OR(Strg, Spell)
 	local Arg1, Arg2 = Strg:match('(.*)||(.*)')
-	local Arg1 = DSL.Parse(Arg1, spell)
+	local Arg1 = DSL.Parse(Arg1, Spell)
 	if Arg1 then return true end -- Dont process anything in front sence we already hit
-	local Arg2 = DSL.Parse(Arg2, spell)
+	local Arg2 = DSL.Parse(Arg2, Spell)
 	return Arg1 or Arg2
 end
 
-local function Nest(Strg, spell)
-	local first, second = Strg:find('({.*})')
+local function FindNest(Strg)
+	local Start, End = Strg:find('({.*})')
 	local count1, count2 = 0, 0
-	for i=first, second do
+	for i=Start, End do
 		local temp = Strg:sub(i, i)
 		if temp == "{" then
 			count1 = count1 + 1
@@ -55,62 +55,59 @@ local function Nest(Strg, spell)
 			count2 = count2 + 1
 		end
 		if count1 == count2 then
-			local Result = DSL.Parse(Strg:sub(first+1, i-1), spell)
-			local Strg = Strg:sub(1, first-1)..tostring(Result or false)..Strg:sub(i+1)
-			return DSL.Parse(Strg, spell)
+			return Start,  i
 		end
 	end
 end
 
-local function ProcessCondition(Strg, Args)
+local function Nest(Strg, Spell)
+	local Start, End = FindNest(Strg)
+	local Result = DSL.Parse(Strg:sub(Start+1, End-1), Spell)
+	Result = tostring(Result or false)
+	Strg = Strg:sub(1, Start-1)..Result..Strg:sub(End+1)
+	return DSL.Parse(Strg, Spell)
+end
+
+local function ProcessCondition(Strg, Args, Spell)
+	local Args = Strg:match('%((.+)%)')
+	if Args then 
+		Args = NeP.Locale.Spells(Args) -- Translates the name to the correct locale
+		Strg = Strg:gsub('%((.+)%)', '')
+	else
+		Args = Spell
+	end
+	Strg = Strg:gsub('%s', '')
 	if DSL.Conditions[Strg] then
 		return DSL.Get(Strg)('player', Args)
 	end
 	local unitId, rest = strsplit('.', Strg, 2)
-	local unitId = NeP.Engine.FilterUnit(unitId)
+	unitId = NeP.Engine.FilterUnit(unitId)
 	if UnitExists(unitId) then
 		return DSL.Get(rest)(unitId, Args)
 	end
 end
 
-local function ProcessString(Strg, spell)
-	local Strg = Strg
+local function ProcessString(Strg, Spell)
 	if Strg:find('%a') then
-		local Args = Strg:match('%((.+)%)')
-		if Args then 
-			Args = NeP.Locale.Spells(Args) -- Translates the name to the correct locale
-			Strg = Strg:gsub('%((.+)%)', '')
-		end
-		Strg = Strg:gsub('%s', '')
-		return ProcessCondition(Strg, (Args or spell))
+		return ProcessCondition(Strg, Spell)
 	end
 	return Strg:gsub('%s', '')
 end
 
 local fOps = {['!='] = '~=',['='] = '=='}
-local function FindComparator(Strg)
-	local OP = Strg:match('[><=!~]')
-	local Strg = Strg:gsub(OP, '')
-	local OP2 = Strg:match('[><=!~]')
-	if OP2 then Strg = Strg:gsub(OP2, '') end
-	local OP = OP..(OP2 or '')
-	local StringOP = OP
-	if fOps[OP] then OP = fOps[OP] end
-	return StringOP, OP
+local function Comperatores(Strg, Spell)
+	local OP = ''
+	for Token in Strg:gmatch('[><=!~]') do OP = OP..Token end
+	local arg1, arg2 = unpack(NeP.string_split(Strg, OP))
+	arg1, arg2 = DSL.Parse(arg1, Spell), DSL.Parse(arg2, Spell)
+	return DoMath(arg1, arg2, (fOps[OP] or OP))
 end
 
-local function Comperatores(Strg, spell)
-	local StringOP, OP = FindComparator(Strg)
-	local arg1, arg2 = unpack(NeP.string_split(Strg, StringOP))
-	local arg1, arg2 = DSL.Parse(arg1, spell), DSL.Parse(arg2, spell)
-	return DoMath(arg1, arg2, OP)
-end
-
-local function StringMath(Strg, spell)
+local function StringMath(Strg, Spell)
 	local OP, total = Strg:match('[%+%-%*%/]'), 0
 	local tempT = NeP.string_split(Strg, OP)
 	for i=1, #tempT do
-		local Strg = DSL.Parse(tempT[i], spell)
+		local Strg = DSL.Parse(tempT[i], Spell)
 		total = DoMath(total, Strg, OP)
 	end
 	return total
@@ -118,14 +115,14 @@ end
 
 -- Routes
 local typesTable = {
-	['function'] = function(dsl, spell) return dsl() end,
-	['table'] = function(dsl, spell)
+	['function'] = function(dsl, Spell) return dsl() end,
+	['table'] = function(dsl, Spell)
 		local r_Tbl = {[1] = true}
 		for _,String in ipairs(dsl) do
 			if String == 'or' then
 				r_Tbl[#r_Tbl+1] = true
 			elseif r_Tbl[#r_Tbl] then
-				local eval = DSL.Parse(String, spell)
+				local eval = DSL.Parse(String, Spell)
 				r_Tbl[#r_Tbl] = eval or false
 			end
 		end
@@ -136,29 +133,29 @@ local typesTable = {
 		end
 		return false
 	end,
-	['string'] = function(Strg, spell)
+	['string'] = function(Strg, Spell)
 		local pX = string.sub(Strg, 1, 1)
 		if OPs[pX] then
 			local Strg = string.sub(Strg, 2);
-			return OPs[pX](Strg, spell)
+			return OPs[pX](Strg, Spell)
 		elseif OPs[Strg] or OPs[Strg] then
-			return OPs[Strg](Strg, spell)
+			return OPs[Strg](Strg, Spell)
 		elseif Strg:find('{(.-)}') then
-			return Nest(Strg, spell)
+			return Nest(Strg, Spell)
 		elseif Strg:find('||') then
-			return _OR(Strg, spell)
+			return _OR(Strg, Spell)
 		elseif Strg:find('&') then
-			return _AND(Strg, spell)
+			return _AND(Strg, Spell)
 		elseif Strg:find('[><=!~]') then
-			return Comperatores(Strg, spell)
+			return Comperatores(Strg, Spell)
 		elseif Strg:find("[%+%-%*%/]") then
-			return StringMath(Strg, spell)
+			return StringMath(Strg, Spell)
 		else
-			return ProcessString(Strg, spell)
+			return ProcessString(Strg, Spell)
 		end
 	end,
-	['nil'] = function(dsl, spell) return true end,
-	['boolean']	 = function(dsl, spell) return dsl end,
+	['nil'] = function(dsl, Spell) return true end,
+	['boolean']	 = function(dsl, Spell) return dsl end,
 }
 
 local Deprecated_Warn = {}
@@ -193,8 +190,8 @@ function DSL.RegisterConditon_Deprecated(name, replace, condition, overwrite)
 	end
 end
 
-function DSL.Parse(dsl, spell)
+function DSL.Parse(dsl, Spell)
 	if typesTable[type(dsl)] then
-		return typesTable[type(dsl)](dsl, spell)
+		return typesTable[type(dsl)](dsl, Spell)
 	end
 end
