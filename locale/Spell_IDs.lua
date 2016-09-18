@@ -2287,7 +2287,7 @@ local function FilterSpells()
 		end
 		SpellsTable = LocalizedSpellsTable
 	else
-		SpellsTable = SpellID[class_id]
+		SpellsTable = nil
 	end
 
 	wipe(SpellID)
