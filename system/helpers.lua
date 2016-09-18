@@ -45,11 +45,22 @@ function NeP.Helpers.SpellSanity(spell, target)
 	return true
 end
 
+local function hasAnyTalent()
+	for row=1, 7 do
+		for col=1,3 do
+			if hasTalent(row, col) then
+				return true
+			end
+		end
+	end
+	return false
+end
+
 function Helpers.specInfo()
 	local Spec = GetSpecialization()
 	local localizedClass, englishClass, classIndex = UnitClass('player')
 	local SpecInfo = classIndex
-	if Spec and (hasTalent(1, 1) or hasTalent(1, 2) or hasTalent(1, 3)) then
+	if Spec and hasAnyTalent() then
 		SpecInfo = GetSpecializationInfo(Spec)
 	else
 		SpecInfo = classIndex
