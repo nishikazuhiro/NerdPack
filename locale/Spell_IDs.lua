@@ -2278,14 +2278,12 @@ local function FilterSpells()
 	
 	local locale = GetLocale()
 	if locale ~= "enUS" then
-		local LocalizedSpellsTable = {}
-		for _, id in pairs(SpellID[class_id]) do
-			local native_spell = GetSpellInfo(id)
-			if native_spell then
-				LocalizedSpellsTable[native_spell] = id
+		for spell_name_enus, spell_id in pairs(SpellID[class_id]) do
+			local localized_spell = GetSpellInfo(spell_id)
+			if localized_spell then
+				SpellsTable[spell_name_enus] = localized_spell
 			end
 		end
-		SpellsTable = LocalizedSpellsTable
 	else
 		SpellsTable = nil
 	end
