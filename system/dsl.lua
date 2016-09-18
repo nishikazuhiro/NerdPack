@@ -152,7 +152,7 @@ local typesTable = {
 		elseif Strg:find('[><=!~]') then
 			return Comperatores(Strg, spell)
 		elseif Strg:find("[%+%-%*%/]") then
-			return StringMath(Strg)
+			return StringMath(Strg, spell)
 		else
 			return ProcessString(Strg, spell)
 		end
