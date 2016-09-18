@@ -2298,7 +2298,7 @@ NeP.Listener.register("Spell_IDS", "PLAYER_LOGIN", function(...)
 end)
 
 function NeP.Locale.Spells(spell)
-	if SpellsTable[spell] then
+	if SpellsTable and SpellsTable[spell] then
 		return SpellsTable[spell]
 	end
 	return spell
