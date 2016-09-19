@@ -178,7 +178,3 @@ function DSL.Parse(dsl, Spell)
 		return typesTable[type(dsl)](dsl, Spell)
 	end
 end
-
-function DSL.Convert()
-
-end
