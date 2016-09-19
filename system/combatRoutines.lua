@@ -19,7 +19,7 @@ function Engine.Compiler(dsl)
 		end
 		final_Strg = final_Strg..'}'
 	elseif type(dsl) == 'function' then
-		final_Strg = 'false'
+		final_Strg = "func="..tostring(dsl)
 	else
 		final_Strg = dsl
 	end

@@ -112,13 +112,19 @@ local function StringMath(Strg, Spell)
 	return total
 end
 
+local function ExeFunc(Strg)
+	local Args = Strg:match('%((.+)%)')
+	if Args then Strg = Strg:gsub('%((.+)%)', '') end
+	return _G[Strg](Args)
+end
+
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
 	['string'] = function(Strg, Spell)
 		local pX = Strg:sub(1, 1)
 		if OPs[pX] then
-			local Strg = Strg:sub(2);
+			Strg = Strg:sub(2);
 			return OPs[pX](Strg, Spell)
 		elseif OPs[Strg] then
 			return OPs[Strg](Strg, Spell)
@@ -128,6 +134,9 @@ local typesTable = {
 			return _OR(Strg, Spell)
 		elseif Strg:find('&') then
 			return _AND(Strg, Spell)
+		elseif Strg:find("func=") then
+			Strg = Strg:sub(6);
+			ExeFunc(Strg)
 		elseif Strg:find('[><=!~]') then
 			return Comperatores(Strg, Spell)
 		elseif Strg:find("[%+%-%*%/]") then
