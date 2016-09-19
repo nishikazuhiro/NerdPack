@@ -90,7 +90,7 @@ local function insertToLog(whatIs, spell, target)
 	elseif whatIs == 'Item' then
 		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
 	end
-	NeP.Interface.UpdateIcon(icon)
+	NeP.Interface.UpdateToggleIcon('mastertoggle', icon)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
