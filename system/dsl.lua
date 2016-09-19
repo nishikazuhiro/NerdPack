@@ -117,11 +117,11 @@ end
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
 	['string'] = function(Strg, Spell)
-		local pX = string.sub(Strg, 1, 1)
+		local pX = Strg:sub(1, 1)
 		if OPs[pX] then
-			local Strg = string.sub(Strg, 2);
+			local Strg = Strg:sub(2);
 			return OPs[pX](Strg, Spell)
-		elseif OPs[Strg] or OPs[Strg] then
+		elseif OPs[Strg] then
 			return OPs[Strg](Strg, Spell)
 		elseif Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
@@ -142,30 +142,33 @@ local typesTable = {
 }
 
 local Deprecated_Warn = {}
-
-function DSL.Get(condition)
-	if condition then
-		local condition = string.lower(condition)
-		if DSL.Conditions[condition] then
-			if Deprecated_Warn[condition] then
-				NeP.Core.Print(condition..' Was deprecated, use: '..Deprecated_Warn[condition].replace..'instead.')
-				Deprecated_Warn[condition] = nil
-			end
-			return DSL.Conditions[condition]
-		end
+local function Deprecated(Strg)
+	if Deprecated_Warn[Strg] then
+		NeP.Core.Print(Strg..' Was deprecated, use: '..Deprecated_Warn[Strg].replace..'instead.')
+		Deprecated_Warn[Strg] = nil
 	end
-	return (function() end)
+end
+
+function DSL.Get(Strg)
+	local fakeC = (function() end)
+	if not Strg then return fakeC end
+	local Strg = Strg:lower()
+	if DSL.Conditions[Strg] then
+		Deprecated(Strg)
+		return DSL.Conditions[Strg]
+	end
+	return fakeC
 end
 
 function DSL.RegisterConditon(name, condition, overwrite)
-	local name = string.lower(name)
+	local name = name:lower()
 	if not DSL.Conditions[name] or overwrite then
 		DSL.Conditions[name] = condition
 	end
 end
 
 function DSL.RegisterConditon_Deprecated(name, replace, condition, overwrite)
-	local name = string.lower(name)
+	local name = name:lower()
 	DSL.RegisterConditon(name, condition, overwrite)
 	if not Deprecated_Warn[name] then
 		Deprecated_Warn[name] = {}
