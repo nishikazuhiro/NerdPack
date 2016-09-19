@@ -170,16 +170,16 @@ RegisterConditon('IsNear', function(target, args)
 	return false
 end)
 
-NeP.DSL.RegisterConditon('equipped', function(_, item)
+RegisterConditon('equipped', function(_, item)
 	return IsEquippedItem(item)
 end)
 
-NeP.DSL.RegisterConditon('gcd', function()
+RegisterConditon('gcd', function()
 	local _, GCD = GetSpellCooldown(61304)
 	return GCD
 end)
 
-RegisterConditon('GUI', function(_, key)
-	local SelectedCR = Intf.GetSelectedCR().Name
+RegisterConditon('UI', function(_, key)
+	local SelectedCR = NeP.Interface.GetSelectedCR().Name
 	return NeP.Interface.fetchKey(SelectedCR, key)
 end)
