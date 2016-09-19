@@ -43,6 +43,20 @@ function Engine.Nest_ToString(_table)
 	return Result_Table
 end
 
+-- WIP
+local function BuildGUI(CrName, _SpecConfig)
+	return _SpecConfig and {
+		key = CrName,
+		title = CrName,
+		--subtitle = "",
+		profiles = true,
+		color = (function() return NeP.Core.classColor('player') end),
+		width = 250,
+		height = 500,
+		config = _SpecConfig
+	}
+end
+
 function Engine.registerRotation(SpecID, CrName, InCombat, OutCombat, initFunc, _SpecConfig)
 	local _,_, classIndex = UnitClass('player')
 	if ClassTable[classIndex][SpecID] or ClassTable[SpecID] then
@@ -51,26 +65,13 @@ function Engine.registerRotation(SpecID, CrName, InCombat, OutCombat, initFunc, 
 		InCombat = Engine.Nest_ToString(InCombat)
 		OutCombat = Engine.Nest_ToString(OutCombat)
 
-		Engine.Rotations[SpecID][CrName] = { 
+		Engine.Rotations[SpecID][CrName] = {
 			[true] = InCombat,
 			[false] = OutCombat,
 			InitFunc = initFunc or (function() return end),
 			Name = CrName,
-			SpecConfig = nil
+			SpecConfig = BuildGUI(CrName, _SpecConfig)
 		}
-
-		if _SpecConfig then
-			Engine.Rotations[SpecID][CrName].SpecConfig = {
-				key = CrName,
-				title = CrName,
-				--subtitle = "",
-				profiles = true,
-				color = (function() return NeP.Core.classColor('player') end),
-				width = 250,
-				height = 500,
-				config = _SpecConfig
-			}
-		end
 
 	end
 end
