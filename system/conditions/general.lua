@@ -178,3 +178,8 @@ NeP.DSL.RegisterConditon('gcd', function()
 	local _, GCD = GetSpellCooldown(61304)
 	return GCD
 end)
+
+RegisterConditon('GUI', function(_, key)
+	local SelectedCR = Intf.GetSelectedCR().Name
+	return NeP.Interface.fetchKey(SelectedCR, key)
+end)

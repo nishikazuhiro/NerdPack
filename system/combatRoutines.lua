@@ -43,20 +43,34 @@ function Engine.Nest_ToString(_table)
 	return Result_Table
 end
 
--- Register CRs
-function Engine.registerRotation(SpecID, CrName, InCombat, OutCombat, initFunc)
+function Engine.registerRotation(SpecID, CrName, InCombat, OutCombat, initFunc, _SpecConfig)
 	local _,_, classIndex = UnitClass('player')
 	if ClassTable[classIndex][SpecID] or ClassTable[SpecID] then
 		if Engine.Rotations[SpecID] == nil then Engine.Rotations[SpecID] = {} end
-		
-		-- Convert old stuff to new
+
 		InCombat = Engine.Nest_ToString(InCombat)
 		OutCombat = Engine.Nest_ToString(OutCombat)
+
 		Engine.Rotations[SpecID][CrName] = { 
 			[true] = InCombat,
 			[false] = OutCombat,
-			['InitFunc'] = initFunc or (function() return end),
-			['Name'] = CrName
+			InitFunc = initFunc or (function() return end),
+			Name = CrName,
+			SpecConfig = nil
 		}
+
+		if _SpecConfig then
+			Engine.Rotations[SpecID][CrName].SpecConfig = {
+				key = CrName,
+				title = CrName,
+				--subtitle = "",
+				profiles = true,
+				color = (function() return NeP.Core.classColor('player') end),
+				width = 250,
+				height = 500,
+				config = _SpecConfig
+			}
+		end
+
 	end
 end

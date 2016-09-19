@@ -10,12 +10,8 @@ end
 NeP.Listener.register("NeP_Config", "ADDON_LOADED", function(...)
 	local addon = ...
 	if string.lower(addon) == string.lower(NeP.Info.Name) then
-		if nDavG == nil then
-			nDavG = {}
-			data = nDavG
-		else
-			data = nDavG
-		end
+		if nDavG == nil then nDavG = {} end
+		data = nDavG
 	end
 end)
 
@@ -23,6 +19,7 @@ NeP.Listener.register("NeP_Config", "PLAYER_LOGIN", function(...)
 	for i=1, #toLoad do
 		toLoad[i]()
 	end
+	toLoad = nil
 end)
 
 function NeP.Config.Read(key, ...)

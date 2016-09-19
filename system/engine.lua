@@ -1,6 +1,5 @@
 NeP.Engine = {
 	Run = false,
-	SelectedCR = nil,
 	ForceTarget = nil,
 	lastTarget = nil,
 	lastCast = nil,
@@ -91,7 +90,7 @@ local function insertToLog(whatIs, spell, target)
 	elseif whatIs == 'Item' then
 		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
 	end
-	NeP.MFrame.usedButtons['mastertoggle'].texture:SetTexture(icon)
+	NeP.Interface.UpdateIcon(icon)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
@@ -363,10 +362,11 @@ end
 NeP.Timer.Sync("nep_parser", function()
 	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
 	if Running then
-		if Engine.SelectedCR then
+		local SelectedCR = NeP.Interface.GetSelectedCR()
+		if SelectedCR then
 			if not Engine.forcePause then
 				local InCombatCheck = InCombatLockdown()
-				local table = Engine.SelectedCR[InCombatCheck]
+				local table = SelectedCR[InCombatCheck]
 				Engine.Parse(table)
 			end
 		else

@@ -243,3 +243,12 @@ function NeP.string_split(string, delimiter)
 	table.insert(result, string.sub(string, from))
 	return result
 end
+
+function NeP.Core.OpenPage(URL)
+	local URL = tostring(URL)
+	if OpenURL then
+		OpenURL(URL)
+	else
+		NeP.Core.Message('Please Visit:\n'..URL)
+	end
+end

@@ -48,6 +48,7 @@
 	<Script file="interface\actionLog.lua" />
 	<Script file="interface\tools.lua" />
 	<Script file="interface\mainframe.lua" />
+	<Script file="interface\toggles.lua" />
 	<Script file="interface\settings.lua" />
 
 	<!-- System -->

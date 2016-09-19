@@ -45,57 +45,6 @@ function NeP.Helpers.SpellSanity(spell, target)
 	return true
 end
 
-local function hasAnyTalent()
-	for row=1, 7 do
-		for col=1,3 do
-			if hasTalent(row, col) then
-				return true
-			end
-		end
-	end
-	return false
-end
-
-function Helpers.specInfo()
-	local Spec = GetSpecialization()
-	local localizedClass, englishClass, classIndex = UnitClass('player')
-	local SpecInfo = classIndex
-	if Spec and hasAnyTalent() then
-		SpecInfo = GetSpecializationInfo(Spec)
-	else
-		SpecInfo = classIndex
-	end
-	return SpecInfo
-end 
-
-function Helpers.GetSpecTables()
-	local SpecInfo = Helpers.specInfo()
-	if NeP.Engine.Rotations[SpecInfo] then
-		return NeP.Engine.Rotations[SpecInfo]
-	end
-end
-
-function Helpers.GetSelectedSpec()
-	local SpecInfo = Helpers.specInfo()
-	local Selected = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
-	return Helpers.GetSpecTables()[Selected] or { 
-			[true] = {},
-			[false] = {},
-			['InitFunc'] = (function() return end),
-			['Name'] = 'NONE'
-		}
-end
-
-function Helpers.updateSpec()
-	local SlctdCR = Helpers.GetSelectedSpec()
-	if SlctdCR then
-		NeP.Interface.ResetToggles()
-		NeP.Interface.ResetSettings()
-		NeP.Engine.SelectedCR = SlctdCR
-		SlctdCR['InitFunc']()
-	end
-end
-
 NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 	if UI_Erros[error] then
 		-- Get the target from the engine
@@ -109,15 +58,6 @@ NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 			end
 		end
 	end
-end)
-
-NeP.Listener.register("PLAYER_LOGIN", function(...)
-	Helpers.updateSpec()
-	NeP.Listener.register("PLAYER_SPECIALIZATION_CHANGED", function(unitID)
-		if unitID == 'player' then
-			Helpers.updateSpec()
-		end
-	end)
 end)
 
 C_Timer.NewTicker(1, (function()
