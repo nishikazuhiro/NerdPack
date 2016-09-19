@@ -77,21 +77,6 @@ local invItems = {
 	['ranged']		= 'RangedSlot'
 }
 
--- Register CRs
-local ClassTable = NeP.Core.ClassTable
-function Engine.registerRotation(SpecID, CrName, InCombat, outCombat, initFunc)
-	local _,_, classIndex = UnitClass('player')
-	if ClassTable[classIndex][SpecID] or ClassTable[SpecID] then
-		if Engine.Rotations[SpecID] == nil then Engine.Rotations[SpecID] = {} end
-		Engine.Rotations[SpecID][CrName] = { 
-			[true] = InCombat,
-			[false] = outCombat,
-			['InitFunc'] = initFunc or (function() return end),
-			['Name'] = CrName
-		}
-	end
-end
-
 local function insertToLog(whatIs, spell, target)
 	local targetName = UnitName(target or 'player')
 	local name, icon
@@ -197,7 +182,6 @@ local function canIterate(spell)
 end
 
 local function spellResolve(spell, target, isGroundCast)
-	local spell = NeP.Locale.Spells(spell)
 	-- Convert Ids to Names
 	if string.match(spell, '%d') then
 		spell = GetSpellInfo(tonumber(spell))

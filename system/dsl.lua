@@ -116,26 +116,6 @@ end
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
-	-- This is backwards compatibility
-	['table'] = function(dsl, Spell)
-		local final_Strg = ''
-		for i=1, #dsl do
-			local temp = dsl[i]
-			if type(temp) == 'table' then
-				local Result = DSL.Parse(temp, Spell)
-				final_Strg = final_Strg..tostring(Result)
-			elseif type(temp) == 'function' then
-				final_Strg = final_Strg..'&'..tostring(temp())
-			elseif final_Strg == '' then
-				final_Strg = temp
-			elseif temp == 'or' then
-				final_Strg = final_Strg..'||'
-			else
-				final_Strg = final_Strg..'&'..temp
-			end
-		end
-		return DSL.Parse(final_Strg, Spell)
-	end,
 	['string'] = function(Strg, Spell)
 		local pX = string.sub(Strg, 1, 1)
 		if OPs[pX] then
@@ -197,4 +177,8 @@ function DSL.Parse(dsl, Spell)
 	if typesTable[type(dsl)] then
 		return typesTable[type(dsl)](dsl, Spell)
 	end
+end
+
+function DSL.Convert()
+
 end
