@@ -36,9 +36,12 @@
 	<!-- Core Files -->
 	<Script file="interface\debug.lua" />
 	<Script file="system\timer.lua" />
-	<Script file="system\classindex.lua" />
+	<Script file="tables\classindex.lua" />
+	<Script file="tables\Spell_IDs.lua" />
+	<Script file="tables\LoS.lua" />
+	<Script file="tables\castable_mounts.lua" />
+
 	<Script file="system\listener.lua" />
-	<Script file="locale\Spell_IDs.lua" />
 	<Script file="system\config.lua" />
 	<Script file="system\timeout.lua" />
 	<Script file="system\tooltip.lua" />

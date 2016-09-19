@@ -14,37 +14,6 @@ local Debug = Core.Debug
 local TA = Core.TA
 local fK = NeP.Interface.fetchKey
 
-local fakeUnits = {
-	{ -- Tank
-		token = 'tank',
-		unit = function(num) return NeP.Healing['tank'](num) end
-	},
-	{ -- Lowest
-		token = 'lowest',
-		unit = function(num) return NeP.Healing['lowest'](num) end
-	},
-	{ -- Healer
-		token = 'healer',
-		unit = function(num) return NeP.Healing['healer'](num) end
-	},
-	{ -- Damager
-		token = 'damager',
-		unit = function(num) return NeP.Healing['damager'](num) end
-	}
-}
-
--- Engine will bypass IsMounted() if unit has any of this mount buff
-local ByPassMounts = {
-	[165803] = '', -- Telaari Talbuk
-	[164222] = '', -- Frostwolf War Wolf
-	[221883] = '', -- Divine Steed (pally cd)
-	[221887] = '', -- Divine Steed (pally cd)
-	[221673] = '', -- Storm's Reach Worg
-	[221595] = '', -- Storm's Reach Cliffwalker
-	[221672] = '', -- Storm's Reach Greatstag
-	[221671] = '', -- Storm's Reach Warbear
-}
-
 local invItems = {
 	['head']		= 'HeadSlot',
 	['helm']		= 'HeadSlot',
@@ -143,11 +112,7 @@ end
 local function IsMountedCheck()
 	for i = 1, 40 do
 		local mountID = select(11, UnitBuff('player', i))
-		if mountID then
-			if ByPassMounts[tonumber(mountID)] then
-				return true
-			end
-		end
+		if mountID and NeP.ByPassMounts(mountID) then return true end
 	end
 	return not IsMounted()
 end
@@ -289,6 +254,7 @@ local sTriggers = {
 	end
 }
 
+local fakeUnits = {'tank','lowest','healer','damager'}
 function Engine.FilterUnit(unit)
 	-- This is needed to reattatch to the string
 	local wT, pF = '', ''
@@ -297,12 +263,12 @@ function Engine.FilterUnit(unit)
 	if pX == '!' then pF = pX end
 	-- Find fake units
 	for i=1, #fakeUnits do
-		local token = fakeUnits[i].token
+		local token = fakeUnits[i]
 		if string.find(unit, token) then
 			local num = tonumber(string.match(unit, "%d+") or 1)
 			local arg1, arg2 = string.match(unit, '(.+)%((.+)%)')
 			if arg2 then unit = arg1 end
-			local unit = fakeUnits[i].unit(num, arg2)
+			local unit = NeP.Healing[token](num, arg2)
 			if unit then
 				local result = pF..unit..wT
 				return result
