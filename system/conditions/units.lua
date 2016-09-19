@@ -205,7 +205,7 @@ RegisterConditon("enemy", function(target, spell)
 end)
 
 RegisterConditon("distance", function(target)
-	return NeP.Engine.Distance('player', target)
+	return NeP.Engine.UnitCombatRange('player', target)
 end)
 
 RegisterConditon("range", function(target)

@@ -97,6 +97,10 @@ function NeP.Engine.FaceRoll()
 		return NeP.Helpers.infront
 	end
 
+	function NeP.Engine.UnitCombatRange(unitA, unitB)
+		return NeP.Engine.Distance(unitA, unitB)
+	end
+
 	local _rangeTable = {
 		['melee'] = 1.5,
 		['ranged'] = 40,
