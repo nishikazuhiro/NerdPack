@@ -77,14 +77,13 @@ local function ProcessCondition(Strg, Args, Spell)
 		Args = Spell
 	end
 	Strg = Strg:gsub('%s', '')
-	if DSL.Conditions[Strg] then
-		return DSL.Get(Strg)('player', Args)
-	end
-	local unitId, rest = strsplit('.', Strg, 2)
-	unitId = NeP.Engine.FilterUnit(unitId)
-	if UnitExists(unitId) then
-		return DSL.Get(rest)(unitId, Args)
-	end
+	local unitID, rest = strsplit('.', Strg, 2)
+	local target =  'player' -- default target
+	unitID =  NeP.Engine.FilterUnit(unitID)
+	if unitID and UnitExists(unitID) then target = unitID end
+	if rest then Strg = rest end
+	local Condition = DSL.Get(Strg)
+	if Condition then return Condition(target, Args) end
 end
 
 local function ProcessString(Strg, Spell)
