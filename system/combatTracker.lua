@@ -107,5 +107,5 @@ NeP.Listener.register('CombatTracker', 'COMBAT_LOG_EVENT_UNFILTERED', function(.
 end)
 
 NeP.Listener.register('CombatTracker', 'PLAYER_REGEN_ENABLED', function(...)
-	Data = {}
+	wipe(Data)
 end)
