@@ -87,7 +87,7 @@ local function checkTarget(target)
 		target = NeP.Engine.FilterUnit(target)
 	end
 	-- is it ground?
-	if string.sub(target, -7) == '.ground' then
+	if target:sub(-7) == '.ground' then
 		isGroundCast = true
 		target = string.sub(target, 0, -8)
 	end
@@ -127,17 +127,17 @@ local function canIterate(spell)
 			Iterate = true
 		end
 		if sType == 'string' then
-			local pX = string.sub(spell, 1, 1)
+			local pX = spell:sub(1, 1)
 			-- Interrupts current cast and cast this instead
 			if pX == '!' then
-				spell = string.sub(spell, 2);
+				spell = spell:sub(2);
 				if spell ~= Engine.lastCast and castingTime >= 0.5 then
 					sI = true
 					Iterate = true
 				end
 			-- Cast this along with current cast
 			elseif pX == '&' then
-				spell = string.sub(spell, 2);
+				spell = spell:sub(2);
 				Iterate = true
 			end
 		end
@@ -169,7 +169,7 @@ end
 
 local sActions = {
 	-- Dispell all
-	['dispelall'] = function(spell, target, sI, args)
+	['dispelall'] = function(_, target, sI, args)
 		for i=1,#NeP.Healing.Units do
 			local Obj = NeP.Healing.Units[i]
 			local dispellType = NeP.Dispells.CanDispellUnit(unit)
@@ -177,25 +177,37 @@ local sActions = {
 				local spell = NeP.Dispells.GetSpell(dispellType)
 				if spell then
 					if sI then SpellStopCasting() end
-					Cast(spell, Obj.key, false)
+					Cast(spell, Obj.key)
 					return true
 				end
 			end
 		end
 	end,
+	['taunt'] = function(_, target, sI, args)
+		local spell = spellResolve(args, Obj.key)
+		if not spell then return end
+		for i=1,#NeP.OM['unitEnemie'] do
+			local Obj = NeP.OM['unitEnemie'][i]	
+			local Threat = UnitThreatSituation("player", Obj.key)
+			if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
+				Cast(spell, Obj.key)
+				return true
+			end
+		end
+	end,
 	-- dots all units
-	['adots'] = function(spell, target, sI, args)
+	['adots'] = function(_, target, sI, args)
 		--FIXME: TODO
 	end,
 	-- Ress all dead
-	['ressdead'] = function(spell, target, sI, args)
+	['ressdead'] = function(_, target, sI, args)
 		for i=1,#NeP.OM['DeadUnits'] do
 			local Obj = NeP.OM['DeadUnits'][i]
-			local spell = spellResolve(spell, Obj.key, false)
+			local spell = spellResolve(spell, Obj.key)
 			if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 			and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
 				if sI then SpellStopCasting() end
-				Cast(spell, Obj.key, false)
+				Cast(spell, Obj.key)
 				return true
 			end
 		end
@@ -232,7 +244,7 @@ local sTriggers = {
 	-- Lib
 	['@'] = function(spell, target, sI)
 		if sI then SpellStopCasting() end
-		local lib = string.sub(spell, 2);
+		local lib = spell:sub(2);
 		local result = NeP.library.parse(false, lib, target)
 		if result then return result end
 	end,
@@ -244,8 +256,8 @@ local sTriggers = {
 	end,
 	-- These are special actions
 	['%'] = function(spell, target, sI)
-		local action = string.lower(string.sub(spell, 2));
-		local arg1, arg2 = string.match(action, '(.+)%((.+)%)')
+		local action = spell:lower():sub(2)
+		local arg1, arg2 = action:match('(.+)%((.+)%)')
 		if arg2 then action = arg1 end
 		if sActions[action] then
 			local result = sActions[action](spell, target, sI, arg2)
@@ -258,15 +270,15 @@ local fakeUnits = {'tank','lowest','healer','damager'}
 function Engine.FilterUnit(unit)
 	-- This is needed to reattatch to the string
 	local wT, pF = '', ''
-	local pX = string.sub(unit, 1, 1)
-	if string.find(unit, 'target') then wT = 'target' end
+	local pX = unit:sub(1, 1)
+	if unit:find('target') then wT = 'target' end
 	if pX == '!' then pF = pX end
 	-- Find fake units
 	for i=1, #fakeUnits do
 		local token = fakeUnits[i]
-		if string.find(unit, token) then
-			local num = tonumber(string.match(unit, "%d+") or 1)
-			local arg1, arg2 = string.match(unit, '(.+)%((.+)%)')
+		if unit:find(token) then
+			local num = tonumber(unit:match("%d+") or 1)
+			local arg1, arg2 = unit:match('(.+)%((.+)%)')
 			if arg2 then unit = arg1 end
 			local unit = NeP.Healing[token](num, arg2)
 			if unit then
@@ -300,7 +312,7 @@ function Engine.Parse(table)
 				local target, isGroundCast = checkTarget(target)
 				if target then
 					Debug('Engine', 'Hit String')
-					local pX = string.sub(spell, 1, 1)
+					local pX = spell:sub(1, 1)
 					if sTriggers[pX] then
 						if dsl_Parse(conditions, spell) then
 							if Engine.ForceTarget then target = Engine.ForceTarget end

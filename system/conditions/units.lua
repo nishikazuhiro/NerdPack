@@ -36,12 +36,18 @@ end)
 ------------------------------------------ ANY -------------------------------------------
 ------------------------------------------------------------------------------------------
 
-RegisterConditon('boss', function (target, spell)
+local UnitClsf = {
+	'elite' = 2,
+	'rareelite' = 3,
+	'rare' = 4,
+	'worldboss' = 5
+}
+
+RegisterConditon('boss', function (target)
 	local classification = UnitClassification(target)
-	if classification == 'rareelite'
-	or classification == 'rare'
-	or classification == 'worldboss'
-	or LibBoss.BossIDs[tonumber(UnitID(target))] then
+	if UnitClsf[classification] then 
+		return UnitClsf[classification] >= 3
+	elseif LibBoss.BossIDs[UnitID(target)] then
 		return true
 	end
 	return false
@@ -49,11 +55,9 @@ end)
 
 RegisterConditon('elite', function (target, spell)
 	local classification = UnitClassification(target)
-	if classification == 'elite'
-	or classification == 'rareelite'
-	or classification == 'rare'
-	or classification == 'worldboss'
-	or LibBoss.BossIDs[tonumber(UnitID(target))] then
+	if UnitClsf[classification] then
+		return UnitClsf[classification] >= 2
+	elseif LibBoss.BossIDs[UnitID(target)] then
 		return true
 	end
 	return false
@@ -61,10 +65,7 @@ end)
 
 RegisterConditon("id", function(target, id)
 	local expectedID = tonumber(id)
-	if expectedID and UnitID(target) == expectedID then
-		return true
-	end
-	return false
+	return expectedID and UnitID(target) == expectedID 
 end)
 
 RegisterConditon("threat", function(target)
