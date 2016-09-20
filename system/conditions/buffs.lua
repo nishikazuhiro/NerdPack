@@ -22,17 +22,21 @@ end)
 ------------------------------------------------------------------------------------------
 RegisterConditon("buff", function(target, spell)
 	local buff,_,_,caster = NeP.APIs['UnitBuff'](target, spell)
-	return buff and (caster == 'player' or caster == 'pet')
+	if not not buff and (caster == 'player' or caster == 'pet') then
+		return true
+	end
 end)
 
 RegisterConditon("buff.any", function(target, spell)
 	local buff,_,_,caster = NeP.APIs['UnitBuff'](target, spell, "any")
-	return buff
+	if not not buff then
+		return true
+	end
 end)
 
 RegisterConditon("buff.count", function(target, spell)
 	local buff,count,_,caster = NeP.APIs['UnitBuff'](target, spell)
-	if buff and (caster == 'player' or caster == 'pet') then
+	if not not buff and (caster == 'player' or caster == 'pet') then
 		return count
 	end
 	return 0
@@ -51,17 +55,21 @@ end)
 
 RegisterConditon("debuff", function(target, spell)
 	local debuff,_,_,caster = NeP.APIs['UnitDebuff'](target, spell)
-	return debuff and (caster == 'player' or caster == 'pet')
+	if not not debuff and (caster == 'player' or caster == 'pet') then
+		return true
+	end
 end)
 
 RegisterConditon("debuff.any", function(target, spell)
 	local debuff,_,_,caster = NeP.APIs['UnitDebuff'](target, spell, "any")
-	return debuff
+	if not not debuff then
+		return true
+	end
 end)
 
 RegisterConditon("debuff.count", function(target, spell)
 	local debuff,count,_,caster = NeP.APIs['UnitDebuff'](target, spell)
-	if debuff and (caster == 'player' or caster == 'pet') then
+	if not not debuff and (caster == 'player' or caster == 'pet') then
 		return count
 	end
 	return 0
