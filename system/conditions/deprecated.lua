@@ -7,12 +7,11 @@ NeP.DSL.get = NeP.DSL.Get
 NeP.Interface.CreatePlugin = NeP.Interface.Add
 NeP.Interface.CreateSetting = function(name, key)
 	C_Timer.After(1, function()
-	print(name, key)
-	NeP.Interface.ClassSettings = {
-		text = name, 
-		func = key, 
-		notCheckable = 1
-	}
+		NeP.Interface.ClassSettings = {
+			text = name, 
+			func = key, 
+			notCheckable = 1
+		}
 	end)
 end
 
