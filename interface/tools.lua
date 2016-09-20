@@ -673,13 +673,15 @@ end
 
 function NeP.Interface.ShowGUI(key)
 	if usedGUIS[key] then
-		return usedGUIS[key].parent:Show()
+		usedGUIS[key].parent:Show()
 	end
 end
 
 function NeP.Interface.buildGUI(config)
 
 	local cKey = tostring(config.key)
+
+	if usedGUIS[cKey] then NeP.Interface.ShowGUI(key) end
 
 	local parent = DiesalGUI:Create('Window')
 	parent:SetWidth(config.width or 200)
