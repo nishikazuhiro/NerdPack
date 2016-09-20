@@ -42,7 +42,3 @@ function NeP.Tooltip.Scan_Debuff(target, pattern)
 	end
 	return false
 end
-
-function NeP.Tooltip.CastTime(target, pattern)
-	--WIP
-end

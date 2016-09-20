@@ -76,7 +76,7 @@ RegisterConditon('interruptAt', function (target, spell)
 	return false
 end)
 
-RegisterConditon('spell.cooldown', function(target, spell)
+RegisterConditon('spell.cooldown', function(_, spell)
 	local start, duration, enabled = GetSpellCooldown(spell)
 	if not start then return 0 end
 	if start ~= 0 then
@@ -85,7 +85,7 @@ RegisterConditon('spell.cooldown', function(target, spell)
 	return 0
 end)
 
-RegisterConditon('spell.recharge', function(target, spell)
+RegisterConditon('spell.recharge', function(_, spell)
 	local charges, maxCharges, start, duration = GetSpellCharges(spell)
 	if not start then return false end
 	if start ~= 0 then
@@ -94,11 +94,11 @@ RegisterConditon('spell.recharge', function(target, spell)
 	return 0
 end)
 
-RegisterConditon('spell.usable', function(target, spell)
+RegisterConditon('spell.usable', function(_, spell)
 	return (IsUsableSpell(spell) ~= nil)
 end)
 
-RegisterConditon('spell.exists', function(target, spell)
+RegisterConditon('spell.exists', function(_, spell)
 	if GetSpellBookIndex(spell) then
 		return true
 	end
