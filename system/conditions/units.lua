@@ -37,10 +37,10 @@ end)
 ------------------------------------------------------------------------------------------
 
 local UnitClsf = {
-	'elite' = 2,
-	'rareelite' = 3,
-	'rare' = 4,
-	'worldboss' = 5
+	['elite'] = 2,
+	['rareelite'] = 3,
+	['rare'] = 4,
+	['worldboss'] = 5
 }
 
 RegisterConditon('boss', function (target)
