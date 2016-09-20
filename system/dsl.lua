@@ -124,6 +124,7 @@ local typesTable = {
 	['string'] = function(Strg, Spell)
 		local pX = Strg:sub(1, 1)
 		if Strg:find('!{(.-)}') then
+			Strg = Strg:sub(2);
 			return not Nest(Strg, Spell)
 		elseif Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
