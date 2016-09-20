@@ -51,10 +51,10 @@ local function showActiveSpell(spell, target)
 end
 
 -- Hide it
-NeP.Timer.Sync("nep_faceroll", function()
+NeP.Timer.Sync("nep_faceroll", 1, function()
 	activeFrame:Hide()
 	display:Hide()
-end, 0)
+end)
 
 function NeP.Engine.FaceRoll()
 

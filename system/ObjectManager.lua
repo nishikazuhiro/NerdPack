@@ -284,7 +284,7 @@ NeP.Listener.register('OM', "PLAYER_ENTERING_WORLD", function(...)
 end)
 
 -- Run OM
-C_Timer.NewTicker(0.25, (function()
+NeP.Timer.Sync("nep_OM", 0.25, function()
 	WipeOM()
 	if NeP.OM.Maker then
 		NeP.OM.Maker()
@@ -300,4 +300,4 @@ C_Timer.NewTicker(0.25, (function()
 		bt['FRIENDLY']:SetText('FRIENDLY ('..#NeP.OM['unitFriend']..')')
 		bt['OBJECTS']:SetText('OBJECTS ('..#NeP.OM['GameObjects']..')')
 	end
-end), nil)
+end)

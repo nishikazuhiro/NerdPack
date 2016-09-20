@@ -325,7 +325,7 @@ function Engine.Parse(table)
 	Engine.ForceTarget = nil
 end
 
-NeP.Timer.Sync("nep_parser", function()
+NeP.Timer.Sync("nep_parser", 0.01, function()
 	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
 	if Running then
 		local SelectedCR = NeP.Interface.GetSelectedCR()
@@ -339,4 +339,4 @@ NeP.Timer.Sync("nep_parser", function()
 			Core.Message(TA('Engine', 'NoCR'))
 		end
 	end
-end, 2)
+end, 3)
