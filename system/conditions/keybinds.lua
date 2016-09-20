@@ -23,6 +23,10 @@ local KEYBINDS = {
 	['alt'] = function() return IsAltKeyDown() end,
 	['lalt'] = function() return IsLeftAltKeyDown() end,
 	['ralt'] = function() return IsRightAltKeyDown() end,
+	-- Mouse
+	['mouse3'] = function() return IsMouseButtonDown(3) end,
+	['mouse4'] = function() return IsMouseButtonDown(4) end,
+	['mouse5'] = function() return IsMouseButtonDown(5) end,
 }
 
 NeP.DSL.RegisterConditon("keybind", function(_, Arg)
