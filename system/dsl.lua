@@ -123,7 +123,9 @@ local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
 	['string'] = function(Strg, Spell)
 		local pX = Strg:sub(1, 1)
-		if Strg:find('{(.-)}') then
+		if Strg:find('!{(.-)}') then
+			return not Nest(Strg, Spell)
+		elseif Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
 		elseif Strg:find('||') then
 			return _OR(Strg, Spell)
