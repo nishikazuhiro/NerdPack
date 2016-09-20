@@ -123,17 +123,15 @@ local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
 	['string'] = function(Strg, Spell)
 		local pX = Strg:sub(1, 1)
-		if OPs[pX] then
-			Strg = Strg:sub(2);
-			return OPs[pX](Strg, Spell)
-		elseif OPs[Strg] then
-			return OPs[Strg](Strg, Spell)
-		elseif Strg:find('{(.-)}') then
+		if Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
 		elseif Strg:find('||') then
 			return _OR(Strg, Spell)
 		elseif Strg:find('&') then
 			return _AND(Strg, Spell)
+		elseif OPs[pX] then
+			Strg = Strg:sub(2);
+			return OPs[pX](Strg, Spell)
 		elseif Strg:find("func=") then
 			Strg = Strg:sub(6);
 			return ExeFunc(Strg)
@@ -141,6 +139,8 @@ local typesTable = {
 			return Comperatores(Strg, Spell)
 		elseif Strg:find("[%+%-%*%/]") then
 			return StringMath(Strg, Spell)
+		elseif OPs[Strg] then
+			return OPs[Strg](Strg, Spell)
 		else
 			return ProcessString(Strg, Spell)
 		end
