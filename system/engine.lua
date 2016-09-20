@@ -74,22 +74,18 @@ local function Cast(spell, target, isGroundCast)
 end
 
 local function checkTarget(target)
-	local target = target
 	local isGroundCast = false
 	-- none defined (decide one)
-	if type(target) == 'nil' then
-		target = 'player'
-		if UnitExists('target') then
-			target = 'target'
-		end
-	-- fake units
+	if not target then
+		target = UnitExists('target') and 'target' or 'player'
 	else
 		target = NeP.Engine.FilterUnit(target)
+		if not target then return end
 	end
 	-- is it ground?
 	if target:sub(-7) == '.ground' then
 		isGroundCast = true
-		target = string.sub(target, 0, -8)
+		target = target:sub(0,-8)
 	end
 	-- Sanity checks
 	if isGroundCast and target == 'mouseover'
@@ -321,23 +317,14 @@ end
 
 local fakeUnits = {'tank','lowest','healer','damager'}
 function Engine.FilterUnit(unit)
-	-- This is needed to reattatch to the string
-	local wT, pF = '', ''
-	local pX = unit:sub(1, 1)
-	if unit:find('target') then wT = 'target' end
-	if pX == '!' then pF = pX end
-	-- Find fake units
 	for i=1, #fakeUnits do
 		local token = fakeUnits[i]
 		if unit:find(token) then
-			local num = tonumber(unit:match("%d+") or 1)
 			local arg1, arg2 = unit:match('(.+)%((.+)%)')
 			if arg2 then unit = arg1 end
-			local unit = NeP.Healing[token](num, arg2)
-			if unit then
-				local result = pF..unit..wT
-				return result
-			end
+			local num = unit:match("%d+") or 1
+			local real_unit = NeP.Healing[token](num, arg2)
+			return real_unit and unit:gsub(token, real_unit)
 		end
 	end
 	return unit
