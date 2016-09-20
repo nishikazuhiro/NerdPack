@@ -105,3 +105,7 @@ NeP.Listener.register('CombatTracker', 'COMBAT_LOG_EVENT_UNFILTERED', function(.
 	-- Add the amount of dmg/heak
 	if EVENTS[EVENT] then EVENTS[EVENT](...) end
 end)
+
+NeP.Listener.register('CombatTracker', 'PLAYER_REGEN_ENABLED', function(...)
+	Data = {}
+end)
