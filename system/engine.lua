@@ -266,6 +266,59 @@ local sTriggers = {
 	end
 }
 
+local sTypes = {
+	['table'] = function(spell, conditions)
+		if NeP.DSL.Parse(conditions, spell) then
+			Debug('Engine', 'Hit Table')
+			if Engine.Parse(spell) then return true end
+		end
+	end,
+	['function'] = function(spell, conditions)
+		Debug('Engine', 'Hit Function')
+		if NeP.DSL.Parse(conditions, spell) then
+			if spell() then return true end
+		end
+	end,
+	['string'] = function(spell, conditions, target, sI)
+		Debug('Engine', 'Hit String')
+		local target, isGroundCast = checkTarget(target)
+		local pX = spell:sub(1, 1)
+		if target and sTriggers[pX] and NeP.DSL.Parse(conditions, spell) then
+			if Engine.ForceTarget then target = Engine.ForceTarget end
+			if sTriggers[pX](spell, target, sI) then
+				return true
+			end
+		elseif target then
+			Debug('Engine', 'Hit Regular')
+			local spell = spellResolve(spell, target, isGroundCast)
+			if spell and NeP.DSL.Parse(conditions, spell) then
+				if Engine.ForceTarget then target = Engine.ForceTarget end
+				if sI then SpellStopCasting() end
+				Cast(spell, target, isGroundCast)
+				return true
+			end
+		end
+	end,
+}
+
+-- This iterates the routine table itself.
+function Engine.Parse(cr_table)
+	for i=1, #cr_table do
+		local table = cr_table[i]
+		local spell, conditions, target = table[1], table[2], table[3]
+		local Iterate, spell, sI = canIterate(spell)
+		if Iterate then
+			local tP = type(spell)
+			if sTypes[tP] and sTypes[tP](spell, conditions, target, sI) then
+				return true
+			end
+		end
+	end
+	-- Reset States
+	Engine.isGroundSpell = false
+	Engine.ForceTarget = nil
+end
+
 local fakeUnits = {'tank','lowest','healer','damager'}
 function Engine.FilterUnit(unit)
 	-- This is needed to reattatch to the string
@@ -288,53 +341,6 @@ function Engine.FilterUnit(unit)
 		end
 	end
 	return unit
-end
-
--- This iterates the routine table itself.
-function Engine.Parse(table)
-	for i=1, #table do
-		local aR, tP = table[i], type(table[i][1])
-		local spell, conditions, target = aR[1], aR[2], aR[3]
-		local Iterate, spell, sI = canIterate(spell)
-		local dsl_Parse = NeP.DSL.Parse
-		if Iterate then
-			if tP == 'table' then
-				if dsl_Parse(conditions, spell) then
-					Debug('Engine', 'Hit Table')
-					if Engine.Parse(spell) then return true end
-				end
-			elseif tP == 'function' then
-				if dsl_Parse(conditions, spell) then
-					Debug('Engine', 'Hit Function')
-					if spell() then return true end
-				end
-			elseif tP == 'string' then
-				local target, isGroundCast = checkTarget(target)
-				if target then
-					Debug('Engine', 'Hit String')
-					local pX = spell:sub(1, 1)
-					if sTriggers[pX] then
-						if dsl_Parse(conditions, spell) then
-							if Engine.ForceTarget then target = Engine.ForceTarget end
-							if sTriggers[pX](spell, target, sI) then return true end
-						end
-					else
-						Debug('Engine', 'Hit Regular')
-						local spell = spellResolve(spell, target, isGroundCast)
-						if spell and dsl_Parse(conditions, spell) then
-							if Engine.ForceTarget then target = Engine.ForceTarget end
-							if sI then SpellStopCasting() end
-							Cast(spell, target, isGroundCast)
-							return true
-						end
-					end
-				end
-			end
-		end
-	end
-	-- Reset States
-	Engine.isGroundSpell = false
-	Engine.ForceTarget = nil
 end
 
 NeP.Timer.Sync("nep_parser", 0.01, function()
