@@ -51,7 +51,8 @@ local fakeCR =  {
 function Intf.GetSelectedCR()
 	local SpecInfo = specInfo()
 	local Selected = NeP.Config.Read('NeP_SlctdCR_'..SpecInfo)
-	return GetSpecTables()[Selected] or fakeCR
+	local SpecTable = GetSpecTables()
+	return SpecTable and SpecTable[Selected] or fakeCR
 end
 
 local function updateSpec()
