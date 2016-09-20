@@ -48,7 +48,7 @@ https://github.com/MrTheSoulz/NerdPack-PB
 <h2>Instructions on how to install:</h2>
 ###Toolbox:  
 The toolbox install and updates NerdPack and available modules.  
-[DOWNLOAD](https://github.com/MrTheSoulz/NerdPack)  
+[DOWNLOAD](https://dl.dropboxusercontent.com/u/101560647/NerdPack/NerdPack_ToolBox.zip)  
 
 ###Manual:  
 * Close WoW before updating/installing.
