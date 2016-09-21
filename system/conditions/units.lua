@@ -357,6 +357,49 @@ RegisterConditon("modifier.enemies", function()
 	return #NeP.OM['unitEnemie']
 end)
 
+local _Ressurected_tab = {}
+RegisterConditon("ressdead", function()
+	local Spell = NeP.Engine.Current_Spell
+	-- set ressurection delay
+	local RESS_DELAY = 15
+	
+	if not IsUsableSpell(Spell) then return false end
+	
+	local function IsRessed(unitName)
+		for i, v in ipairs(_Ressurected_tab) do
+			if _Ressurected_tab[i].name == unitName then
+				if _Ressurected_tab[i].time > GetTime() then
+					return true
+				else
+					table.remove(_Ressurected_tab, i)
+				end
+			end
+		end	
+		return false
+	end
+	
+	for i=1,#NeP.OM['DeadUnits'] do
+		local Obj = NeP.OM['DeadUnits'][i]
+			if GetUnitSpeed("player") == 0
+			and IsUsableSpell(Spell) 
+			and UnitIsDeadOrGhost(Obj.key) 
+			and UnitIsPlayer(Obj.key) 
+			and UnitPlayerOrPetInParty(Obj.key)
+			and Obj.distance <= 40 
+			and NeP.Engine.LineOfSight('player', Obj.key) then
+				if IsRessed(Obj.name) then
+					return false
+				else
+					NeP.Engine.ForceTarget = Obj.key
+					table.insert(_Ressurected_tab, {name = Obj.name, time = GetTime()+RESS_DELAY})
+					return true
+				end
+			end
+	end
+	
+	return false
+end)
+
 RegisterConditon("area.enemies", function(unit, distance)
 	local total = 0
 	local distance = tonumber(distance)
