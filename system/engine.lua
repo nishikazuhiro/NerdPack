@@ -143,19 +143,17 @@ end
 
 local function spellResolve(spell, target, isGroundCast)
 	-- Convert Ids to Names
-	if string.match(spell, '%d') then
-		spell = GetSpellInfo(tonumber(spell))
+	if spell and spell:find('%d') then
+		spell = GetSpellName(spell)
+		if not spell then return end
 	end
-	if spell and target then
-		-- Make sure we can cast the spell
-		local skillType, spellId = GetSpellBookItemInfo(spell)
-		local isUsable, notEnoughMana = IsUsableSpell(spell)
-		if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana
-		and NeP.Helpers.SpellSanity(spell, target) then
-			local start, duration, enabled = GetSpellCooldown(spell)
+	-- Make sure we can cast the spell
+	local skillType = GetSpellBookItemInfo(spell)
+	local isUsable, notEnoughMana = IsUsableSpell(spell)
+	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana and NeP.Helpers.SpellSanity(spell, target) then
+		if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast then
 			local _, GCD = GetSpellCooldown(61304)
-			local canCast = (not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast)
-			if (start <= GCD) and canCast then
+			if (GetSpellCooldown(spell) <= GCD) then
 				Engine.Current_Spell = spell
 				return spell
 			end
