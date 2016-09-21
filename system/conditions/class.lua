@@ -138,6 +138,10 @@ RegisterConditon('combopoints', function(target)
 	return GetComboPoints('player', 'target')
 end)
 
+RegisterConditon('lunarpower', function(target, spell)
+    return UnitPower(target, SPELL_POWER_LUNAR_POWER)
+end)
+
 RegisterConditon('mushrooms', function()
 	local count = 0
 	for slot = 1, 3 do
