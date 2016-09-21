@@ -108,7 +108,7 @@ end)
 RegisterConditon('spell.charges', function(_, spell)
 	local charges, maxCharges, start, duration = GetSpellCharges(spell)
 	if duration then charges = charges + ( ( (GetTime()-start-(duration/10)) ) /10) end
-	if charges == maxCharges then total = maxCharges end
+	if charges == maxCharges then charges = maxCharges end
 	return charges
 end)
 
