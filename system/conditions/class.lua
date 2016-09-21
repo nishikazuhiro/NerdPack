@@ -54,10 +54,10 @@ RegisterConditon('runicpower', function(target, spell)
 	return UnitPower(target, SPELL_POWER_RUNIC_POWER)
 end)
 
-RegisterConditon('runes', function(target, rune)
+RegisterConditon('runes.frac', function(target, rune)
 	local count = 0
 	local next = 0
-	for i=1, 6 do
+	for i = 1, 6 do
 		local start, duration, runeReady = GetRuneCooldown(i)
 		if runeReady then
 			count = count + 1
@@ -65,8 +65,22 @@ RegisterConditon('runes', function(target, rune)
 			next = duration
 		end
 	end
-	if next > 0 then count = count + (next/10) end
+	if next > 0 then count = count + (next / 10) end
 	return count
+end)
+
+RegisterConditon('runes.count', function(target, rune)
+    local count = 0
+    for i = 1, 6 do
+        local _, _, runeReady = GetRuneCooldown(i)
+        if runeReady then count = count + 1 end
+    end
+    return count
+end)
+
+RegisterConditon('runes', function(target, rune)  
+    return NeP.DSL.Conditions['runes.count'](target, rune)
+    -- return UnitPower(target, SPELL_POWER_RUNES) -- is it work?
 end)
 
 --------------------------------------------------- SHAMMMAN -------------------------------------------------
