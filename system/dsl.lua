@@ -80,8 +80,10 @@ local function ProcessCondition(Strg, Args, Spell)
 	local unitID, rest = strsplit('.', Strg, 2)
 	local target =  'player' -- default target
 	unitID =  NeP.Engine.FilterUnit(unitID)
-	if unitID and UnitExists(unitID) then target = unitID end
-	if rest then Strg = rest end
+	if unitID and UnitExists(unitID) then
+		target = unitID
+		Strg = rest
+	end
 	local Condition = DSL.Get(Strg)
 	if Condition then return Condition(target, Args) end
 end
@@ -123,10 +125,7 @@ local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
 	['string'] = function(Strg, Spell)
 		local pX = Strg:sub(1, 1)
-		if Strg:find('!{(.-)}') then
-			Strg = Strg:sub(2);
-			return not Nest(Strg, Spell)
-		elseif Strg:find('{(.-)}') then
+		if Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
 		elseif Strg:find('||') then
 			return _OR(Strg, Spell)
@@ -161,14 +160,11 @@ local function Deprecated(Strg)
 end
 
 function DSL.Get(Strg)
-	local fakeC = (function() end)
-	if not Strg then return fakeC end
-	local Strg = Strg:lower()
+	Strg = Strg:lower()
 	if DSL.Conditions[Strg] then
 		Deprecated(Strg)
 		return DSL.Conditions[Strg]
 	end
-	return fakeC
 end
 
 function DSL.RegisterConditon(name, condition, overwrite)
@@ -179,7 +175,7 @@ function DSL.RegisterConditon(name, condition, overwrite)
 end
 
 function DSL.RegisterConditon_Deprecated(name, replace, condition, overwrite)
-	local name = name:lower()
+	name = name:lower()
 	DSL.RegisterConditon(name, condition, overwrite)
 	if not Deprecated_Warn[name] then
 		Deprecated_Warn[name] = {}
