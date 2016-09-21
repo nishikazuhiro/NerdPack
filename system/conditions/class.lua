@@ -109,14 +109,6 @@ end)
 --------------------------------------------------- WARLOCK --------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 
-RegisterConditon('demonicfury', function(target, spell)
-	return UnitPower(target, SPELL_POWER_DEMONIC_FURY)
-end)
-
-RegisterConditon('embers', function(target, spell)
-	return UnitPower(target, SPELL_POWER_BURNING_EMBERS, true)
-end)
-
 RegisterConditon('soulshards', function(target, spell)
 	return UnitPower(target, SPELL_POWER_SOUL_SHARDS)
 end)
