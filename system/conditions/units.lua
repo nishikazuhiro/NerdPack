@@ -400,6 +400,126 @@ RegisterConditon("ressdead", function()
 	return false
 end)
 
+-------------
+-- IN TEST --
+-------------
+
+-- scan all units and select unit with maximum units in range, may be need optimized
+
+function enemyaoe(unit, distance)
+temp_EnemyAoeTable = {} --not use, its for debug-drawing
+local total = 0
+local distance = tonumber(distance)
+if UnitExists(unit) then
+	for i=1, #_macEngine.OM.unitEnemie do
+		local Obj = _macEngine.OM.unitEnemie[i]
+		if (_macEngine.Protected.Distance(unit, Obj.key) <= distance) then
+			table.insert(temp_EnemyAoeTable, {keyUnit = Obj.key}) --not use, its for debug-drawing
+			total = total +1
+		end
+	end
+end
+return total
+end
+
+function enemy_BestAoeUnit(spelldistance, distance, mincount)
+enemy_AoeTable = {}
+for i=1, #_macEngine.OM.unitEnemie do
+local Obj = _macEngine.OM.unitEnemie[i]
+	if _macEngine.Protected.Distance("player", Obj.key) <= spelldistance and _macEngine.Protected.LineOfSight('player', Obj.key) then
+	if enemyaoe(Obj.key, distance) >= mincount then
+		table.insert(enemy_AoeTable, {keyName = UnitName(Obj.key), keyUnit = Obj.key, keyAoe = enemyaoe(Obj.key, distance), keyDist = distance, keySpell = spell})
+		table.sort(enemy_AoeTable, function(a,b) return a.keyAoe > b.keyAoe end)
+	end
+	end
+end
+if #enemy_AoeTable > 0 then
+	table.sort(enemy_AoeTable, function(a,b) return a.keyAoe > b.keyAoe end)
+	return enemy_AoeTable[1].keyAoe, enemy_AoeTable[1].keyUnit
+else
+	return false
+end
+end
+
+function friendaoe(unit, distance, minhp)
+temp_FriendAoeTable = {} --not use, its for debug-drawing
+local total = 0
+local distance = tonumber(distance)
+if UnitExists(unit) then
+	for i=1, #_macEngine.OM.unitFriend do
+		local Obj = _macEngine.OM.unitFriend[i]
+		if (_macEngine.Protected.Distance(unit, Obj.key) <= distance) and Obj.health <= 100 then
+			table.insert(temp_FriendAoeTable, {keyUnit = Obj.key}) --not use, its for debug-drawing
+			total = total +1
+		end
+	end
+end
+return total
+end
+
+function friend_BestAoeUnit(spelldistance, distance, firsthp, secondhp, mincount)
+friend_AoeTable = {}
+for i=1, #_macEngine.OM.unitFriend do
+local Obj = _macEngine.OM.unitFriend[i]
+	if _macEngine.Protected.Distance("player", Obj.key) <= spelldistance and _macEngine.Protected.LineOfSight('player', Obj.key) then
+	if friendaoe(Obj.key, distance, secondhp) >= mincount and Obj.health <= firsthp then
+		table.insert(friend_AoeTable, {keyName = UnitName(Obj.key), keyUnit = Obj.key, keyAoe = friendaoe(Obj.key, distance), keyDist = distance, keySpell = spell})
+		table.sort(friend_AoeTable, function(a,b) return a.keyAoe > b.keyAoe end)
+	end
+	end
+end
+if #friend_AoeTable > 0 then
+	table.sort(friend_AoeTable, function(a,b) return a.keyAoe > b.keyAoe end)
+	return friend_AoeTable[1].keyAoe, friend_AoeTable[1].keyUnit
+else
+	return false
+end
+end
+
+-- simple: { "Cataclysm", "BestUnitForDamage(10, 3, 1)" } , its for GROUND cast
+_macEngine.DSL.RegisterConditon("BestUnitForDamage", function(args)
+	local Spell = _macEngine.Engine.Current_Spell
+	if not IsUsableSpell(Spell) then return false end
+	local range, aoenums, ground = strsplit(',', args, 3)
+	local range, aoenums = tonumber(range), tonumber(aoenums)
+	local totalenemy = enemy_BestAoeUnit(40, range, aoenums)
+	local unit = select(2,enemy_BestAoeUnit(40, range, aoenums))
+		if totalenemy >= aoenums then
+			if not ground then
+				_macEngine.Engine.ForceTarget = unit
+				return true
+			else
+				_macEngine.Protected.CastGround(Spell, unit)
+				return true
+			end
+		end
+	return false
+end)
+
+-- simple: { "Circle of Healing", "BestUnitForHeal(10, 3)" } , its for NOT GROUND cast
+_macEngine.DSL.RegisterConditon("BestUnitForHeal", function(args)
+	local Spell = _macEngine.Engine.Current_Spell
+	if not IsUsableSpell(Spell) then return false end
+	local range, aoenums, ground = strsplit(',', args, 3)
+	local range, aoenums = tonumber(range), tonumber(aoenums)
+	local totalfriend = friend_BestAoeUnit(40, range, aoenums)
+	local unit = select(2,friend_BestAoeUnit(40, range, aoenums))
+		if totalfriend >= aoenums then
+			if not ground then
+				_macEngine.Engine.ForceTarget = unit
+				return true
+			else
+				_macEngine.Protected.CastGround(Spell, unit)
+				return true
+			end
+		end
+	return false
+end)
+
+-------------
+-- END --
+-------------
+
 RegisterConditon("area.enemies", function(unit, distance)
 	local total = 0
 	local distance = tonumber(distance)
