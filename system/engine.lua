@@ -183,7 +183,7 @@ local sActions = {
 		local spell = spellResolve(args, Obj.key)
 		if not spell then return end
 		for i=1,#NeP.OM['unitEnemie'] do
-			local Obj = NeP.OM['unitEnemie'][i]	
+			local Obj = NeP.OM['unitEnemie'][i]
 			local Threat = UnitThreatSituation("player", Obj.key)
 			if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
 				Cast(spell, Obj.key)
@@ -199,7 +199,7 @@ local sActions = {
 	['ressdead'] = function(_, target, sI, args)
 		for i=1,#NeP.OM['DeadUnits'] do
 			local Obj = NeP.OM['DeadUnits'][i]
-			local spell = spellResolve(spell, Obj.key)
+			local spell = spellResolve(args, Obj.key)
 			if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 			and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
 				if sI then SpellStopCasting() end
