@@ -69,6 +69,16 @@ local function Nest(Strg, Spell)
 end
 
 local function ProcessCondition(Strg, Args, Spell)
+	-- Process Unit Stuff
+	Strg = Strg:gsub('%s', '')
+	local unitID, rest = strsplit('.', Strg, 2)
+	local target =  'player' -- default target
+	unitID =  NeP.FakeUnits.Filter(unitID)
+	if unitID and UnitExists(unitID) then
+		target = unitID
+		Strg = rest
+	end
+	-- Condition arguments
 	local Args = Strg:match('%((.+)%)')
 	if Args then 
 		Args = NeP.Locale.Spells(Args) -- Translates the name to the correct locale
@@ -76,14 +86,7 @@ local function ProcessCondition(Strg, Args, Spell)
 	else
 		Args = Spell
 	end
-	Strg = Strg:gsub('%s', '')
-	local unitID, rest = strsplit('.', Strg, 2)
-	local target =  'player' -- default target
-	unitID =  NeP.Engine.FilterUnit(unitID)
-	if unitID and UnitExists(unitID) then
-		target = unitID
-		Strg = rest
-	end
+	-- Process the Condition itself
 	local Condition = DSL.Get(Strg)
 	if Condition then return Condition(target, Args) end
 end

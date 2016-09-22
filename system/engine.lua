@@ -79,7 +79,7 @@ local function checkTarget(target)
 	if not target then
 		target = UnitExists('target') and 'target' or 'player'
 	else
-		target = NeP.Engine.FilterUnit(target)
+		target = NeP.FakeUnits.Filter(target)
 		if not target then return end
 	end
 	-- is it ground?
@@ -311,21 +311,6 @@ function Engine.Parse(cr_table)
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
-end
-
-local fakeUnits = {'tank','lowest','healer','damager'}
-function Engine.FilterUnit(unit)
-	for i=1, #fakeUnits do
-		local token = fakeUnits[i]
-		if unit:find(token) then
-			local arg1, arg2 = unit:match('(.+)%((.+)%)')
-			if arg2 then unit = arg1 end
-			local num = unit:match("%d+") or 1
-			local real_unit = NeP.Healing[token](num, arg2)
-			return real_unit and unit:gsub(token, real_unit)
-		end
-	end
-	return unit
 end
 
 NeP.Timer.Sync("nep_parser", 0.01, function()
