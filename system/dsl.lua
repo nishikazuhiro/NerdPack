@@ -70,7 +70,6 @@ end
 
 local function ProcessCondition(Strg, Spell)
 	-- Process Unit Stuff
-	Strg = Strg:gsub('%s', '')
 	local unitID, rest = strsplit('.', Strg, 2)
 	local target =  'player' -- default target
 	unitID =  NeP.FakeUnits.Filter(unitID)
@@ -86,6 +85,7 @@ local function ProcessCondition(Strg, Spell)
 	else
 		Args = Spell
 	end
+	Strg = Strg:gsub('%s', '')
 	-- Process the Condition itself
 	local Condition = DSL.Get(Strg)
 	if Condition then return Condition(target, Args) end
