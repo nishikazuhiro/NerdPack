@@ -3,8 +3,27 @@ local Units = {}
 
 local Healing = NeP.Healing
 
+function NeP.FakeUnits.Add(Name, Func)
+	if not Units[Name] then
+		Units[Name] = func
+	end
+end
+
+function NeP.FakeUnits.Filter(unit)
+	for token,func in pairs(Units) do
+		if unit:find(token) then
+			local arg1, arg2 = unit:match('(.+)%((.+)%)')
+			if arg2 then unit = arg1 end
+			local num = unit:match("%d+") or 1
+			local real_unit = func(num, arg2)
+			return real_unit and unit:gsub(token, real_unit)
+		end
+	end
+	return unit
+end
+
 -- Lowest
-Units['lowest'] = function(num, role)
+NeP.FakeUnits.Add('lowest', function(num, role)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
@@ -18,10 +37,10 @@ Units['lowest'] = function(num, role)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
-end
+end)
 
 -- healer
-Units['healer'] = function(num)
+NeP.FakeUnits.Add('healer', function(num)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
@@ -39,10 +58,10 @@ Units['healer'] = function(num)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
-end
+end)
 
 -- healer
-Units['damager'] = function(num)
+NeP.FakeUnits.Add('damager', function(num)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
@@ -60,10 +79,10 @@ Units['damager'] = function(num)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
-end
+end)
 
 -- Tank
-Units['tank'] = function(num)
+NeP.FakeUnits.Add('tank', function(num)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
@@ -79,17 +98,4 @@ Units['tank'] = function(num)
 	if tempTable[num] then
 		return tempTable[num].key
 	end
-end
-
-function NeP.FakeUnits.Filter(unit)
-	for token,func in pairs(Units) do
-		if unit:find(token) then
-			local arg1, arg2 = unit:match('(.+)%((.+)%)')
-			if arg2 then unit = arg1 end
-			local num = unit:match("%d+") or 1
-			local real_unit = func(num, arg2)
-			return real_unit and unit:gsub(token, real_unit)
-		end
-	end
-	return unit
-end
+end)
