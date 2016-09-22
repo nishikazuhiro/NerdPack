@@ -144,7 +144,7 @@ end
 local function spellResolve(spell, target, isGroundCast)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
-		spell = GetSpellName(spell)
+		spell = GetSpellInfo(spell)
 		if not spell then return end
 	end
 	-- Make sure we can cast the spell
