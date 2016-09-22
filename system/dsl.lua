@@ -68,7 +68,7 @@ local function Nest(Strg, Spell)
 	return DSL.Parse(Strg, Spell)
 end
 
-local function ProcessCondition(Strg, Args, Spell)
+local function ProcessCondition(Strg, Spell)
 	-- Process Unit Stuff
 	Strg = Strg:gsub('%s', '')
 	local unitID, rest = strsplit('.', Strg, 2)
