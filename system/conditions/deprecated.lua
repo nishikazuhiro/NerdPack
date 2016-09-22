@@ -87,7 +87,7 @@ RegisterConditon("modifier.raid", 'UNIT.ingroup', function()
 	return IsInRaid()
 end)
 
-RegisterConditon("isPlayer", function(target)
+RegisterConditon("isPlayer", 'UNIT.isself', function(target)
 	return UnitIsUnit(target, 'player')
 end)
 
