@@ -8,29 +8,12 @@ local LibBoss = LibStub("LibBossIDs-1.0")
 --------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 ]]
-
-RegisterConditon("modifier.party", function()
-	return IsInGroup()
+RegisterConditon("ingroup", function(target)
+	return UnitInParty(target) or UnitInRaid(target)
 end)
 
-RegisterConditon("modifier.raid", function()
-	return IsInRaid()
-end)
-
-RegisterConditon("party", function(target)
-	return UnitInParty(target)
-end)
-
-RegisterConditon("raid", function(target)
-	return UnitInRaid(target)
-end)
-
-RegisterConditon("modifier.members", function()
+RegisterConditon("group.members", function()
 	return (GetNumGroupMembers() or 0)
-end)
-
-RegisterConditon("modifier.player", function()
-	return UnitIsPlayer("target")
 end)
 
 ------------------------------------------ ANY -------------------------------------------
