@@ -158,7 +158,9 @@ local typesTable = {
 		elseif Strg:find("func=") then
 			Strg = Strg:sub(6);
 			return ExeFunc(Strg)
-		elseif Strg:find('[><=!~]') then
+		elseif Strg:find('[><=~]') then
+			return Comperatores(Strg, Spell)
+		elseif Strg:find('!=') then
 			return Comperatores(Strg, Spell)
 		elseif Strg:find("[%+%-%*%/]") then
 			return StringMath(Strg, Spell)
