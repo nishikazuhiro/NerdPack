@@ -126,6 +126,24 @@ end
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
+	['table'] = function(dsl, spell)
+		local r_Tbl = {[1] = true}
+		for i=1, #dsl do
+			local Strg = dsl[i]
+			if Strg == 'or' then
+				r_Tbl[#r_Tbl+1] = true
+			elseif r_Tbl[#r_Tbl] then
+				local eval = DSL.Parse(Strg, spell)
+				r_Tbl[#r_Tbl] = eval or false
+			end
+		end
+		for i = 1, #r_Tbl do
+			if r_Tbl[i] then
+				return true
+			end
+		end
+		return false
+	end,
 	['string'] = function(Strg, Spell)
 		local pX = Strg:sub(1, 1)
 		if Strg:find('{(.-)}') then

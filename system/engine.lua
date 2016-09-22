@@ -147,6 +147,8 @@ local function spellResolve(spell, target, isGroundCast)
 		spell = GetSpellInfo(spell)
 		if not spell then return end
 	end
+	-- locale spells
+	spell = NeP.Locale.Spells(spell)
 	-- Make sure we can cast the spell
 	local skillType = GetSpellBookItemInfo(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
