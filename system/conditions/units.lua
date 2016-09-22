@@ -91,7 +91,7 @@ RegisterConditon("player", function(target)
 	return UnitIsPlayer(target)
 end)
 
-RegisterConditon("isPlayer", function(target)
+RegisterConditon("isself", function(target)
 	return UnitIsUnit(target, 'player')
 end)
 
