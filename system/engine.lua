@@ -10,7 +10,7 @@ NeP.Engine = {
 
 local Engine = NeP.Engine
 local Core = NeP.Core
-local Debug = Core.Debug
+--local Debug = Core.Debug
 local TA = Core.TA
 local fK = NeP.Interface.fetchKey
 
@@ -218,7 +218,7 @@ local sActions = {
 local sTriggers = {
 	-- Items
 	['#'] = function(spell, target, sI)
-		Debug('Engine', 'Hit #Item')
+		--Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
 		if invItems[item] then
 			local invItem = GetInventorySlotInfo(invItems[item])
@@ -264,34 +264,44 @@ local sTriggers = {
 
 local sTypes = {
 	['table'] = function(spell, conditions)
-		if NeP.DSL.Parse(conditions, spell) then
-			Debug('Engine', 'Hit Table')
-			if Engine.Parse(spell) then return true end
+		if NeP.DSL.Parse(conditions) then
+			--Debug('Engine', 'Hit Table')
+			if Engine.Parse(spell) then
+				return true
+			end
 		end
 	end,
 	['function'] = function(spell, conditions)
-		Debug('Engine', 'Hit Function')
-		if NeP.DSL.Parse(conditions, spell) then
-			if spell() then return true end
+		--Debug('Engine', 'Hit Function')
+		if NeP.DSL.Parse(conditions) then
+			if spell() then
+				return true
+			end
 		end
 	end,
 	['string'] = function(spell, conditions, target, sI)
-		Debug('Engine', 'Hit String')
+		--Debug('Engine', 'Hit String')
 		local target, isGroundCast = checkTarget(target)
 		local pX = spell:sub(1, 1)
-		if target and sTriggers[pX] and NeP.DSL.Parse(conditions, spell) then
-			if Engine.ForceTarget then target = Engine.ForceTarget end
-			if sTriggers[pX](spell, target, sI) then
-				return true
-			end
-		elseif target then
-			Debug('Engine', 'Hit Regular')
-			local spell = spellResolve(spell, target, isGroundCast)
-			if spell and NeP.DSL.Parse(conditions, spell) then
-				if Engine.ForceTarget then target = Engine.ForceTarget end
-				if sI then SpellStopCasting() end
-				Cast(spell, target, isGroundCast)
-				return true
+		if target then
+			if sTriggers[pX] and NeP.DSL.Parse(conditions) then
+				if Engine.ForceTarget then
+					target = Engine.ForceTarget
+				end
+				if sTriggers[pX](spell, target, sI) then
+					return true
+				end
+			else
+				--Debug('Engine', 'Hit Regular')
+				local spell = spellResolve(spell, target, isGroundCast)
+				if spell and NeP.DSL.Parse(conditions, spell) then
+					if Engine.ForceTarget then
+						target = Engine.ForceTarget
+					end
+					if sI then SpellStopCasting() end
+					Cast(spell, target, isGroundCast)
+					return true
+				end
 			end
 		end
 	end,
@@ -305,8 +315,9 @@ function Engine.Parse(cr_table)
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
 			local tP = type(spell)
-			if sTypes[tP] and sTypes[tP](spell, conditions, target, sI) then
-				return true
+			if sTypes[tP] then
+				local result = sTypes[tP](spell, conditions, target, sI)
+				if result then return true end
 			end
 		end
 	end
