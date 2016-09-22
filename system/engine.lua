@@ -180,10 +180,10 @@ local sActions = {
 		end
 	end,
 	['taunt'] = function(_, target, sI, args)
-		local spell = spellResolve(args, Obj.key)
 		if not spell then return end
 		for i=1,#NeP.OM['unitEnemie'] do
 			local Obj = NeP.OM['unitEnemie'][i]
+			local spell = spellResolve(args, Obj.key)
 			local Threat = UnitThreatSituation("player", Obj.key)
 			if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
 				Cast(spell, Obj.key)
