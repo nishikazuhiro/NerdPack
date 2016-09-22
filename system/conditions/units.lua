@@ -336,21 +336,14 @@ end)
 
 ------------------------------------------ OM CRAP ---------------------------------------
 ------------------------------------------------------------------------------------------
-RegisterConditon("modifier.enemies", function()
-	return #NeP.OM['unitEnemie']
-end)
-
 RegisterConditon("area.enemies", function(unit, distance)
 	local total = 0
-	local distance = tonumber(distance)
-	if UnitExists(unit) then
-		for i=1, #NeP.OM['unitEnemie'] do
-			local Obj = NeP.OM['unitEnemie'][i]
-			if UnitExists(Obj.key) and not UnitIsDeadOrGhost(Obj.key)
-			and (UnitAffectingCombat(Obj.key) or isDummy(Obj.key))
-			and (NeP.Engine.Distance(unit, Obj.key) <= distance) then
-				total = total +1
-			end
+	if not UnitExists(unit) then return total end
+	for i=1, #NeP.OM['unitEnemie'] do
+		local Obj = NeP.OM['unitEnemie'][i]
+		if UnitExists(Obj.key) and (UnitAffectingCombat(Obj.key) or isDummy(Obj.key))
+		and NeP.Engine.Distance(unit, Obj.key) <= tonumber(distance) then
+			total = total +1
 		end
 	end
 	return total
@@ -358,14 +351,11 @@ end)
 
 RegisterConditon("area.friendly", function(unit, distance)
 	local total = 0
-	local distance = tonumber(distance)
-	if UnitExists(unit) then
-		for i=1, #NeP.OM['unitFriend'] do
-			local Obj = NeP.OM['unitFriend'][i]
-			if UnitExists(Obj.key) and not UnitIsDeadOrGhost(Obj.key)
-			and NeP.Engine.Distance(unit, Obj.key) <= distance then
-				total = total +1
-			end
+	if not UnitExists(unit) then return total end
+	for i=1, #NeP.Healing.Units do
+		local Obj = NeP.Healing.Units[i]
+		if UnitExists(Obj.key) and NeP.Engine.Distance(unit, Obj.key) <= tonumber(distance) then
+			total = total +1
 		end
 	end
 	return total

@@ -90,3 +90,7 @@ end)
 RegisterConditon("isPlayer", function(target)
 	return UnitIsUnit(target, 'player')
 end)
+
+RegisterConditon("modifier.enemies", 'UNIT.area(DISTANCE).enemies', function()
+	return #NeP.OM['unitEnemie']
+end)
