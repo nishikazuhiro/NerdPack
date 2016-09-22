@@ -91,13 +91,6 @@ local function ProcessCondition(Strg, Spell)
 	if Condition then return Condition(target, Args) end
 end
 
-local function ProcessString(Strg, Spell)
-	if Strg:find('%a') then
-		return ProcessCondition(Strg, Spell)
-	end
-	return Strg:gsub('%s', '')
-end
-
 local fOps = {['!='] = '~=',['='] = '=='}
 local function Comperatores(Strg, Spell)
 	local OP = ''
@@ -123,6 +116,16 @@ local function ExeFunc(Strg)
 	return _G[Strg](Args)
 end
 
+local function RemoveSpaces(Strg)
+	if Strg:find('^%s') then
+		Strg = Strg:sub(2);
+	end
+	if Strg:find('$%s') then
+		Strg = Strg:sub(-2);
+	end
+	return Strg
+end
+
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
@@ -145,6 +148,7 @@ local typesTable = {
 		return false
 	end,
 	['string'] = function(Strg, Spell)
+		Strg = RemoveSpaces(Strg)
 		local pX = Strg:sub(1, 1)
 		if Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
@@ -166,8 +170,10 @@ local typesTable = {
 			return StringMath(Strg, Spell)
 		elseif OPs[Strg] then
 			return OPs[Strg](Strg, Spell)
+		elseif Strg:find('%a') then
+			return ProcessCondition(Strg, Spell)
 		else
-			return ProcessString(Strg, Spell)
+			return Strg
 		end
 	end,
 	['nil'] = function(dsl, Spell) return true end,
