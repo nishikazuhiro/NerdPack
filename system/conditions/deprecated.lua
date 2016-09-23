@@ -62,3 +62,35 @@ end)
 RegisterConditon("modifier.lalt", "keybind(lalt)", function(target, spell)
 	return NeP.DSL.Get("keybind")(nil, "lalt")
 end)
+
+RegisterConditon("modifier.player", 'UNIT.isPlayer', function()
+	return UnitIsPlayer("target")
+end)
+
+RegisterConditon("modifier.members", "group.members", function()
+	return (GetNumGroupMembers() or 0)
+end)
+
+RegisterConditon("party", 'UNIT.ingroup', function(target)
+	return UnitInParty(target)
+end)
+
+RegisterConditon("raid", 'UNIT.ingroup', function(target)
+	return UnitInRaid(target)
+end)
+
+RegisterConditon("modifier.party", 'UNIT.ingroup', function()
+	return IsInGroup()
+end)
+
+RegisterConditon("modifier.raid", 'UNIT.ingroup', function()
+	return IsInRaid()
+end)
+
+RegisterConditon("isPlayer", 'UNIT.isself', function(target)
+	return UnitIsUnit(target, 'player')
+end)
+
+RegisterConditon("modifier.enemies", 'UNIT.area(DISTANCE).enemies', function()
+	return #NeP.OM['unitEnemie']
+end)

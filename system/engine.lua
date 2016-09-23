@@ -10,7 +10,7 @@ NeP.Engine = {
 
 local Engine = NeP.Engine
 local Core = NeP.Core
-local Debug = Core.Debug
+--local Debug = Core.Debug
 local TA = Core.TA
 local fK = NeP.Interface.fetchKey
 
@@ -79,7 +79,7 @@ local function checkTarget(target)
 	if not target then
 		target = UnitExists('target') and 'target' or 'player'
 	else
-		target = NeP.Engine.FilterUnit(target)
+		target = NeP.FakeUnits.Filter(target)
 		if not target then return end
 	end
 	-- is it ground?
@@ -144,9 +144,11 @@ end
 local function spellResolve(spell, target, isGroundCast)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
-		spell = GetSpellName(spell)
+		spell = GetSpellInfo(spell)
 		if not spell then return end
 	end
+	-- locale spells
+	spell = NeP.Locale.Spells(spell)
 	-- Make sure we can cast the spell
 	local skillType = GetSpellBookItemInfo(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
@@ -178,10 +180,10 @@ local sActions = {
 		end
 	end,
 	['taunt'] = function(_, target, sI, args)
-		local spell = spellResolve(args, Obj.key)
 		if not spell then return end
 		for i=1,#NeP.OM['unitEnemie'] do
 			local Obj = NeP.OM['unitEnemie'][i]
+			local spell = spellResolve(args, Obj.key)
 			local Threat = UnitThreatSituation("player", Obj.key)
 			if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
 				Cast(spell, Obj.key)
@@ -216,7 +218,7 @@ local sActions = {
 local sTriggers = {
 	-- Items
 	['#'] = function(spell, target, sI)
-		Debug('Engine', 'Hit #Item')
+		--Debug('Engine', 'Hit #Item')
 		local item = string.sub(spell, 2);
 		if invItems[item] then
 			local invItem = GetInventorySlotInfo(invItems[item])
@@ -262,34 +264,44 @@ local sTriggers = {
 
 local sTypes = {
 	['table'] = function(spell, conditions)
-		if NeP.DSL.Parse(conditions, spell) then
-			Debug('Engine', 'Hit Table')
-			if Engine.Parse(spell) then return true end
+		if NeP.DSL.Parse(conditions) then
+			--Debug('Engine', 'Hit Table')
+			if Engine.Parse(spell) then
+				return true
+			end
 		end
 	end,
 	['function'] = function(spell, conditions)
-		Debug('Engine', 'Hit Function')
-		if NeP.DSL.Parse(conditions, spell) then
-			if spell() then return true end
+		--Debug('Engine', 'Hit Function')
+		if NeP.DSL.Parse(conditions) then
+			if spell() then
+				return true
+			end
 		end
 	end,
 	['string'] = function(spell, conditions, target, sI)
-		Debug('Engine', 'Hit String')
+		--Debug('Engine', 'Hit String')
 		local target, isGroundCast = checkTarget(target)
 		local pX = spell:sub(1, 1)
-		if target and sTriggers[pX] and NeP.DSL.Parse(conditions, spell) then
-			if Engine.ForceTarget then target = Engine.ForceTarget end
-			if sTriggers[pX](spell, target, sI) then
-				return true
-			end
-		elseif target then
-			Debug('Engine', 'Hit Regular')
-			local spell = spellResolve(spell, target, isGroundCast)
-			if spell and NeP.DSL.Parse(conditions, spell) then
-				if Engine.ForceTarget then target = Engine.ForceTarget end
-				if sI then SpellStopCasting() end
-				Cast(spell, target, isGroundCast)
-				return true
+		if target then
+			if sTriggers[pX] and NeP.DSL.Parse(conditions) then
+				if Engine.ForceTarget then
+					target = Engine.ForceTarget
+				end
+				if sTriggers[pX](spell, target, sI) then
+					return true
+				end
+			else
+				--Debug('Engine', 'Hit Regular')
+				local spell = spellResolve(spell, target, isGroundCast)
+				if spell and NeP.DSL.Parse(conditions, spell) then
+					if Engine.ForceTarget then
+						target = Engine.ForceTarget
+					end
+					if sI then SpellStopCasting() end
+					Cast(spell, target, isGroundCast)
+					return true
+				end
 			end
 		end
 	end,
@@ -303,29 +315,15 @@ function Engine.Parse(cr_table)
 		local Iterate, spell, sI = canIterate(spell)
 		if Iterate then
 			local tP = type(spell)
-			if sTypes[tP] and sTypes[tP](spell, conditions, target, sI) then
-				return true
+			if sTypes[tP] then
+				local result = sTypes[tP](spell, conditions, target, sI)
+				if result then return true end
 			end
 		end
 	end
 	-- Reset States
 	Engine.isGroundSpell = false
 	Engine.ForceTarget = nil
-end
-
-local fakeUnits = {'tank','lowest','healer','damager'}
-function Engine.FilterUnit(unit)
-	for i=1, #fakeUnits do
-		local token = fakeUnits[i]
-		if unit:find(token) then
-			local arg1, arg2 = unit:match('(.+)%((.+)%)')
-			if arg2 then unit = arg1 end
-			local num = unit:match("%d+") or 1
-			local real_unit = NeP.Healing[token](num, arg2)
-			return real_unit and unit:gsub(token, real_unit)
-		end
-	end
-	return unit
 end
 
 NeP.Timer.Sync("nep_parser", 0.01, function()
