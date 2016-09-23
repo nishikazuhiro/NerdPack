@@ -81,10 +81,9 @@ function NeP.CombatTracker.TimeToDie(unit)
 end
 
 NeP.DSL.RegisterConditon("incdmg", function(target, args)
-	local args = args or 1
 	if target and UnitExists(target) then
 		local pDMG = NeP.CombatTracker.getDMG(target)
-		return pDMG * (tonumber(args)/1000)
+		return pDMG * tonumber(args or 1)
 	end
 	return 0
 end)
