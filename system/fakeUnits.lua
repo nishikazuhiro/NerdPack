@@ -5,7 +5,7 @@ local Healing = NeP.Healing
 
 function NeP.FakeUnits.Add(Name, Func)
 	if not Units[Name] then
-		Units[Name] = func
+		Units[Name] = Func
 	end
 end
 
