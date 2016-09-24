@@ -98,7 +98,7 @@ NeP.FakeUnits.Add('ldebuff', function(num, debuff)
 end)
 
 -- Lowest without debuff
-NeP.FakeUnits.Add('ldebuff', function(num, debuff)
+NeP.FakeUnits.Add('lndebuff', function(num, debuff)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
