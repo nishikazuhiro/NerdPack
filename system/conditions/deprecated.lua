@@ -94,3 +94,35 @@ end)
 RegisterConditon("modifier.enemies", 'UNIT.area(DISTANCE).enemies', function()
 	return #NeP.OM['unitEnemie']
 end)
+
+NeP.library.register('coreHealing', {
+
+	lowestDebuff = function(debuff, health)
+		for i=1, #Healing.Units do
+			local Obj = Healing.Units[i]
+			if Obj.health <= health then
+				local debuff,_,_,caster = NeP.APIs['UnitDebuff'](Obj.key, debuff, "any")
+				if not debuff then
+					NeP.Engine.ForceTarget = Obj.key
+					return true
+				end
+			end
+		end
+		return false
+	end,
+
+	lowestBuff = function(buff, health)
+		for i=1, #Healing.Units do
+			local Obj = Healing.Units[i]
+			if Obj.health <= health then
+				local buff,_,_,caster = NeP.APIs['UnitBuff'](Obj.key, buff, "any")
+				if not buff then
+					NeP.Engine.ForceTarget = Obj.key
+					return true
+				end
+			end
+		end
+		return false
+	end
+
+})

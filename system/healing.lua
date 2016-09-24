@@ -44,42 +44,6 @@ C_Timer.NewTicker(0.25, (function()
 	table.sort(NeP.Healing.Units, function(a,b) return a.health < b.health end)
 end), nil)
 
-NeP.library.register('coreHealing', {
-
-	needsHealing = function(percent, count)
-		NeP.Core.Print('@coreHealing.needsHealing has been removed, tell the CR author to replace it with AoEHeal.')
-	end,
-
-	lowestDebuff = function(debuff, health)
-		for i=1, #Healing.Units do
-			local Obj = Healing.Units[i]
-			if Obj.health <= health then
-				local debuff,_,_,caster = NeP.APIs['UnitDebuff'](Obj.key, debuff, "any")
-				if not debuff then
-					NeP.Engine.ForceTarget = Obj.key
-					return true
-				end
-			end
-		end
-		return false
-	end,
-
-	lowestBuff = function(buff, health)
-		for i=1, #Healing.Units do
-			local Obj = Healing.Units[i]
-			if Obj.health <= health then
-				local buff,_,_,caster = NeP.APIs['UnitBuff'](Obj.key, buff, "any")
-				if not buff then
-					NeP.Engine.ForceTarget = Obj.key
-					return true
-				end
-			end
-		end
-		return false
-	end
-
-})
-
 --[[ CONDITIONS ]]
 NeP.DSL.RegisterConditon('AoEHeal', function(target, args)
 	local target, args = target, args
