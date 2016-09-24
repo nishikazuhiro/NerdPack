@@ -267,9 +267,9 @@ RegisterConditon('swimming', function ()
 	return IsSwimming()
 end)
 
-RegisterConditon("lastcast", function(spell, arg)
-	if arg then spell = arg end
-	return NeP.Engine.lastCast == GetSpellName(spell)
+RegisterConditon("lastcast", function(Unit, Spell)
+	local lastcast = NeP.CombatTracker.LastCast(Unit)
+	return lastcast == GetSpellInfo(Spell)
 end)
 
 RegisterConditon("mounted", function()
