@@ -67,6 +67,7 @@
 	<Script file="system\conditions\deprecated.lua" />
 	<Script file="system\combatTracker.lua" />
 	<Script file="system\engine.lua" />
+	<Script file="system\EngineActions.lua" />
 	<Script file="system\combatRoutines.lua" />
 	<Script file="system\listeners.lua" />
 	<Script file="system\helpers.lua" />

@@ -14,38 +14,7 @@ local Core = NeP.Core
 local TA = Core.TA
 local fK = NeP.Interface.fetchKey
 
-local invItems = {
-	['head']		= 'HeadSlot',
-	['helm']		= 'HeadSlot',
-	['neck']		= 'NeckSlot',
-	['shoulder']	= 'ShoulderSlot',
-	['shirt']		= 'ShirtSlot',
-	['chest']		= 'ChestSlot',
-	['belt']		= 'WaistSlot',
-	['waist']		= 'WaistSlot',
-	['legs']		= 'LegsSlot',
-	['pants']		= 'LegsSlot',
-	['feet']		= 'FeetSlot',
-	['boots']		= 'FeetSlot',
-	['wrist']		= 'WristSlot',
-	['bracers']		= 'WristSlot',
-	['gloves']		= 'HandsSlot',
-	['hands']		= 'HandsSlot',
-	['finger1']		= 'Finger0Slot',
-	['finger2']		= 'Finger1Slot',
-	['trinket1']	= 'Trinket0Slot',
-	['trinket2']	= 'Trinket1Slot',
-	['back']		= 'BackSlot',
-	['cloak']		= 'BackSlot',
-	['mainhand']	= 'MainHandSlot',
-	['offhand']		= 'SecondaryHandSlot',
-	['weapon']		= 'MainHandSlot',
-	['weapon1']		= 'MainHandSlot',
-	['weapon2']		= 'SecondaryHandSlot',
-	['ranged']		= 'RangedSlot'
-}
-
-local function insertToLog(whatIs, spell, target)
+function Engine.insertToLog(whatIs, spell, target)
 	local targetName = UnitName(target or 'player')
 	local name, icon
 	if whatIs == 'Spell' then
@@ -70,11 +39,15 @@ local function Cast(spell, target, isGroundCast)
 		Engine.Cast(spell, target)
 	end
 	Engine.lastCast = spell
-	insertToLog('Spell', spell, target)
+	Engine.insertToLog('Spell', spell, target)
 end
 
 local function checkTarget(target)
 	local isGroundCast = false
+	-- FORCED
+	if Engine.ForceTarget then
+		target = Engine.ForceTarget
+	end
 	-- none defined (decide one)
 	if not target then
 		target = UnitExists('target') and 'target' or 'player'
@@ -143,7 +116,50 @@ local function canIterate(spell)
 	return Iterate, spell, sI
 end
 
-local function spellResolve(spell, target, isGroundCast)
+function Engine.FUNCTION(spell, conditions)
+	local result = NeP.DSL.Parse(conditions) and spell()
+	if result then return true end
+end
+
+function Engine.TABLE(spell, conditions)
+	local result = NeP.DSL.Parse(conditions) and Engine.Parse(spell)
+	if result then return true end
+end
+
+function Engine.STRING(spell, conditions, target, sI)
+	local pX = spell:sub(1, 1)
+	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
+		local result = Engine.Actions[pX](spell, target, sI)
+		if result then return true end
+	end
+	local target, isGroundCast = checkTarget(target)
+	if target then
+		local spell = Engine.spellResolve(spell, target, isGroundCast)
+		if spell and NeP.DSL.Parse(conditions, spell) then
+			if sI then SpellStopCasting() end
+			Cast(spell, target, isGroundCast)
+			return true
+		end
+	end
+end
+
+function Engine.Parse(cr_table)
+	for i=1, #cr_table do
+		local table = cr_table[i]
+		local spell, conditions, target = table[1], table[2], table[3]
+		local Iterate, spell, sI = canIterate(spell)
+		local tP = type(spell):upper()
+		if Iterate and Engine[tP] then
+			local result = Engine[tP](spell, conditions, target, sI)
+			if result then return true end
+		end
+	end
+	-- Reset States
+	Engine.isGroundSpell = false
+	Engine.ForceTarget = nil
+end
+
+function Engine.spellResolve(spell, target, isGroundCast)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
 		spell = GetSpellInfo(spell)
@@ -163,167 +179,6 @@ local function spellResolve(spell, target, isGroundCast)
 			end
 		end
 	end
-end
-
-local sActions = {
-	-- Dispell all
-	['dispelall'] = function(_, target, sI, args)
-		for i=1,#NeP.Healing.Units do
-			local Obj = NeP.Healing.Units[i]
-			local dispellType = NeP.Dispells.CanDispellUnit(unit)
-			if dispellType then
-				local spell = NeP.Dispells.GetSpell(dispellType)
-				if spell then
-					if sI then SpellStopCasting() end
-					Cast(spell, Obj.key)
-					return true
-				end
-			end
-		end
-	end,
-	['taunt'] = function(_, target, sI, args)
-		if not spell then return end
-		for i=1,#NeP.OM['unitEnemie'] do
-			local Obj = NeP.OM['unitEnemie'][i]
-			local spell = spellResolve(args, Obj.key)
-			local Threat = UnitThreatSituation("player", Obj.key)
-			if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
-				Cast(spell, Obj.key)
-				return true
-			end
-		end
-	end,
-	-- dots all units
-	['adots'] = function(_, target, sI, args)
-		--FIXME: TODO
-	end,
-	-- Ress all dead
-	['ressdead'] = function(_, target, sI, args)
-		for i=1,#NeP.OM['DeadUnits'] do
-			local Obj = NeP.OM['DeadUnits'][i]
-			local spell = spellResolve(args, Obj.key)
-			if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
-			and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
-				if sI then SpellStopCasting() end
-				Cast(spell, Obj.key)
-				return true
-			end
-		end
-	end,
-	-- Pause
-	['pause'] = function(spell, target, sI, args)
-		if sI then SpellStopCasting() end
-		return true
-	end
-}
-
-local sTriggers = {
-	-- Items
-	['#'] = function(spell, target, sI)
-		--Debug('Engine', 'Hit #Item')
-		local item = string.sub(spell, 2);
-		if invItems[item] then
-			local invItem = GetInventorySlotInfo(invItems[item])
-			item = GetInventoryItemID("player", invItem)
-		else item = GetItemID(item) end
-		if item and GetItemSpell(item) then
-			local isUsable, notEnoughMana = IsUsableItem(item)
-			if isUsable then
-				local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-				if itemStart == 0 and GetItemCount(item) > 0 then
-					if sI then SpellStopCasting() end
-					Engine.UseItem(GetItemInfo(item), target)
-					insertToLog('Item', item, target)
-					return true
-				end
-			end
-		end
-	end,
-	-- Lib
-	['@'] = function(spell, target, sI)
-		if sI then SpellStopCasting() end
-		local lib = spell:sub(2);
-		local result = NeP.library.parse(false, lib, target)
-		if result then return result end
-	end,
-	-- Macro
-	['/'] = function(spell, target, sI)
-		if sI then SpellStopCasting() end
-		Engine.Macro(spell)
-		return true
-	end,
-	-- These are special actions
-	['%'] = function(spell, target, sI)
-		local action = spell:lower():sub(2)
-		local arg1, arg2 = action:match('(.+)%((.+)%)')
-		if arg2 then action = arg1 end
-		if sActions[action] then
-			local result = sActions[action](spell, target, sI, arg2)
-			if result then return result end
-		end
-	end
-}
-
-local sTypes = {
-	['table'] = function(spell, conditions)
-		if NeP.DSL.Parse(conditions) then
-			--Debug('Engine', 'Hit Table')
-			if Engine.Parse(spell) then
-				return true
-			end
-		end
-	end,
-	['function'] = function(spell, conditions)
-		--Debug('Engine', 'Hit Function')
-		if NeP.DSL.Parse(conditions) then
-			if spell() then
-				return true
-			end
-		end
-	end,
-	['string'] = function(spell, conditions, target, sI)
-		--Debug('Engine', 'Hit String')
-		local target, isGroundCast = checkTarget(target)
-		local pX = spell:sub(1, 1)
-		if target then
-			if sTriggers[pX] and NeP.DSL.Parse(conditions) then
-				if Engine.ForceTarget then
-					target = Engine.ForceTarget
-				end
-				if sTriggers[pX](spell, target, sI) then
-					return true
-				end
-			else
-				--Debug('Engine', 'Hit Regular')
-				local spell = spellResolve(spell, target, isGroundCast)
-				if spell and NeP.DSL.Parse(conditions, spell) then
-					if Engine.ForceTarget then
-						target = Engine.ForceTarget
-					end
-					if sI then SpellStopCasting() end
-					Cast(spell, target, isGroundCast)
-					return true
-				end
-			end
-		end
-	end,
-}
-
--- This iterates the routine table itself.
-function Engine.Parse(cr_table)
-	for i=1, #cr_table do
-		local table = cr_table[i]
-		local spell, conditions, target = table[1], table[2], table[3]
-		local tP = type(spell)
-		local Iterate, spell, sI = canIterate(spell)
-		if Iterate and sTypes[tP] then
-			local result = sTypes[tP](spell, conditions, target, sI)
-			if result then return true end
-		end
-	end
-	-- Reset States
-	Engine.isGroundSpell = false
-	Engine.ForceTarget = nil
 end
 
 NeP.Timer.Sync("nep_parser", 0.01, function()
