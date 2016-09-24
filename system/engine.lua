@@ -102,7 +102,7 @@ function Engine.STRING(spell, conditions, target, bypass)
 	local pX = spell:sub(1, 1)
 	local target, isGroundCast = checkTarget(target)
 	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
-		spell:lower():sub(2)
+		spell = spell:lower():sub(2)
 		local result = Engine.Actions[pX](spell, target, sI)
 		if result then return true end
 	elseif target and (castingTime('player') == 0 or bypass) then
