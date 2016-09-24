@@ -83,10 +83,15 @@ function Engine.STRING(spell, conditions, target, bypass)
 		local result = Engine.Actions[pX](spell, target, sI)
 		if result then return true end
 	elseif target and ((castingTime('player') == 0) or bypass) then
-		local spell = Engine.spellResolve(spell, target, isGroundCast)
-		if spell and NeP.DSL.Parse(conditions, spell) then
-			Cast(spell, target, isGroundCast)
-			return true
+		local spell = Engine.spellResolve(spell)
+		if spell and NeP.Helpers.SpellSanity(spell, target)
+		and NeP.DSL.Parse(conditions, spell) then
+			if not ( UnitCanAttack('player', target)
+			and not IsHarmfulSpell(spell))
+			or isGroundCast then
+				Cast(spell, target, isGroundCast)
+				return true
+			end
 		end
 	end
 end
@@ -106,7 +111,7 @@ function Engine.Parse(cr_table)
 	Engine.ForceTarget = nil
 end
 
-function Engine.spellResolve(spell, target, isGroundCast)
+function Engine.spellResolve(spell)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
 		spell = GetSpellInfo(spell)
@@ -117,13 +122,11 @@ function Engine.spellResolve(spell, target, isGroundCast)
 	-- Make sure we can cast the spell
 	local skillType = GetSpellBookItemInfo(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
-	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana and NeP.Helpers.SpellSanity(spell, target) then
-		if not (IsHarmfulSpell(spell) and not UnitCanAttack('player', target)) or isGroundCast then
-			local _, GCD = GetSpellCooldown(61304)
-			if (GetSpellCooldown(spell) <= GCD) then
-				Engine.Current_Spell = spell
-				return spell
-			end
+	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
+		local _, GCD = GetSpellCooldown(61304)
+		if (GetSpellCooldown(spell) <= GCD) then
+			Engine.Current_Spell = spell
+			return spell
 		end
 	end
 end
