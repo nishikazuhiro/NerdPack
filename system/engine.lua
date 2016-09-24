@@ -1,5 +1,4 @@
 NeP.Engine = {
-	Run = false,
 	ForceTarget = nil,
 	lastTarget = nil,
 	lastCast = nil,
