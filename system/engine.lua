@@ -27,7 +27,11 @@ local function checkTarget(target)
 	local isGroundCast = false
 	-- none defined (decide one)
 	if not target then
-		target = UnitExists('target') and 'target' or 'player'
+		if UnitExists('target') then
+			target = 'target'
+		else
+			target = 'player'
+		end
 	else
 		target = NeP.FakeUnits.Filter(target)
 		if not target then return end
@@ -78,20 +82,18 @@ end
 function Engine.STRING(spell, conditions, target, bypass)
 	local pX = spell:sub(1, 1)
 	local target, isGroundCast = checkTarget(target)
-	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
-		spell = spell:lower():sub(2)
-		local result = Engine.Actions[pX](spell, target, sI)
-		if result then return true end
+	if Engine.Actions[pX] then
+		if NeP.DSL.Parse(conditions) then
+			spell = spell:lower():sub(2)
+			local result = Engine.Actions[pX](spell, target, sI)
+			if result then return true end
+		end
 	elseif target and ((castingTime('player') == 0) or bypass) then
 		local spell = Engine.spellResolve(spell)
 		if spell and NeP.Helpers.SpellSanity(spell, target)
 		and NeP.DSL.Parse(conditions, spell) then
-			if not ( UnitCanAttack('player', target)
-			and not IsHarmfulSpell(spell))
-			or isGroundCast then
-				Cast(spell, target, isGroundCast)
-				return true
-			end
+			Cast(spell, target, isGroundCast)
+			return true
 		end
 	end
 end
@@ -124,7 +126,7 @@ function Engine.spellResolve(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
 	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
 		local _, GCD = GetSpellCooldown(61304)
-		if (GetSpellCooldown(spell) <= GCD) then
+		if GetSpellCooldown(spell) <= GCD then
 			Engine.Current_Spell = spell
 			return spell
 		end
