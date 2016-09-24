@@ -108,7 +108,9 @@ end
 local function IsMountedCheck()
 	for i = 1, 40 do
 		local mountID = select(11, UnitBuff('player', i))
-		if mountID and NeP.ByPassMounts(mountID) then return true end
+		if mountID and NeP.ByPassMounts(mountID) then
+			return true
+		end
 	end
 	return not IsMounted()
 end

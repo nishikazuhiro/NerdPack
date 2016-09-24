@@ -5,7 +5,7 @@ local ByPassMounts = {
 
 function NeP.ByPassMounts(ID)
 	for i=1, #ByPassMounts do
-		if tonumber(mountID) == ByPassMounts[i] then
+		if tonumber(ID) == ByPassMounts[i] then
 			return true
 		end
 	end
