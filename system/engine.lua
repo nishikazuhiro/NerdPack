@@ -8,7 +8,6 @@ NeP.Engine = {
 }
 
 local Engine = NeP.Engine
-local Core = NeP.Core
 
 local function Cast(spell, target, isGroundCast)
 	-- FORCED TARGET
@@ -159,7 +158,8 @@ NeP.Timer.Sync("nep_parser", 0.01, function()
 				Engine.Parse(table)
 			end
 		else
-			Core.Message(Core.TA('Engine', 'NoCR'))
+			local MSG = NeP.Core.TA('Engine', 'NoCR')
+			NeP.Core.Message(MSG)
 		end
 	end
 end, 3)
