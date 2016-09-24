@@ -134,10 +134,6 @@ RegisterConditon('form', function(target, spell)
 	return GetShapeshiftForm()
 end)
 
-RegisterConditon('combopoints', function(target)
-	return GetComboPoints('player', 'target')
-end)
-
 RegisterConditon('lunarpower', function(target, spell)
     return UnitPower(target, SPELL_POWER_LUNAR_POWER)
 end)
@@ -186,9 +182,16 @@ RegisterConditon('pain', function(target, spell)
 	return UnitPower(target, SPELL_POWER_PAIN)
 end)
 
---------------------------------------------------- MAGE ----------------------------------------------
+--------------------------------------------------- MAGE -----------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 
 RegisterConditon('arcanecharges', function(target, spell)
 	return UnitPower(target, SPELL_POWER_ARCANE_CHARGES)
+end)
+
+--------------------------------------------------- ROGUE ----------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+RegisterConditon('combopoints', function(target, spell)
+	return UnitPower(target, SPELL_POWER_COMBO_POINTS)
 end)
