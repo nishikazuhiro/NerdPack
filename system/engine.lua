@@ -312,13 +312,11 @@ function Engine.Parse(cr_table)
 	for i=1, #cr_table do
 		local table = cr_table[i]
 		local spell, conditions, target = table[1], table[2], table[3]
+		local tP = type(spell)
 		local Iterate, spell, sI = canIterate(spell)
-		if Iterate then
-			local tP = type(spell)
-			if sTypes[tP] then
-				local result = sTypes[tP](spell, conditions, target, sI)
-				if result then return true end
-			end
+		if Iterate and sTypes[tP] then
+			local result = sTypes[tP](spell, conditions, target, sI)
+			if result then return true end
 		end
 	end
 	-- Reset States
