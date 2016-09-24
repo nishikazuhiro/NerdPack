@@ -46,7 +46,7 @@ NeP.FakeUnits.Add('lowest', function(num, role)
 	end
 end)
 
--- LowestBuff
+-- Lowest with Buff
 NeP.FakeUnits.Add('lbuff', function(num, buff)
 	local tempTable = {}
 	for i=1, #Healing.Units do
@@ -63,12 +63,46 @@ NeP.FakeUnits.Add('lbuff', function(num, buff)
 	end
 end)
 
--- LowestBuff
+-- Lowest without debuff
+NeP.FakeUnits.Add('lnbuff', function(num, buff)
+	local tempTable = {}
+	for i=1, #Healing.Units do
+		local Obj = Healing.Units[i]
+		if not NeP.DSL.Get('buff')(Obj.key, buff) then
+			tempTable[#tempTable+1] = {
+				key = Obj.key,
+				prio = prio
+			}
+		end
+	end
+	if tempTable[num] then
+		return tempTable[num].key
+	end
+end)
+
+-- Lowest with debuff
 NeP.FakeUnits.Add('ldebuff', function(num, debuff)
 	local tempTable = {}
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
 		if NeP.DSL.Get('debuff')(Obj.key, debuff) then
+			tempTable[#tempTable+1] = {
+				key = Obj.key,
+				prio = prio
+			}
+		end
+	end
+	if tempTable[num] then
+		return tempTable[num].key
+	end
+end)
+
+-- Lowest without debuff
+NeP.FakeUnits.Add('ldebuff', function(num, debuff)
+	local tempTable = {}
+	for i=1, #Healing.Units do
+		local Obj = Healing.Units[i]
+		if not NeP.DSL.Get('debuff')(Obj.key, debuff) then
 			tempTable[#tempTable+1] = {
 				key = Obj.key,
 				prio = prio
