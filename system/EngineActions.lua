@@ -2,7 +2,7 @@ NeP.Engine.Actions = {}
 local Actions = NeP.Engine.Actions
 
 -- Dispell all
-Actions['dispelall'] = function(_, target, args)
+Actions['dispelall'] = function(_, _, args)
 	for i=1,#NeP.Healing.Units do
 		local Obj = NeP.Healing.Units[i]
 		local dispellType = NeP.Dispells.CanDispellUnit(unit)
@@ -17,7 +17,7 @@ Actions['dispelall'] = function(_, target, args)
 end
 
 -- Automated tauting
-Actions['taunt'] = function(_, target, args)
+Actions['taunt'] = function(_, _, args)
 	local spell = NeP.Engine.spellResolve(args)
 	for i=1,#NeP.OMActions['unitEnemie'] do
 		local Obj = NeP.OMActions['unitEnemie'][i]
@@ -35,7 +35,7 @@ Actions['adots'] = function()
 end
 
 -- Ress all dead
-Actions['ressdead'] = function(_, target, args)
+Actions['ressdead'] = function(_, _, args)
 	local spell = NeP.Engine.spellResolve(args)
 	for i=1,#NeP.OMActions['DeadUnits'] do
 		local Obj = NeP.OMActions['DeadUnits'][i]
@@ -105,7 +105,7 @@ Actions['#'] = function(item, target)
 end
 
 -- Lib
-Actions['@'] = function(spell, target)
+Actions['@'] = function(lib, target)
 	local result = NeP.library.parse(false, lib, target)
 	if result then return result end
 end
@@ -117,7 +117,7 @@ Actions['/'] = function(spell, target)
 end
 
 -- These are special Actions
-Actions['%'] = function(spell, target)
+Actions['%'] = function(action, target)
 	local arg1, arg2 = action:match('(.+)%((.+)%)')
 	if arg2 then action = arg1 end
 	local result = Actions[action] and Actions[action](spell, target, arg2)
