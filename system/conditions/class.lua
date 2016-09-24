@@ -57,7 +57,7 @@ end)
 RegisterConditon('runes', function(target, rune)
 	local count = 0
 	local next = 0
-	for i=1, 6 do
+	for i = 1, 6 do
 		local start, duration, runeReady = GetRuneCooldown(i)
 		if runeReady then
 			count = count + 1
@@ -65,7 +65,7 @@ RegisterConditon('runes', function(target, rune)
 			next = duration
 		end
 	end
-	if next > 0 then count = count + (next/10) end
+	if next > 0 then count = count + (next / 10) end
 	return count
 end)
 
@@ -109,14 +109,6 @@ end)
 --------------------------------------------------- WARLOCK --------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 
-RegisterConditon('demonicfury', function(target, spell)
-	return UnitPower(target, SPELL_POWER_DEMONIC_FURY)
-end)
-
-RegisterConditon('embers', function(target, spell)
-	return UnitPower(target, SPELL_POWER_BURNING_EMBERS, true)
-end)
-
 RegisterConditon('soulshards', function(target, spell)
 	return UnitPower(target, SPELL_POWER_SOUL_SHARDS)
 end)
@@ -142,8 +134,8 @@ RegisterConditon('form', function(target, spell)
 	return GetShapeshiftForm()
 end)
 
-RegisterConditon('combopoints', function(target)
-	return GetComboPoints('player', 'target')
+RegisterConditon('lunarpower', function(target, spell)
+    return UnitPower(target, SPELL_POWER_LUNAR_POWER)
 end)
 
 RegisterConditon('mushrooms', function()
@@ -190,9 +182,16 @@ RegisterConditon('pain', function(target, spell)
 	return UnitPower(target, SPELL_POWER_PAIN)
 end)
 
---------------------------------------------------- MAGE ----------------------------------------------
+--------------------------------------------------- MAGE -----------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 
 RegisterConditon('arcanecharges', function(target, spell)
 	return UnitPower(target, SPELL_POWER_ARCANE_CHARGES)
+end)
+
+--------------------------------------------------- ROGUE ----------------------------------------------------
+--------------------------------------------------------------------------------------------------------------
+
+RegisterConditon('combopoints', function(target, spell)
+	return UnitPower(target, SPELL_POWER_COMBO_POINTS)
 end)
