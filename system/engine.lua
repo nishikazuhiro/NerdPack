@@ -74,9 +74,14 @@ function Engine.FUNCTION(spell, conditions)
 	if result then return true end
 end
 
-function Engine.TABLE(spell, conditions)
-	local result = NeP.DSL.Parse(conditions) and Engine.Parse(spell)
-	if result then return true end
+function Engine.TABLE(nest)
+	for i=1, #nest do
+		local spell, conditions, target = unpack(nest[i])
+		if NeP.DSL.Parse(conditions) then
+			local result = Engine.Parse(spell, conditions, target)
+			if result then return true end
+		end
+	end
 end
 
 function Engine.STRING(spell, conditions, target, bypass)
@@ -98,15 +103,11 @@ function Engine.STRING(spell, conditions, target, bypass)
 	end
 end
 
-function Engine.Parse(cr_table)
-	for i=1, #cr_table do
-		local table = cr_table[i]
-		local spell, conditions, target = table[1], table[2], table[3]
-		if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
-			local tP = type(spell):upper()
-			local result = Engine[tP] and Engine[tP](spell, conditions, target)
-			if result then return true end
-		end
+function Engine.Parse(spell, conditions, target)
+	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
+		local tP = type(spell):upper()
+		local result = Engine[tP] and Engine[tP](spell, conditions, target)
+		if result then return true end
 	end
 	-- Reset States
 	Engine.isGroundSpell = false
