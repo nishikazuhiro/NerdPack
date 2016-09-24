@@ -127,11 +127,11 @@ end
 
 Actions['!'] = function(spell, target)
 	SpellStopCasting()
-	Engine.STRING(spell, nil, target, true)
-	return true
+	local result = Engine.STRING(spell, nil, target, true)
+	if result then return result end
 end
 			-- Cast this along with current cast
 Actions['&'] = function(spell, target)
-	Engine.STRING(spell, nil, target, true)
-	return true
+	local result = Engine.STRING(spell, nil, target, true)
+	if result then return result end
 end
