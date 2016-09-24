@@ -189,4 +189,6 @@ RegisterConditon('UI', function(_, key)
 	return NeP.Interface.fetchKey(SelectedCR, key)
 end)
 
+RegisterConditon('haste', function(unit)
+	return UnitSpellHaste(unit)
 end)
