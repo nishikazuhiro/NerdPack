@@ -94,7 +94,8 @@ end
 local fOps = {['!='] = '~=',['='] = '=='}
 local function Comperatores(Strg, Spell)
 	local OP = ''
-	for Token in Strg:gmatch('[><=!~]') do OP = OP..Token end
+	for Token in Strg:gmatch('[><=~]') do OP = OP..Token end
+	if Strg:find('!=') then OP = '!=' end
 	local arg1, arg2 = unpack(NeP.string_split(Strg, OP))
 	arg1, arg2 = DSL.Parse(arg1, Spell), DSL.Parse(arg2, Spell)
 	return DoMath(arg1, arg2, (fOps[OP] or OP))
