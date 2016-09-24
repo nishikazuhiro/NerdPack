@@ -2,14 +2,13 @@ NeP.Engine.Actions = {}
 local Actions = NeP.Engine.Actions
 
 -- Dispell all
-Actions['dispelall'] = function(_, target, sI, args)
+Actions['dispelall'] = function(_, target, args)
 	for i=1,#NeP.Healing.Units do
 		local Obj = NeP.Healing.Units[i]
 		local dispellType = NeP.Dispells.CanDispellUnit(unit)
 		if dispellType then
 			local spell = NeP.Dispells.GetSpell(dispellType)
 			if spell then
-				if sI then SpellStopCasting() end
 				Cast(spell, Obj.key)
 				return true
 			end
@@ -18,7 +17,7 @@ Actions['dispelall'] = function(_, target, sI, args)
 end
 
 -- Automated tauting
-Actions['taunt'] = function(_, target, sI, args)
+Actions['taunt'] = function(_, target, args)
 	if not spell then return end
 	for i=1,#NeP.OMActions['unitEnemie'] do
 		local Obj = NeP.OMActions['unitEnemie'][i]
@@ -32,18 +31,17 @@ Actions['taunt'] = function(_, target, sI, args)
 end
 
 -- dots all units
-Actions['adots'] = function(_, target, sI, args)
+Actions['adots'] = function()
 	--FIXME: TODO
 end
 
 -- Ress all dead
-Actions['ressdead'] = function(_, target, sI, args)
+Actions['ressdead'] = function(_, target, args)
 	for i=1,#NeP.OMActions['DeadUnits'] do
 		local Obj = NeP.OMActions['DeadUnits'][i]
 		local spell = NeP.Engine.spellResolve(args, Obj.key)
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 		and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
-			if sI then SpellStopCasting() end
 			Cast(spell, Obj.key)
 			return true
 		end
@@ -51,8 +49,7 @@ Actions['ressdead'] = function(_, target, sI, args)
 end
 
 -- Pause
-Actions['pause'] = function(spell, target, sI, args)
-	if sI then SpellStopCasting() end
+Actions['pause'] = function()
 	return true
 end
 
@@ -88,8 +85,7 @@ local invItems = {
 }
 
 -- Items
-Actions['#'] = function(spell, target, sI)
-	local item = string.sub(spell, 2);
+Actions['#'] = function(item, target)
 	if invItems[item] then
 		local invItem = GetInventorySlotInfo(invItems[item])
 		item = GetInventoryItemID("player", invItem)
@@ -101,7 +97,6 @@ Actions['#'] = function(spell, target, sI)
 		if isUsable then
 			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 			if itemStart == 0 and GetItemCount(item) > 0 then
-				if sI then SpellStopCasting() end
 				Engine.UseItem(GetItemInfo(item), target)
 				Engine.insertToLog('Item', item, target)
 				return true
@@ -111,25 +106,32 @@ Actions['#'] = function(spell, target, sI)
 end
 
 -- Lib
-Actions['@'] = function(spell, target, sI)
-	if sI then SpellStopCasting() end
-	local lib = spell:sub(2);
+Actions['@'] = function(spell, target)
 	local result = NeP.library.parse(false, lib, target)
 	if result then return result end
 end
 
 -- Macro
-Actions['/'] = function(spell, target, sI)
-	if sI then SpellStopCasting() end
+Actions['/'] = function(spell, target)
 	Engine.Macro(spell)
 	return true
 end
 
 -- These are special Actions
-Actions['%'] = function(spell, target, sI)
-	local action = spell:lower():sub(2)
+Actions['%'] = function(spell, target)
 	local arg1, arg2 = action:match('(.+)%((.+)%)')
 	if arg2 then action = arg1 end
-	local result = Actions[action] and Actions[action](spell, target, sI, arg2)
+	local result = Actions[action] and Actions[action](spell, target, arg2)
 	if result then return result end
+end
+
+Actions['!'] = function(spell, target)
+	SpellStopCasting()
+	Engine.STRING(spell, nil, target, true)
+	return true
+end
+			-- Cast this along with current cast
+Actions['&'] = function(spell, target)
+	Engine.STRING(spell, nil, target, true)
+	return true
 end

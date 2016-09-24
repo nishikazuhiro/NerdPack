@@ -33,6 +33,10 @@ function Engine.insertToLog(whatIs, spell, target)
 end
 
 local function Cast(spell, target, isGroundCast)
+	-- FORCED TARGET
+	if Engine.ForceTarget then
+		target = Engine.ForceTarget
+	end
 	if isGroundCast then
 		Engine.CastGround(spell, target)
 	else
@@ -44,10 +48,6 @@ end
 
 local function checkTarget(target)
 	local isGroundCast = false
-	-- FORCED
-	if Engine.ForceTarget then
-		target = Engine.ForceTarget
-	end
 	-- none defined (decide one)
 	if not target then
 		target = UnitExists('target') and 'target' or 'player'
@@ -88,34 +88,6 @@ local function IsMountedCheck()
 	return not IsMounted()
 end
 
-local function canIterate(spell)
-	local Iterate, spell, sI = false, spell, false
-	local sType = type(spell)
-	-- If not Dead and not mounted
-	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
-		local castingTime = castingTime('player')
-		if castingTime == 0 or sType == 'table' then
-			Iterate = true
-		end
-		if sType == 'string' then
-			local pX = spell:sub(1, 1)
-			-- Interrupts current cast and cast this instead
-			if pX == '!' then
-				spell = spell:sub(2);
-				if spell ~= Engine.lastCast and castingTime >= 0.5 then
-					sI = true
-					Iterate = true
-				end
-			-- Cast this along with current cast
-			elseif pX == '&' then
-				spell = spell:sub(2);
-				Iterate = true
-			end
-		end
-	end
-	return Iterate, spell, sI
-end
-
 function Engine.FUNCTION(spell, conditions)
 	local result = NeP.DSL.Parse(conditions) and spell()
 	if result then return true end
@@ -126,17 +98,16 @@ function Engine.TABLE(spell, conditions)
 	if result then return true end
 end
 
-function Engine.STRING(spell, conditions, target, sI)
+function Engine.STRING(spell, conditions, target, bypass)
 	local pX = spell:sub(1, 1)
+	local target, isGroundCast = checkTarget(target)
 	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
+		spell:lower():sub(2)
 		local result = Engine.Actions[pX](spell, target, sI)
 		if result then return true end
-	end
-	local target, isGroundCast = checkTarget(target)
-	if target then
+	elseif target and (castingTime('player') == 0 or bypass) then
 		local spell = Engine.spellResolve(spell, target, isGroundCast)
 		if spell and NeP.DSL.Parse(conditions, spell) then
-			if sI then SpellStopCasting() end
 			Cast(spell, target, isGroundCast)
 			return true
 		end
@@ -147,10 +118,9 @@ function Engine.Parse(cr_table)
 	for i=1, #cr_table do
 		local table = cr_table[i]
 		local spell, conditions, target = table[1], table[2], table[3]
-		local Iterate, spell, sI = canIterate(spell)
-		local tP = type(spell):upper()
-		if Iterate and Engine[tP] then
-			local result = Engine[tP](spell, conditions, target, sI)
+		if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
+			local tP = type(spell):upper()
+			local result = Engine[tP] and Engine[tP](spell, conditions, target)
 			if result then return true end
 		end
 	end
