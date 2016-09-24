@@ -10,27 +10,6 @@ NeP.Engine = {
 
 local Engine = NeP.Engine
 local Core = NeP.Core
---local Debug = Core.Debug
-local TA = Core.TA
-local fK = NeP.Interface.fetchKey
-
-function Engine.insertToLog(whatIs, spell, target)
-	local targetName = UnitName(target or 'player')
-	local name, icon
-	if whatIs == 'Spell' then
-		local spellIndex, spellBook = GetSpellBookIndex(spell)
-		if spellBook then
-			local spellID = select(2, GetSpellBookItemInfo(spellIndex, spellBook))
-			name, _, icon = GetSpellInfo(spellIndex, spellBook)
-		else
-			name, _, icon = GetSpellInfo(spellIndex)
-		end
-	elseif whatIs == 'Item' then
-		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
-	end
-	NeP.Interface.UpdateToggleIcon('mastertoggle', icon)
-	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
-end
 
 local function Cast(spell, target, isGroundCast)
 	-- FORCED TARGET
@@ -151,6 +130,25 @@ function Engine.spellResolve(spell, target, isGroundCast)
 	end
 end
 
+function Engine.insertToLog(whatIs, spell, target)
+	local targetName = UnitName(target or 'player')
+	local name, icon
+	if whatIs == 'Spell' then
+		local spellIndex, spellBook = GetSpellBookIndex(spell)
+		if spellBook then
+			local spellID = select(2, GetSpellBookItemInfo(spellIndex, spellBook))
+			name, _, icon = GetSpellInfo(spellIndex, spellBook)
+		else
+			name, _, icon = GetSpellInfo(spellIndex)
+		end
+	elseif whatIs == 'Item' then
+		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
+	end
+	NeP.Interface.UpdateToggleIcon('mastertoggle', icon)
+	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
+end
+
+
 NeP.Timer.Sync("nep_parser", 0.01, function()
 	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
 	if Running then
@@ -162,7 +160,7 @@ NeP.Timer.Sync("nep_parser", 0.01, function()
 				Engine.Parse(table)
 			end
 		else
-			Core.Message(TA('Engine', 'NoCR'))
+			Core.Message(Core.TA('Engine', 'NoCR'))
 		end
 	end
 end, 3)
