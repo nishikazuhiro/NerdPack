@@ -74,10 +74,10 @@ function Engine.FUNCTION(spell, conditions)
 	if result then return true end
 end
 
-function Engine.TABLE(nest)
-	for i=1, #nest do
-		local spell, conditions, target = unpack(nest[i])
-		if NeP.DSL.Parse(conditions) then
+function Engine.TABLE(nest, conditions)
+	if NeP.DSL.Parse(conditions) then
+		for i=1, #nest do
+			local spell, conditions, target = unpack(nest[i])
 			local result = Engine.Parse(spell, conditions, target)
 			if result then return true end
 		end
