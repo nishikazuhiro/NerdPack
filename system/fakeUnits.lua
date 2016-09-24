@@ -1,7 +1,14 @@
 NeP.FakeUnits = {}
 local Units = {}
-
 local Healing = NeP.Healing
+
+local Roles = {
+	['TANK'] = 2,
+	['HEALER'] = 1.5,
+	['DAMAGER'] = 1,
+	['NONE'] = 1	 
+}
+
 
 function NeP.FakeUnits.Add(Name, Func)
 	if not Units[Name] then
