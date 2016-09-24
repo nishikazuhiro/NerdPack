@@ -112,7 +112,7 @@ RegisterConditon('spell.charges', function(_, spell)
 	return charges or 0
 end)
 
-RegisterConditon('spell.count', function(target, spell)
+RegisterConditon('spell.count', function(_, spell)
 	return select(1, GetSpellCount(spell))
 end)
 
@@ -120,6 +120,10 @@ RegisterConditon('spell.range', function(target, spell)
 	local spellIndex, spellBook = GetSpellBookIndex(spell)
 	if not spellIndex then return false end
 	return spellIndex and IsSpellInRange(spellIndex, spellBook, target)
+end)
+
+RegisterConditon('spell.casttime', function(_, spell)
+	return spell and select(4, GetSpellInfo(spell))
 end)
 
 RegisterConditon('combat.time', function(target)
@@ -183,4 +187,6 @@ end)
 RegisterConditon('UI', function(_, key)
 	local SelectedCR = NeP.Interface.GetSelectedCR().Name
 	return NeP.Interface.fetchKey(SelectedCR, key)
+end)
+
 end)
