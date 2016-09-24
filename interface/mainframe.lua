@@ -149,7 +149,7 @@ local DropMenu = {}
 local DropMenu_Add = {
 	{ text = "Extra Settings:", notCheckable = 1, hasArrow = true, menuList = Intf.Extras },
 	{ text = TA('mainframe', 'OM'), notCheckable = 1, func = function() NeP.OM.List:Show() end },
-	{ text = TA('mainframe', 'AL'), notCheckable = 1, func = function() PE_ActionLog:Show() end },
+	{ text = TA('mainframe', 'AL'), notCheckable = 1, func = function() NeP_AL:Show() end },
 	{ text = TA('mainframe', 'Forum'), notCheckable = 1, func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end},
 	{ text = TA('mainframe', 'Donate'), notCheckable = 1, func = function() OpenPage('http://goo.gl/yrctPO') end },
 	{ text = TA('mainframe', 'HideNeP'), notCheckable = 1, func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end },
