@@ -123,7 +123,9 @@ RegisterConditon('spell.range', function(target, spell)
 end)
 
 RegisterConditon('spell.casttime', function(_, spell)
-	return spell and select(4, GetSpellInfo(spell))
+	local CastTime = select(4, GetSpellInfo(spell)) / 1000
+	if CastTime then return CastTime end
+	return 0
 end)
 
 RegisterConditon('combat.time', function(target)
