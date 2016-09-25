@@ -116,18 +116,20 @@ function NeP.OM.addToOM(Obj)
 	local ObjID = tonumber(ObjID) or '0'
 	if not BlacklistedObject(ObjID) and not BlacklistedDebuffs(Obj) then
 		local distance = NeP.Engine.Distance('player', Obj)
-		-- Dead Units
-		if UnitIsDeadOrGhost(Obj) then
-			InsertToOM('DeadUnits', Obj, GUID, ObjID)
-		-- Friendly
-		elseif UnitIsFriend('player', Obj) then
-			InsertToOM('unitFriend', Obj, GUID, ObjID)
-		-- Enemie
-		elseif UnitCanAttack('player', Obj) then
-			InsertToOM('unitEnemie', Obj, GUID, ObjID)
-		-- Object
-		elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
-			InsertToOM('GameObjects', Obj, GUID, ObjID)
+		if distance < NeP.Interface.fetchKey('NePSettings', 'OM_MaxDis', 100) then
+			-- Dead Units
+			if UnitIsDeadOrGhost(Obj) then
+				InsertToOM('DeadUnits', Obj, GUID, ObjID)
+			-- Friendly
+			elseif UnitIsFriend('player', Obj) then
+				InsertToOM('unitFriend', Obj, GUID, ObjID)
+			-- Enemie
+			elseif UnitCanAttack('player', Obj) then
+				InsertToOM('unitEnemie', Obj, GUID, ObjID)
+			-- Object
+			elseif ObjectWithIndex and ObjectIsType(Obj, ObjectTypes.GameObject) then
+				InsertToOM('GameObjects', Obj, GUID, ObjID)
+			end
 		end
 	end
 end

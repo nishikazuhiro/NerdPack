@@ -159,21 +159,15 @@ function NeP.Engine.FaceRoll()
 		-- Mouseover
 		if UnitExists('mouseover') then
 			local object = 'mouseover'
-			local ObjDistance = NeP.Engine.Distance('player', object)
 			if GenericFilter(object) then
-				if ObjDistance <= 100 then
-					NeP.OM.addToOM(object)
-				end
+				NeP.OM.addToOM(object)
 			end
 		end
 		-- Target Cache
 		if UnitExists('target') then
 			local object = 'target'
-			local ObjDistance = NeP.Engine.Distance('player', object)
 			if GenericFilter(object) then
-				if ObjDistance <= 100 then
-					NeP.OM.addToOM(object)
-				end
+				NeP.OM.addToOM(object)
 			end
 		end
 		-- If in Group scan frames...
@@ -182,19 +176,13 @@ function NeP.Engine.FaceRoll()
 			for i = 1, GetNumGroupMembers() do
 				-- Enemie
 				local target = prefix..i..'target'
-				local ObjDistance = NeP.Engine.Distance('player', target)
 				if GenericFilter(target) then
-					if ObjDistance <= 100 then
-						NeP.OM.addToOM(target)
-					end
+					NeP.OM.addToOM(target)
 				end
 				-- Friendly
 				local friendly = prefix..i
-				local ObjDistance = NeP.Engine.Distance('player', friendly)
 				if GenericFilter(friendly) then
-					if ObjDistance <= 100 then
-						NeP.OM.addToOM(friendly)
-					end
+					NeP.OM.addToOM(friendly)
 				end
 			end
 		end
