@@ -9,14 +9,7 @@ local config = {
 	config = {
 		{type = 'header', text = 'Visual Settings:', align = 'center'},
 		{type = 'spinner', text = 'Toggle Size', key = 'tSize', default = 40, min = 25, max = 100},
-		{type = 'button', text = 'Apply', callback = function()
-				-- Update size
-				local NeP_Size = NeP.Interface.fetchKey('NePSettings', 'tSize', 40)
-				if NeP_Size < 25 then NeP_Size = 40 end
-				NeP.Interface.buttonSize = NeP_Size
-				NeP.Interface.RefreshToggles()
-			end,
-		width = 220, height = 20},
+		{type = 'button', text = 'Apply', callback = function() NeP.Interface.RefreshToggles() end, width = 220, height = 20},
 
 		{type = 'spacer'},{ type = 'rule' },
 		{type = 'header', text = 'ObjectManager Settings:', align = 'center'},

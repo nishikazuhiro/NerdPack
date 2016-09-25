@@ -126,10 +126,6 @@ NeP.Config.WhenLoaded(function()
 		NePFrame.NePfDrag:Show()
 		Config.Write('NePranOnce', true)
 	end
-	-- Update size
-	local NeP_Size = F('NePSettings', 'tSize', 40)
-	if NeP_Size < 25 then NeP_Size = 40 end
-	Intf.buttonSize = NeP_Size
 	-- Read Saved Frame Position
 	local POS_1 = Config.Read('NePFrame_POS_1', 'CENTER')
 	local POS_2 = Config.Read('NePFrame_POS_2', 0)
