@@ -121,12 +121,10 @@ NeP.FakeUnits.Add('healer', function(num)
 		local Obj = Healing.Units[i]
 		if Obj.role == 'HEALER' then
 			local prio = Roles[Obj.role] * UnitManaMax(Obj.key)
-			if not UnitIsUnit('player', Obj.key) then
-				tempTable[#tempTable+1] = {
-					key = Obj.key,
-					prio = prio
-				}
-			end
+			tempTable[#tempTable+1] = {
+				key = Obj.key,
+				prio = prio
+			}
 		end
 	end
 	table.sort(tempTable, function(a,b) return a.prio > b.prio end)
@@ -142,12 +140,10 @@ NeP.FakeUnits.Add('damager', function(num)
 		local Obj = Healing.Units[i]
 		if Obj.role == 'DAMAGER' then
 			local prio = Roles[Obj.role] * UnitHealthMax(Obj.key)
-			if not UnitIsUnit('player', Obj.key) then
-				tempTable[#tempTable+1] = {
-					key = Obj.key,
-					prio = prio
-				}
-			end
+			tempTable[#tempTable+1] = {
+				key = Obj.key,
+				prio = prio
+			}
 		end
 	end
 	table.sort(tempTable, function(a,b) return a.prio > b.prio end)
