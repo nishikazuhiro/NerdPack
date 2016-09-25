@@ -19,8 +19,8 @@ end
 -- Automated tauting
 Actions['taunt'] = function(_, _, args)
 	local spell = NeP.Engine.spellResolve(args)
-	for i=1,#NeP.OMActions['unitEnemie'] do
-		local Obj = NeP.OMActions['unitEnemie'][i]
+	for i=1,#NeP.OM['unitEnemie'] do
+		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
 		if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
 			Cast(spell, Obj.key)
@@ -37,8 +37,8 @@ end
 -- Ress all dead
 Actions['ressdead'] = function(_, _, args)
 	local spell = NeP.Engine.spellResolve(args)
-	for i=1,#NeP.OMActions['DeadUnits'] do
-		local Obj = NeP.OMActions['DeadUnits'][i]
+	for i=1,#NeP.OM['DeadUnits'] do
+		local Obj = NeP.OM['DeadUnits'][i]
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 		and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
 			Cast(spell, Obj.key)
