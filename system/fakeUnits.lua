@@ -123,7 +123,7 @@ NeP.FakeUnits.Add('healer', function(num)
 			--local prio = Roles[Obj.role] * UnitManaMax(Obj.key)
 			tempTable[#tempTable+1] = {
 				key = Obj.key,
-				prio = prio
+				prio = Obj.prio
 			}
 		end
 	end
@@ -141,7 +141,7 @@ NeP.FakeUnits.Add('damager', function(num)
 		if Obj.role == 'DAMAGER' then
 			tempTable[#tempTable+1] = {
 				key = Obj.key,
-				prio = prio
+				prio = Obj.prio
 			}
 		end
 	end
