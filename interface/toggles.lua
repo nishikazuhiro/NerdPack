@@ -1,9 +1,15 @@
 local TA = NeP.Core.TA
 local Intf = NeP.Interface
 local Config = NeP.Config
+local usedButtons = {}
 
-Intf.Buttons = {}
-Intf.usedButtons = {}
+local E, _L, V, P, G
+if IsAddOnLoaded("ElvUI") then
+	E, _L, V, P, G = unpack(ElvUI)
+	ElvSkin = E:GetModule('ActionBars')
+	Intf.buttonPadding = 2
+	Intf.buttonSize = 32
+end
 
 local function defaultToggles()
 	NeP.Interface.CreateToggle('MasterToggle',
@@ -24,25 +30,13 @@ local function defaultToggles()
 	NeP.Interface.CreateToggle('AoE', 'Interface\\ICONS\\Ability_Druid_Starfall.png', 'AoE', TA('mainframe', 'AoE'))
 end
 
-NeP.Config.WhenLoaded(function()
-	defaultToggles()
-end)
-
-local E, _L, V, P, G
-if IsAddOnLoaded("ElvUI") then
-	E, _L, V, P, G = unpack(ElvUI)
-	ElvSkin = E:GetModule('ActionBars')
-	Intf.buttonPadding = 2
-	Intf.buttonSize = 32
-end
-
 local function createButtons(key, icon, name, tooltip, func)
-	if Intf.usedButtons[key] ~= nil then
-		Intf.usedButtons[key]:Show()
+	if usedButtons[key] ~= nil then
+		usedButtons[key]:Show()
 	else
 		local pos = (Intf.buttonSize*#Intf.Buttons)+(#Intf.Buttons*Intf.buttonPadding)-(Intf.buttonSize+Intf.buttonPadding)
-		Intf.usedButtons[key] = CreateFrame("CheckButton", key, NePFrame, 'ActionButtonTemplate')
-		local temp = Intf.usedButtons[key]
+		usedButtons[key] = CreateFrame("CheckButton", key, NePFrame, 'ActionButtonTemplate')
+		local temp = usedButtons[key]
 		temp:SetPoint("TOPLEFT", NePFrame, pos, 0)
 		temp:SetSize(Intf.buttonSize, Intf.buttonSize)
 		temp:SetFrameLevel(1)
@@ -90,8 +84,11 @@ function NeP.Interface.toggleToggle(key, state)
 end
 
 function NeP.Interface.RefreshToggles()
-	for k,v in pairs(Intf.usedButtons) do
-		Intf.usedButtons[k]:SetSize(Intf.buttonSize, Intf.buttonSize)
+	for k,v in pairs(usedButtons) do
+		local temp = usedButtons[k]
+		temp:SetSize(Intf.buttonSize, Intf.buttonSize)
+		temp.actv = Config.Read('bStates_'..k, false)
+		temp:SetChecked(temp.actv)
 	end
 	for k,v in pairs(Intf.Buttons) do
 		createButtons( v.key, v.icon, v.name, v.tooltip, v.func )
@@ -101,8 +98,8 @@ function NeP.Interface.RefreshToggles()
 end
 
 function NeP.Interface.ResetToggles()
-	for k,v in pairs(Intf.usedButtons) do
-		Intf.usedButtons[k]:Hide()
+	for k,v in pairs(usedButtons) do
+		usedButtons[k]:Hide()
 	end
 	wipe(Intf.Buttons)
 	defaultToggles()
@@ -130,5 +127,7 @@ function NeP.Interface.CreateToggle(key, icon, name, tooltipz, callback)
 end
 
 function NeP.Interface.UpdateToggleIcon(toggle, icon)
-	if icon then Intf.usedButtons[toggle].texture:SetTexture(icon) end
+	if icon then usedButtons[toggle].texture:SetTexture(icon) end
 end
+
+defaultToggles()
