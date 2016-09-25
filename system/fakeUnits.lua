@@ -120,7 +120,7 @@ NeP.FakeUnits.Add('healer', function(num)
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
 		if Obj.role == 'HEALER' then
-			local prio = Roles[Obj.role] * UnitManaMax(Obj.key)
+			--local prio = Roles[Obj.role] * UnitManaMax(Obj.key)
 			tempTable[#tempTable+1] = {
 				key = Obj.key,
 				prio = prio
@@ -139,7 +139,7 @@ NeP.FakeUnits.Add('damager', function(num)
 	for i=1, #Healing.Units do
 		local Obj = Healing.Units[i]
 		if Obj.role == 'DAMAGER' then
-			local prio = Roles[Obj.role] * UnitHealthMax(Obj.key)
+			local prio = Roles[Obj.role] * Obj.health
 			tempTable[#tempTable+1] = {
 				key = Obj.key,
 				prio = prio
