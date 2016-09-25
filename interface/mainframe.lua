@@ -8,10 +8,7 @@ local F = NeP.Interface.fetchKey
 local TA = NeP.Core.TA
 
 Intf.Extras = {}
-Intf.buttonSize = 40
-Intf.buttonPadding = 2
 Intf.ClassSettings = nil
-Intf.Buttons = {}
 
 local function hasAnyTalent()
 	for row=1, 7 do
@@ -93,13 +90,11 @@ NePFrame:SetMovable(true)
 NePFrame:SetFrameLevel(0)
 NePFrame:SetFrameStrata('HIGH')
 NePFrame:SetClampedToScreen(true)
-NePFrame:SetSize(#Intf.Buttons*Intf.buttonSize, Intf.buttonSize)
 
 NePFrame.menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NePFrame, "UIDropDownMenuTemplate")
 NePFrame.menuFrame:Hide();
 
 NePFrame.NePfDrag = CreateFrame("Frame", 'MOVENEP', NePFrame)
-NePFrame.NePfDrag:SetPoint('Right', NePFrame)
 NePFrame.NePfDrag:SetFrameLevel(2)
 NePFrame.NePfDrag:EnableMouse(true)
 local statusText = NePFrame.NePfDrag:CreateFontString('PE_StatusText')
@@ -111,7 +106,6 @@ statusText:SetText("|cffffffff"..TA('mainframe', 'WhileDrag').."|r")
 local texture = NePFrame.NePfDrag:CreateTexture()
 texture:SetAllPoints(NePFrame.NePfDrag)
 texture:SetColorTexture(0,0,0,0.9)
-NePFrame.NePfDrag:SetSize((#Intf.Buttons-1)*Intf.buttonSize+(Intf.buttonPadding*#Intf.Buttons), Intf.buttonSize)
 NePFrame.NePfDrag:RegisterForDrag('LeftButton', 'RightButton')
 NePFrame.NePfDrag:SetScript('OnDragStart', function() NePFrame:StartMoving() end)
 NePFrame.NePfDrag:SetScript('OnDragStop', function(self)
@@ -136,7 +130,6 @@ NeP.Config.WhenLoaded(function()
 	local NeP_Size = F('NePSettings', 'tSize', 40)
 	if NeP_Size < 25 then NeP_Size = 40 end
 	Intf.buttonSize = NeP_Size
-	NePFrame:SetSize(#Intf.Buttons*Intf.buttonSize, Intf.buttonSize)
 	-- Read Saved Frame Position
 	local POS_1 = Config.Read('NePFrame_POS_1', 'CENTER')
 	local POS_2 = Config.Read('NePFrame_POS_2', 0)
@@ -154,7 +147,7 @@ local DropMenu_Add = {
 	{ text = TA('mainframe', 'Forum'), notCheckable = 1, func = function() OpenPage('http://nerdpackaddon.site/index.php/forum/index') end},
 	{ text = TA('mainframe', 'Donate'), notCheckable = 1, func = function() OpenPage('http://goo.gl/yrctPO') end },
 	{ text = TA('mainframe', 'HideNeP'), notCheckable = 1, func = function() NePFrame:Hide(); NeP.Core.Print(TA('Any', 'NeP_Show')) end },
-	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, func = function() NeP.Interface.ShowGUI('NeP_Settings') end },
+	{ text = addonColor..NeP.Info.Name..' |r'..TA('mainframe', 'Settings'), notCheckable = 1, func = function() NeP.Interface.ShowGUI('NePSettings') end },
 }
 
 function Intf.CreateDropMenu()

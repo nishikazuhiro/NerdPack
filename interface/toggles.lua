@@ -3,6 +3,10 @@ local Intf = NeP.Interface
 local Config = NeP.Config
 local usedButtons = {}
 
+Intf.Buttons = {}
+Intf.buttonSize = 40
+Intf.buttonPadding = 2
+
 local E, _L, V, P, G
 if IsAddOnLoaded("ElvUI") then
 	E, _L, V, P, G = unpack(ElvUI)
@@ -31,9 +35,7 @@ local function defaultToggles()
 end
 
 local function createButtons(key, icon, name, tooltip, func)
-	if usedButtons[key] ~= nil then
-		usedButtons[key]:Show()
-	else
+	if not usedButtons[key] then
 		local pos = (Intf.buttonSize*#Intf.Buttons)+(#Intf.Buttons*Intf.buttonPadding)-(Intf.buttonSize+Intf.buttonPadding)
 		usedButtons[key] = CreateFrame("CheckButton", key, NePFrame, 'ActionButtonTemplate')
 		local temp = usedButtons[key]
@@ -84,17 +86,23 @@ function NeP.Interface.toggleToggle(key, state)
 end
 
 function NeP.Interface.RefreshToggles()
-	for k,v in pairs(usedButtons) do
-		local temp = usedButtons[k]
-		temp:SetSize(Intf.buttonSize, Intf.buttonSize)
-		temp.actv = Config.Read('bStates_'..k, false)
-		temp:SetChecked(temp.actv)
+	for i=1, #Intf.Buttons do
+		local bt = Intf.Buttons[i]
+		if usedButtons[bt.key] then
+			local temp = usedButtons[bt.key]
+			local pos = (Intf.buttonSize*i)+(i*Intf.buttonPadding)-(Intf.buttonSize+Intf.buttonPadding)
+			temp:SetPoint("TOPLEFT", NePFrame, pos, 0)
+			temp:SetSize(Intf.buttonSize, Intf.buttonSize)
+			temp.actv = Config.Read('bStates_'..bt.key, false)
+			temp:SetChecked(temp.actv)
+			temp:Show()
+		else
+			createButtons( bt.key, bt.icon, bt.name, bt.tooltip, bt.func )
+		end
 	end
-	for k,v in pairs(Intf.Buttons) do
-		createButtons( v.key, v.icon, v.name, v.tooltip, v.func )
-	end
-	NePFrame:SetSize(#Intf.Buttons*Intf.buttonSize+(Intf.buttonPadding*#Intf.Buttons), Intf.buttonSize)
-	NePFrame.NePfDrag:SetSize((#Intf.Buttons-1)*Intf.buttonSize+(Intf.buttonPadding*#Intf.Buttons), 40)
+	NePFrame:SetSize(#Intf.Buttons*Intf.buttonSize, Intf.buttonSize)
+	NePFrame.NePfDrag:SetSize((#Intf.Buttons-1)*Intf.buttonSize+(Intf.buttonPadding*#Intf.Buttons), Intf.buttonSize+4)
+	NePFrame.NePfDrag:SetPoint('Right', NePFrame, Intf.buttonPadding*#Intf.Buttons, 0)
 end
 
 function NeP.Interface.ResetToggles()
