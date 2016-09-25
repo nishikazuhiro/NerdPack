@@ -91,6 +91,8 @@ function Intf.RefreshToggles()
 	local NeP_Size = F('NePSettings', 'tSize', Intf.buttonSize)
 	if NeP_Size < 25 then NeP_Size = Intf.buttonSize end
 	Intf.buttonSize = NeP_Size
+	--Update Padding
+	Intf.buttonPadding = F('NePSettings', 'tPad', Intf.buttonPadding)
 	-- Iterate Buttons
 	for i=1, #Intf.Buttons do
 		local bt = Intf.Buttons[i]

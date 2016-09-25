@@ -9,6 +9,7 @@ local config = {
 	config = {
 		{type = 'header', text = 'Visual Settings:', align = 'center'},
 		{type = 'spinner', text = 'Toggle Size', key = 'tSize', default = 40, min = 25, max = 100},
+		{type = 'spinner', text = 'Toggle Padding', key = 'tPad', default = 2, max = 20, step = 1},
 		{type = 'button', text = 'Apply', callback = function() NeP.Interface.RefreshToggles() end, width = 220, height = 20},
 
 		{type = 'spacer'},{ type = 'rule' },
