@@ -16,6 +16,7 @@ NeP.library.parse = function(evaluation)
 	if string.sub(evaluation, -1) == ')' then
 		return loadstring('return NeP.library.libs.'..evaluation)()
 	else
-		return loadstring('return NeP.library.libs.' .. evaluation .. '()')()
+		local a, b = strsplit(".", evaluation, 2)
+		return NeP.library.libs[a][b]()
 	end
 end
