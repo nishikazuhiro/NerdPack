@@ -252,3 +252,8 @@ function NeP.Core.OpenPage(URL)
 		NeP.Core.Message('Please Visit:\n'..URL)
 	end
 end
+
+-- FIXME: WIP
+function NeP.Core.Debug(prefix, text)
+	
+end

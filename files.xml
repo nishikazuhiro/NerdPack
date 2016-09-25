@@ -34,7 +34,6 @@
 	<Script file="locale\esMX.lua" />
 
 	<!-- Core Files -->
-	<Script file="interface\debug.lua" />
 	<Script file="system\timer.lua" />
 	<Script file="system\listener.lua" />
 	<Script file="system\config.lua" />
