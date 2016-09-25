@@ -96,8 +96,8 @@ Actions['#'] = function(item, target)
 		if isUsable then
 			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 			if itemStart == 0 and GetItemCount(item) > 0 then
-				Engine.UseItem(GetItemInfo(item), target)
-				Engine.insertToLog('Item', item, target)
+				NeP.Engine.UseItem(GetItemInfo(item), target)
+				NeP.Engine.insertToLog('Item', item, target)
 				return true
 			end
 		end
@@ -112,7 +112,7 @@ end
 
 -- Macro
 Actions['/'] = function(spell, target)
-	Engine.Macro(spell)
+	NeP.Engine.Macro(spell)
 	return true
 end
 
@@ -127,11 +127,11 @@ end
 
 Actions['!'] = function(spell, target)
 	SpellStopCasting()
-	local result = Engine.STRING(spell, nil, target, true)
+	local result = NeP.Engine.STRING(spell, nil, target, true)
 	if result then return result end
 end
 			-- Cast this along with current cast
 Actions['&'] = function(spell, target)
-	local result = Engine.STRING(spell, nil, target, true)
+	local result = NeP.Engine.STRING(spell, nil, target, true)
 	if result then return result end
 end
