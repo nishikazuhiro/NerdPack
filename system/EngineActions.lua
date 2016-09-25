@@ -106,7 +106,7 @@ end
 
 -- Lib
 Actions['@'] = function(lib, target)
-	local result = NeP.library.parse(false, lib, target)
+	local result = NeP.library.parse(lib)
 	if result then return result end
 end
 
@@ -120,6 +120,7 @@ end
 Actions['%'] = function(action, target)
 	local arg1, arg2 = action:match('(.+)%((.+)%)')
 	if arg2 then action = arg1 end
+	action = action:lower()
 	local result = Actions[action] and Actions[action](spell, target, arg2)
 	if result then return result end
 end
