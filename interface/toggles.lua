@@ -2,18 +2,18 @@ local TA = NeP.Core.TA
 local Intf = NeP.Interface
 local Config = NeP.Config
 local F = NeP.Interface.fetchKey
-local usedButtons = {}
 
-Intf.Buttons = {}
-Intf.buttonSize = 40
-Intf.buttonPadding = 2
+local ButtonsSize = 40
+local ButtonsPadding = 2
+local usedButtons = {}
+local Buttons = {}
 
 local E, _L, V, P, G
 if IsAddOnLoaded("ElvUI") then
 	E, _L, V, P, G = unpack(ElvUI)
 	ElvSkin = E:GetModule('ActionBars')
-	Intf.buttonPadding = 2
-	Intf.buttonSize = 32
+	ButtonsPadding = 2
+	ButtonsSize = 32
 end
 
 local function defaultToggles()
@@ -37,11 +37,11 @@ end
 
 local function createButtons(key, icon, name, tooltip, func)
 	if not usedButtons[key] then
-		local pos = (Intf.buttonSize*#Intf.Buttons)+(#Intf.Buttons*Intf.buttonPadding)-(Intf.buttonSize+Intf.buttonPadding)
+		local pos = (ButtonsSize*#Buttons)+(#Buttons*ButtonsPadding)-(ButtonsSize+ButtonsPadding)
 		usedButtons[key] = CreateFrame("CheckButton", key, NePFrame, 'ActionButtonTemplate')
 		local temp = usedButtons[key]
 		temp:SetPoint("TOPLEFT", NePFrame, pos, 0)
-		temp:SetSize(Intf.buttonSize, Intf.buttonSize)
+		temp:SetSize(ButtonsSize, ButtonsSize)
 		temp:SetFrameLevel(1)
 		temp:SetNormalFontObject("GameFontNormal")
 		temp.texture = temp:CreateTexture()
@@ -88,19 +88,19 @@ end
 
 function Intf.RefreshToggles()
 	-- Update size
-	local NeP_Size = F('NePSettings', 'tSize', Intf.buttonSize)
-	if NeP_Size < 25 then NeP_Size = Intf.buttonSize end
-	Intf.buttonSize = NeP_Size
+	local NeP_Size = F('NePSettings', 'tSize', ButtonsSize)
+	if NeP_Size < 25 then NeP_Size = ButtonsSize end
+	ButtonsSize = NeP_Size
 	--Update Padding
-	Intf.buttonPadding = F('NePSettings', 'tPad', Intf.buttonPadding)
+	ButtonsPadding = F('NePSettings', 'tPad', ButtonsPadding)
 	-- Iterate Buttons
-	for i=1, #Intf.Buttons do
-		local bt = Intf.Buttons[i]
+	for i=1, #Buttons do
+		local bt = Buttons[i]
 		if usedButtons[bt.key] then
 			local temp = usedButtons[bt.key]
-			local pos = (Intf.buttonSize*i)+(i*Intf.buttonPadding)-(Intf.buttonSize+Intf.buttonPadding)
+			local pos = (ButtonsSize*i)+(i*ButtonsPadding)-(ButtonsSize+ButtonsPadding)
 			temp:SetPoint("TOPLEFT", NePFrame, pos, 0)
-			temp:SetSize(Intf.buttonSize, Intf.buttonSize)
+			temp:SetSize(ButtonsSize, ButtonsSize)
 			temp.actv = Config.Read('bStates_'..bt.key, false)
 			temp:SetChecked(temp.actv)
 			temp:Show()
@@ -109,16 +109,16 @@ function Intf.RefreshToggles()
 		end
 	end
 	-- Refresh Frame size
-	NePFrame:SetSize(#Intf.Buttons*Intf.buttonSize, Intf.buttonSize)
-	NePFrame.NePfDrag:SetSize((#Intf.Buttons-1)*Intf.buttonSize+(Intf.buttonPadding*#Intf.Buttons), Intf.buttonSize+4)
-	NePFrame.NePfDrag:SetPoint('Right', NePFrame, Intf.buttonPadding*#Intf.Buttons, 0)
+	NePFrame:SetSize(#Buttons*ButtonsSize, ButtonsSize)
+	NePFrame.NePfDrag:SetSize((#Buttons-1)*ButtonsSize+(ButtonsPadding*#Buttons), ButtonsSize+4)
+	NePFrame.NePfDrag:SetPoint('Right', NePFrame, ButtonsPadding*#Buttons, 0)
 end
 
 function Intf.ResetToggles()
 	for k,v in pairs(usedButtons) do
 		usedButtons[k]:Hide()
 	end
-	wipe(Intf.Buttons)
+	wipe(Buttons)
 	defaultToggles()
 end
 
@@ -133,7 +133,7 @@ function Intf.CreateToggle(key, icon, name, tooltipz, callback)
 		end
 		self:SetChecked(self.actv)
 	end
-	table.insert(Intf.Buttons, {
+	table.insert(Buttons, {
 		key = string.lower(key),
 		name = tostring(name),
 		tooltip = tooltipz,
