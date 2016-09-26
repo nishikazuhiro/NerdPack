@@ -2,21 +2,16 @@ NeP.Engine.Actions = {}
 local Actions = NeP.Engine.Actions
 local LibDisp = LibStub('LibDispellable-1.0')
 
-local function FindDispell(Unit)
-	for index, spellID, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff in LibDisp:IterateDispellableAuras(Unit) do
-		local spellName = GetSpellInfo(spellID)
-		return name, spellName, dispelType, count, duration, expires, caster, isStealable
-	end
-end
-
 -- Dispell all
 Actions['dispelall'] = function()
 	for i=1,#NeP.OM['unitFriend'] do
 		local Obj = NeP.OM['unitFriend'][i]
-		local _, spellName, dispelType = FindDispell(Obj.key)
-		if dispelType then
-			NeP.Engine.pCast(spellName, Obj.key, false)
-			return true
+		for _,_, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
+			local spellName = GetSpellInfo(spellID)
+			if dispelType then
+				NeP.Engine.pCast(spellName, Obj.key, false)
+				return true
+			end
 		end
 	end
 end
