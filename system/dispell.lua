@@ -33,7 +33,7 @@ local function SpellIsUsable(spell)
 	if spell and CheckSpell(spell, false)then
 		-- Make sure we can cast the spell
 		local start, duration, enabled = GetSpellCooldown(spell)
-		local _, GCD = GetSpellCooldown(61304)
+		local GCD = NeP.DSL.Get('gcd')()
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if isUsable and (start <= GCD) and not notEnoughMana then
 			return true
