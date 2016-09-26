@@ -126,20 +126,7 @@ function Engine.spellResolve(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
 	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
 		--this GCD works
-		local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3	
-		--[[
-		-- does not work... need debug
-		
-		local class = select(3,UnitClass("player"))
-		-- Some class's always have GCD = 1
-		if class == 4 or (class == 11 and GetShapeshiftForm()== 2) then
-			return 1
-		else
-			local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3    
-			return GCD
-		end
-		
-		]]--
+		local GCD = NeP.DSL.GET('gcd')()
 		if GetSpellCooldown(spell) <= GCD then
 			Engine.Current_Spell = spell
 			return spell
