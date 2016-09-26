@@ -64,11 +64,11 @@
 	<Script file="system\conditions\states.lua" />
 	<Script file="system\conditions\deprecated.lua" />
 	<Script file="system\combatTracker.lua" />
+	<Script file="system\helpers.lua" />
 	<Script file="system\engine.lua" />
-	<Script file="system\EngineActions.lua" />
+	<Script file="system\actions.lua" />
 	<Script file="system\combatRoutines.lua" />
 	<Script file="system\listeners.lua" />
-	<Script file="system\helpers.lua" />
 	<Script file="system\healing.lua" />
 	<Script file="system\fakeUnits.lua" />
 	<Script file="system\ObjectManager.lua" />

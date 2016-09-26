@@ -123,16 +123,22 @@ Actions['%'] = function(action, target)
 	if arg2 then action = arg1 end
 	action = action:lower():sub(2)
 	local result = Actions[action] and Actions[action](spell, target, arg2)
-	if result then return result end
+	if result then return true end
 end
 
-Actions['!'] = function(spell, target)
-	SpellStopCasting()
-	local result = NeP.Engine.STRING(spell:sub(2), nil, target, true)
-	if result then return result end
+Actions['!'] = function(spell, target, isGround)
+	spell = NeP.Engine.Spell(spell:sub(2), target)
+	if spell and spell ~= UnitCastingInfo('player') then
+		SpellStopCasting()
+		NeP.Engine.pCast(spell, target, isGround)
+		return true
+	end
 end
 			-- Cast this along with current cast
-Actions['&'] = function(spell, target)
-	local result = NeP.Engine.STRING(spell:sub(2), nil, target, true)
-	if result then return result end
+Actions['&'] = function(spell, target, isGround)
+	spell = NeP.Engine.Spell(spell:sub(2), target)
+	if spell then
+		NeP.Engine.pCast(spell, target, isGround)
+		return true
+	end
 end

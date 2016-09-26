@@ -3,25 +3,10 @@ NeP.Engine = {
 	lastTarget = nil,
 	lastCast = nil,
 	forcePause = false,
-	Current_Spell = nil,
 	Rotations = {},
 }
 
 local Engine = NeP.Engine
-
-local function Cast(spell, target, isGroundCast)
-	-- FORCED TARGET
-	if Engine.ForceTarget then
-		target = Engine.ForceTarget
-	end
-	if isGroundCast then
-		Engine.CastGround(spell, target)
-	else
-		Engine.Cast(spell, target)
-	end
-	Engine.lastCast = spell
-	Engine.insertToLog('Spell', spell, target)
-end
 
 local function checkTarget(target)
 	local isGroundCast = false
@@ -69,6 +54,22 @@ local function IsMountedCheck()
 	return not IsMounted()
 end
 
+local SpellSanity = NeP.Helpers.SpellSanity
+
+function Engine.Spell(spell, target)
+	spell = Engine.ConvertSpell(spell)
+	if spell and SpellSanity(spell, target) then
+		local skillType = GetSpellBookItemInfo(spell)
+		local isUsable, notEnoughMana = IsUsableSpell(spell)
+		if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
+			local GCD = NeP.DSL.Get('gcd')()
+			if GetSpellCooldown(spell) <= GCD then
+				return spell
+			end
+		end
+	end
+end
+
 function Engine.FUNCTION(spell, conditions)
 	local result = NeP.DSL.Parse(conditions) and spell()
 	if result then return true end
@@ -83,19 +84,18 @@ function Engine.TABLE(nest, conditions)
 	end
 end
 
-function Engine.STRING(spell, conditions, target, bypass)
+function Engine.STRING(spell, conditions, target)
 	local pX = spell:sub(1, 1)
-	local target, isGroundCast = checkTarget(target)
+	local target, isGround = checkTarget(target)
 	if Engine.Actions[pX] then
 		if NeP.DSL.Parse(conditions) then
-			local result = Engine.Actions[pX](spell, target, sI)
+			local result = Engine.Actions[pX](spell, target, isGround)
 			if result then return true end
 		end
-	elseif target and ((castingTime('player') == 0) or bypass) then
-		local spell = Engine.spellResolve(spell)
-		if spell and NeP.Helpers.SpellSanity(spell, target)
-		and NeP.DSL.Parse(conditions, spell) then
-			Cast(spell, target, isGroundCast)
+	elseif target and (castingTime('player') == 0) then
+		spell = Engine.Spell(spell, target)
+		if spell and NeP.DSL.Parse(conditions, spell) then
+			Engine.pCast(spell, target, isGround)
 			return true
 		end
 	end
@@ -112,7 +112,7 @@ function Engine.Parse(spell, conditions, target)
 	Engine.ForceTarget = nil
 end
 
-function Engine.spellResolve(spell)
+function Engine.ConvertSpell(spell)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
 		spell = GetSpellInfo(spell)
@@ -120,16 +120,7 @@ function Engine.spellResolve(spell)
 	end
 	-- locale spells
 	spell = NeP.Locale.Spells(spell)
-	-- Make sure we can cast the spell
-	local skillType = GetSpellBookItemInfo(spell)
-	local isUsable, notEnoughMana = IsUsableSpell(spell)
-	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
-		local GCD = NeP.DSL.Get('gcd')()
-		if GetSpellCooldown(spell) <= GCD then
-			Engine.Current_Spell = spell
-			return spell
-		end
-	end
+	return spell
 end
 
 function Engine.insertToLog(whatIs, spell, target)
@@ -150,6 +141,19 @@ function Engine.insertToLog(whatIs, spell, target)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
+function Engine.pCast(spell, target, isGround)
+	-- FORCED TARGET
+	if Engine.ForceTarget then
+		target = Engine.ForceTarget
+	end
+	if isGround then
+		Engine.CastGround(spell, target)
+	else
+		Engine.Cast(spell, target)
+	end
+	Engine.lastCast = spell
+	Engine.insertToLog('Spell', spell, target)
+end
 
 NeP.Timer.Sync("nep_parser", 0.01, function()
 	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
