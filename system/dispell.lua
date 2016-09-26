@@ -33,21 +33,7 @@ local function SpellIsUsable(spell)
 	if spell and CheckSpell(spell, false)then
 		-- Make sure we can cast the spell
 		local start, duration, enabled = GetSpellCooldown(spell)
-		-- this GCD works
-		local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3	
-		--[[
-		-- should work, maybe need debug also?
-		
-		local class = select(3,UnitClass("player"))
-		-- Some class's always have GCD = 1
-		if class == 4 or (class == 11 and GetShapeshiftForm()== 2) then
-			return 1
-		else
-			local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3    
-			return GCD
-		end
-		
-		]]--
+		local GCD = NeP.DSL.Get('gcd')()
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if isUsable and (start <= GCD) and not notEnoughMana then
 			return true
