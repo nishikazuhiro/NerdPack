@@ -38,7 +38,7 @@ local function addUnit(Obj)
 end
 
 -- Build Roster
-NeP.Timer.Sync("nep_parser", 0.01, function()
+NeP.Timer.Sync("nep_parser", 0.1, function()
 	wipe(Roster)
 	for i=1,#NeP.OM['unitFriend'] do
 		local Obj = NeP.OM['unitFriend'][i]
