@@ -151,11 +151,10 @@ function Engine.pCast(spell, target, isGround)
 	Engine.insertToLog('Spell', spell, target)
 end
 
-NeP.Timer.Sync("nep_parser", 0.01, function()
+NeP.Timer.Sync("nep_parser", 0.1, function()
 	local SelectedCR = NeP.Interface.GetSelectedCR()
 	if SelectedCR then
-		local InCombatCheck = InCombatLockdown()
-		local table = SelectedCR[InCombatCheck]
+		local table = SelectedCR[InCombatLockdown()]
 		Engine.Parse(table)
 	else
 		local MSG = NeP.Core.TA('Engine', 'NoCR')

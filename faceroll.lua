@@ -2,6 +2,7 @@ NeP.Faceroll = {}
 
 local aC = '|cff'..NeP.Interface.addonColor
 local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
+local rangeCheck = LibStub("LibRangeCheck-2.0")
 
 -- This to put an icon on top of the spell we want
 local activeFrame = CreateFrame('Frame', 'activeCastFrame', UIParent)
@@ -56,6 +57,39 @@ NeP.Timer.Sync("nep_faceroll", 1, function()
 	display:Hide()
 end)
 
+local nameplates = {}
+	
+function lnr:OnEnable()
+	self:LNR_RegisterCallback("LNR_ON_NEW_PLATE");
+	self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
+end
+
+function lnr:OnDisable()
+	self:LNR_UnregisterAllCallbacks();
+end
+
+function lnr:LNR_ON_NEW_PLATE(_, _, plateData)
+	local tK = plateData.unitToken
+	nameplates[tK] = tK
+end
+
+function lnr:LNR_ON_RECYCLE_PLATE(_, _, plateData)
+	local tK = plateData.unitToken
+	nameplates[tK] = nil
+end
+
+local function GenericFilter(unit)
+	if not UnitExists(unit) then return false end
+	local table = UnitCanAttack('player', unit) and 'unitEnemie' or 'unitFriend'
+	for i=1, #NeP.OM[table] do
+		local Obj = NeP.OM[table][i]
+		if Obj.guid == UnitGUID(unit) then
+			return false
+		end
+	end
+	return true	
+end
+
 function NeP.Engine.FaceRoll()
 
 	-- cast on ground
@@ -78,13 +112,11 @@ function NeP.Engine.FaceRoll()
 	function NeP.Engine.UseInvItem(slot)
 	end
 
-	function NeP.Engine.LineOfSight(a, b)
+	function NeP.Engine.LineOfSight(_, b)
 		return NeP.Helpers.infront and UnitExists(b)
 	end
 
-	-- Distance
-	local rangeCheck = LibStub("LibRangeCheck-2.0")
-	function NeP.Engine.Distance(a, b)
+	function NeP.Engine.Distance(_, b)
 		if UnitExists(b) then
 			local minRange, maxRange = rangeCheck:GetRange(b)
 			return maxRange or minRange
@@ -93,7 +125,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	-- Infront
-	function NeP.Engine.Infront(a, b)
+	function NeP.Engine.Infront()
 		return NeP.Helpers.infront
 	end
 
@@ -111,46 +143,6 @@ function NeP.Engine.FaceRoll()
 			return _rangeTable[rType] + 3.5
 		end
 		return 0
-	end
-
-	--[[				Generic OM
-	---------------------------------------------------]]
-	local function GenericFilter(unit)
-		if UnitExists(unit) then
-			local alreadyExists = false
-			local table = UnitCanAttack('player', unit) and 'unitEnemie' or 'unitFriend'
-			local GUID = UnitGUID(unit)
-			-- Enemie Filter
-			for i=1, #NeP.OM[table] do
-				local Obj = NeP.OM[table][i]
-				if Obj.guid == GUID then
-					return false
-				end
-				
-			end
-			return true	
-		end
-	end
-
-	local nameplates = {}
-	
-	function lnr:OnEnable()
-		self:LNR_RegisterCallback("LNR_ON_NEW_PLATE");
-		self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
-	end
-
-	function lnr:OnDisable()
-		self:LNR_UnregisterAllCallbacks();
-	end
-
-	function lnr:LNR_ON_NEW_PLATE(eventname, plateFrame, plateData)
-		local tK = plateData.unitToken
-		nameplates[tK] = tK
-	end
-
-	function lnr:LNR_ON_RECYCLE_PLATE(eventname, plateFrame, plateData)
-		local tK = plateData.unitToken
-		nameplates[tK] = nil
 	end
 
 	function NeP.OM.Maker()

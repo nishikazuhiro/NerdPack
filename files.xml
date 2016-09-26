@@ -74,6 +74,7 @@
 	<Script file="system\healing.lua" />
 	<Script file="system\fakeUnits.lua" />
 	<Script file="system\ObjectManager.lua" />
+	<Script file="interface\OM.lua" />
 	<Script file="system\commands.lua" />
 	<Script file="system\queue.lua" />
 	<Script file="faceroll.lua" />
