@@ -1,7 +1,6 @@
 NeP.Faceroll = {}
 
 local aC = '|cff'..NeP.Interface.addonColor
-local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0");
 local rangeCheck = LibStub("LibRangeCheck-2.0")
 
 -- This to put an icon on top of the spell we want
@@ -57,38 +56,10 @@ NeP.Timer.Sync("nep_faceroll", 1, function()
 	display:Hide()
 end)
 
-local nameplates = {}
-	
-function lnr:OnEnable()
-	self:LNR_RegisterCallback("LNR_ON_NEW_PLATE");
-	self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE");
-end
-
-function lnr:OnDisable()
-	self:LNR_UnregisterAllCallbacks();
-end
-
-function lnr:LNR_ON_NEW_PLATE(_, _, plateData)
-	local tK = plateData.unitToken
-	nameplates[tK] = tK
-end
-
-function lnr:LNR_ON_RECYCLE_PLATE(_, _, plateData)
-	local tK = plateData.unitToken
-	nameplates[tK] = nil
-end
-
-local function GenericFilter(unit)
-	if not UnitExists(unit) then return false end
-	local table = UnitCanAttack('player', unit) and 'unitEnemie' or 'unitFriend'
-	for i=1, #NeP.OM[table] do
-		local Obj = NeP.OM[table][i]
-		if Obj.guid == UnitGUID(unit) then
-			return false
-		end
-	end
-	return true	
-end
+local _rangeTable = {
+	['melee'] = 1.5,
+	['ranged'] = 40,
+}
 
 function NeP.Engine.FaceRoll()
 
@@ -129,62 +100,10 @@ function NeP.Engine.FaceRoll()
 		return NeP.Helpers.infront
 	end
 
-	function NeP.Engine.UnitCombatRange(unitA, unitB)
-		return NeP.Engine.Distance(unitA, unitB)
-	end
-
-	local _rangeTable = {
-		['melee'] = 1.5,
-		['ranged'] = 40,
-	}
+	NeP.Engine.UnitCombatRange(unitA, unitB) = NeP.Engine.Distance
 
 	function NeP.Engine.UnitAttackRange(unitA, unitB, rType)
-		if rType then
-			return _rangeTable[rType] + 3.5
-		end
-		return 0
-	end
-
-	function NeP.OM.Maker()
-		-- Self
-		NeP.OM.addToOM('player')
-		-- Mouseover
-		if UnitExists('mouseover') then
-			local object = 'mouseover'
-			if GenericFilter(object) then
-				NeP.OM.addToOM(object)
-			end
-		end
-		-- Target Cache
-		if UnitExists('target') then
-			local object = 'target'
-			if GenericFilter(object) then
-				NeP.OM.addToOM(object)
-			end
-		end
-		-- If in Group scan frames...
-		if IsInGroup() or IsInRaid() then
-			local prefix = (IsInRaid() and 'raid') or 'party'
-			for i = 1, GetNumGroupMembers() do
-				-- Enemie
-				local target = prefix..i..'target'
-				if GenericFilter(target) then
-					NeP.OM.addToOM(target)
-				end
-				-- Friendly
-				local friendly = prefix..i
-				if GenericFilter(friendly) then
-					NeP.OM.addToOM(friendly)
-				end
-			end
-		end
-		-- Nameplate cache
-		for k,_ in pairs(nameplates) do
-			local plate = nameplates[k]
-			if GenericFilter(plate) then
-				NeP.OM.addToOM(plate)
-			end
-		end
+		return rType and _rangeTable[rType] + 3.5 or 0
 	end
 
 end

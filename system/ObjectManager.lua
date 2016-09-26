@@ -42,6 +42,70 @@ function NeP.OM.addToOM(Obj)
 	end
 end
 
+local lnr = LibStub("AceAddon-3.0"):NewAddon("NerdPack", "LibNameplateRegistry-1.0")
+local ValidUnits = {'player', 'mouseover', 'target', 'arena1', 'arena2'}
+local Nameplates = {}
+	
+function lnr:OnEnable()
+	self:LNR_RegisterCallback("LNR_ON_NEW_PLATE")
+	self:LNR_RegisterCallback("LNR_ON_RECYCLE_PLATE")
+end
+
+function lnr:LNR_ON_NEW_PLATE(_, _, plateData)
+	local tK = plateData.unitToken
+	Nameplates[tK] = tK
+end
+
+function lnr:LNR_ON_RECYCLE_PLATE(_, _, plateData)
+	local tK = plateData.unitToken
+	Nameplates[tK] = nil
+end
+
+local function GenericFilter(unit)
+	if not UnitExists(unit) then return false end
+	local table = UnitCanAttack('player', unit) and 'unitEnemie' or 'unitFriend'
+	for i=1, #NeP.OM[table] do
+		local Obj = NeP.OM[table][i]
+		if Obj.guid == UnitGUID(unit) then
+			return false
+		end
+	end
+	return true	
+end
+
+function NeP.OM.Maker()
+	-- If in Group scan frames...
+	if IsInGroup() or IsInRaid() then
+		local prefix = (IsInRaid() and 'raid') or 'party'
+		for i = 1, GetNumGroupMembers() do
+			-- Unit
+			local friendly = prefix..i
+			if GenericFilter(friendly) then
+				NeP.OM.addToOM(friendly)
+				-- Unit's Target
+				local target = friendly..'target'
+				if GenericFilter(target) then
+					NeP.OM.addToOM(target)
+				end
+			end
+		end
+	end
+	-- Valid Units
+	for i=1, #ValidUnits do
+		local object = ValidUnits[i]
+		if GenericFilter(object) then
+			NeP.OM.addToOM(object)
+		end
+	end
+	-- Nameplate cache
+	for k,_ in pairs(Nameplates) do
+		local plate = Nameplates[k]
+		if GenericFilter(plate) then
+			NeP.OM.addToOM(plate)
+		end
+	end
+end
+
 -- Run OM
 NeP.Timer.Sync("nep_OM", 0.5, function()
 	wipe(NeP.OM.unitEnemie)
