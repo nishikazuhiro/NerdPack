@@ -33,7 +33,7 @@ local function SpellIsUsable(spell)
 	if spell and CheckSpell(spell, false)then
 		-- Make sure we can cast the spell
 		local start, duration, enabled = GetSpellCooldown(spell)
-		local _, GCD = GetSpellCooldown(61304)
+		local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3	
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
 		if isUsable and (start <= GCD) and not notEnoughMana then
 			return true

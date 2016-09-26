@@ -125,7 +125,7 @@ function Engine.spellResolve(spell)
 	local skillType = GetSpellBookItemInfo(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
 	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
-		local _, GCD = GetSpellCooldown(61304)
+		local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3	
 		if GetSpellCooldown(spell) <= GCD then
 			Engine.Current_Spell = spell
 			return spell

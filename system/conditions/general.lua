@@ -182,7 +182,7 @@ RegisterConditon('equipped', function(_, item)
 end)
 
 RegisterConditon('gcd', function()
-	local _, GCD = GetSpellCooldown(61304)
+	local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3	
 	return GCD
 end)
 
