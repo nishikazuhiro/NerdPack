@@ -85,6 +85,7 @@ local invItems = {
 
 -- Items
 Actions['#'] = function(item, target)
+	item = item:sub(2)
 	if invItems[item] then
 		local invItem = GetInventorySlotInfo(invItems[item])
 		item = GetInventoryItemID("player", invItem)
@@ -106,7 +107,7 @@ end
 
 -- Lib
 Actions['@'] = function(lib, target)
-	local result = NeP.library.parse(lib)
+	local result = NeP.library.parse(lib:sub(2))
 	if result then return result end
 end
 
@@ -120,18 +121,18 @@ end
 Actions['%'] = function(action, target)
 	local arg1, arg2 = action:match('(.+)%((.+)%)')
 	if arg2 then action = arg1 end
-	action = action:lower()
+	action = action:lower():sub(2)
 	local result = Actions[action] and Actions[action](spell, target, arg2)
 	if result then return result end
 end
 
 Actions['!'] = function(spell, target)
 	SpellStopCasting()
-	local result = NeP.Engine.STRING(spell, nil, target, true)
+	local result = NeP.Engine.STRING(spell:sub(2), nil, target, true)
 	if result then return result end
 end
 			-- Cast this along with current cast
 Actions['&'] = function(spell, target)
-	local result = NeP.Engine.STRING(spell, nil, target, true)
+	local result = NeP.Engine.STRING(spell:sub(2), nil, target, true)
 	if result then return result end
 end

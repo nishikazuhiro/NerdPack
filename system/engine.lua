@@ -88,7 +88,6 @@ function Engine.STRING(spell, conditions, target, bypass)
 	local target, isGroundCast = checkTarget(target)
 	if Engine.Actions[pX] then
 		if NeP.DSL.Parse(conditions) then
-			spell = spell:sub(2)
 			local result = Engine.Actions[pX](spell, target, sI)
 			if result then return true end
 		end
