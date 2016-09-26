@@ -8,6 +8,7 @@ Actions['dispelall'] = function(_, _, args)
 		local dispellType = NeP.Dispells.CanDispellUnit(unit)
 		if dispellType then
 			local spell = NeP.Dispells.GetSpell(dispellType)
+			spell = NeP.Engine.Spell(spell)
 			if spell then
 				Cast(spell, Obj.key)
 				return true
@@ -18,7 +19,7 @@ end
 
 -- Automated tauting
 Actions['taunt'] = function(_, _, args)
-	local spell = NeP.Engine.spellResolve(args)
+	local spell = NeP.Engine.Spell(args)
 	for i=1,#NeP.OM['unitEnemie'] do
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
@@ -36,7 +37,7 @@ end
 
 -- Ress all dead
 Actions['ressdead'] = function(_, _, args)
-	local spell = NeP.Engine.spellResolve(args)
+	local spell = NeP.Engine.Spell(args)
 	for i=1,#NeP.OM['DeadUnits'] do
 		local Obj = NeP.OM['DeadUnits'][i]
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
