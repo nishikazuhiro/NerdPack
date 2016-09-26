@@ -2,7 +2,7 @@ NeP.Engine = {
 	ForceTarget = nil,
 	lastTarget = nil,
 	lastCast = nil,
-	forcePause = false,
+	forcePause = nil,
 	Rotations = {},
 }
 
@@ -12,12 +12,9 @@ local function checkTarget(target)
 	local isGroundCast = false
 	-- none defined (decide one)
 	if not target then
-		if UnitExists('target') then
-			target = 'target'
-		else
-			target = 'player'
-		end
+		target = UnitExists('target') and 'target' or 'player'
 	else
+		-- fake units
 		target = NeP.FakeUnits.Filter(target)
 		if not target then return end
 	end
@@ -30,18 +27,17 @@ local function checkTarget(target)
 	if isGroundCast and target == 'mouseover'
 	or UnitExists(target) and UnitIsVisible(target)
 	and Engine.LineOfSight('player', target) then
-		Engine.lastTarget = target
 		return target, isGroundCast
 	end
 end
 
-local function castingTime(target)
-    local a_name, _,_,_, a_startTime, a_endTime = UnitCastingInfo("player")
-    local b_name, _,_,_, b_startTime, b_endTime = UnitChannelInfo("player")
-    local time = GetTime() * 1000
-    if a_endTime then return (a_endTime - time) / 1000 end
-    if b_endTime then return (b_endTime - time) / 1000 end
-    return 0
+local function castingTime()
+	local time = GetTime()
+	local a_endTime = select(6,UnitCastingInfo("player"))
+	if a_endTime then return (a_endTime/1000 )-time end
+	local b_endTime = select(6,UnitCastingInfo("player"))
+	if b_endTime then return (b_endTime/1000)-time end
+	return 0
 end
 
 local function IsMountedCheck()
@@ -142,7 +138,6 @@ function Engine.insertToLog(whatIs, spell, target)
 end
 
 function Engine.pCast(spell, target, isGround)
-	-- FORCED TARGET
 	if Engine.ForceTarget then
 		target = Engine.ForceTarget
 	end
@@ -152,22 +147,18 @@ function Engine.pCast(spell, target, isGround)
 		Engine.Cast(spell, target)
 	end
 	Engine.lastCast = spell
+	Engine.lastTarget = target
 	Engine.insertToLog('Spell', spell, target)
 end
 
 NeP.Timer.Sync("nep_parser", 0.01, function()
-	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
-	if Running then
-		local SelectedCR = NeP.Interface.GetSelectedCR()
-		if SelectedCR then
-			if not Engine.forcePause then
-				local InCombatCheck = InCombatLockdown()
-				local table = SelectedCR[InCombatCheck]
-				Engine.Parse(table)
-			end
-		else
-			local MSG = NeP.Core.TA('Engine', 'NoCR')
-			NeP.Core.Message(MSG)
-		end
+	local SelectedCR = NeP.Interface.GetSelectedCR()
+	if SelectedCR then
+		local InCombatCheck = InCombatLockdown()
+		local table = SelectedCR[InCombatCheck]
+		Engine.Parse(table)
+	else
+		local MSG = NeP.Core.TA('Engine', 'NoCR')
+		NeP.Core.Message(MSG)
 	end
 end, 3)
