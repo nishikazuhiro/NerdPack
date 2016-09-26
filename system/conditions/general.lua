@@ -186,8 +186,8 @@ RegisterConditon('gcd', function()
     -- Some class's always have GCD = 1
     if class == 4 or (class == 11 and GetShapeshiftForm()== 2) then
         return 1
-    else
-		local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3    
+	else
+		local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3
 		return GCD
 	end
 end)
