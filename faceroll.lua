@@ -100,7 +100,7 @@ function NeP.Engine.FaceRoll()
 		return NeP.Helpers.infront
 	end
 
-	NeP.Engine.UnitCombatRange(unitA, unitB) = NeP.Engine.Distance
+	NeP.Engine.UnitCombatRange = NeP.Engine.Distance
 
 	function NeP.Engine.UnitAttackRange(unitA, unitB, rType)
 		return rType and _rangeTable[rType] + 3.5 or 0
