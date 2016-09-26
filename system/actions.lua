@@ -6,7 +6,7 @@ local LibDisp = LibStub('LibDispellable-1.0')
 Actions['dispelall'] = function()
 	for i=1,#NeP.OM['unitFriend'] do
 		local Obj = NeP.OM['unitFriend'][i]
-		for _,_, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
+		for _,spellID, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
 			local spellName = GetSpellInfo(spellID)
 			if dispelType then
 				NeP.Engine.pCast(spellName, Obj.key, false)
