@@ -125,7 +125,6 @@ function Engine.spellResolve(spell)
 	local skillType = GetSpellBookItemInfo(spell)
 	local isUsable, notEnoughMana = IsUsableSpell(spell)
 	if skillType ~= 'FUTURESPELL' and isUsable and not notEnoughMana then
-		--this GCD works
 		local GCD = NeP.DSL.GET('gcd')()
 		if GetSpellCooldown(spell) <= GCD then
 			Engine.Current_Spell = spell
