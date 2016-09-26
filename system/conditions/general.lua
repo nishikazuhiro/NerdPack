@@ -180,24 +180,6 @@ end)
 RegisterConditon('equipped', function(_, item)
 	return IsEquippedItem(item)
 end)
---[[
-RegisterConditon('gcd', function()
-	local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3	
-	return GCD
-end)
-
-RegisterConditon('gcd', function()
-    local class = select(3,UnitClass("player"))
-    -- Some class's always have GCD = 1
-    if class == 4 or (class == 11 and GetShapeshiftForm()== 2) then
-        return 1
-    end
-
-    local GCD = math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3    
-    return GCD
-end)
-
-]]--
 
 RegisterConditon('gcd', function()
     local class = select(3,UnitClass("player"))
@@ -209,9 +191,6 @@ RegisterConditon('gcd', function()
 		return GCD
 	end
 end)
-
-
-
 
 RegisterConditon('UI', function(_, key)
 	local SelectedCR = NeP.Interface.GetSelectedCR().Name
