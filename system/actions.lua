@@ -3,7 +3,7 @@ local Actions = NeP.Engine.Actions
 local LibDisp = LibStub('LibDispellable-1.0')
 
 local function FindDispell(Unit)
-	for index, spellID, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff in LibDisp:IterateDispellableAuras(Obj.key) do
+	for index, spellID, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff in LibDisp:IterateDispellableAuras(Unit) do
 		local spellName = GetSpellInfo(spellID)
 		return name, spellName, dispelType, count, duration, expires, caster, isStealable
 	end
