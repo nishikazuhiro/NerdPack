@@ -147,4 +147,6 @@ function Intf.UpdateToggleIcon(toggle, icon)
 	if icon then usedButtons[toggle].texture:SetTexture(icon) end
 end
 
-defaultToggles()
+NeP.Config.WhenLoaded(function()
+	defaultToggles()
+end)
