@@ -7,10 +7,8 @@ local nBars = {
 	"MultiBarRightButton",
 	"MultiBarLeftButton"
 }
-local frame = CreateFrame("FRAME", "FooAddonFrame");
-frame:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
-frame:RegisterEvent("PLAYER_ENTERING_WORLD");
-frame:SetScript("OnEvent", function(self, event, ...)
+
+local function UpdateButtons()
 	wipe(NeP.Buttons)
 	for _, group in ipairs(nBars) do
 		for i =1, 12 do
@@ -26,4 +24,12 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 	end
+end
+
+NeP.Listener.register('PLAYER_ENTERING_WORLD', function ()
+	UpdateButtons()
+end)
+
+NeP.Listener.register('ACTIONBAR_SLOT_CHANGED', function ()
+	UpdateButtons()
 end)
