@@ -133,7 +133,7 @@ Actions['!'] = function(spell, target, isGround)
 		if target and isGround then
 			target = target..'.ground'
 		end
-		Engine.STRING(spell, nil, target)
+		NeP.Engine.STRING(spell, nil, target)
 		return true
 	end
 end
