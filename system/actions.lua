@@ -23,7 +23,7 @@ Actions['taunt'] = function(_, _, args)
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
 		if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
-			Cast(spell, Obj.key)
+			NeP.Engine.pCast(spell, Obj.key, false)
 			return true
 		end
 	end
@@ -130,7 +130,10 @@ Actions['!'] = function(spell, target, isGround)
 	spell = NeP.Engine.Spell(spell:sub(2), target)
 	if spell and spell ~= UnitCastingInfo('player') then
 		SpellStopCasting()
-		NeP.Engine.pCast(spell, target, isGround)
+		if target and isGround then
+			target = target..'.ground'
+		end
+		Engine.STRING(spell, nil, target)
 		return true
 	end
 end
