@@ -2,6 +2,8 @@ NeP.Healing = {
 	Units = {},
 }
 
+local F = NeP.Interface.fetchKey
+
 local Roster = NeP.Healing.Units
 
 local RolesAssigned = UnitGroupRolesAssigned
@@ -21,7 +23,14 @@ local Roles = {
 
 local function addUnit(Obj)
 	local Role = RolesAssigned(Obj.key) or 'NONE'
-	local healthRaw = UH(Obj.key)-(THA(Obj.key) or 0)+(IH(Obj.key) or 0)
+	
+	local healthRaw
+	if F('NePSettings', 'ignoreIH', false) then 
+		healthRaw = UH(Obj.key)-(THA(Obj.key) or 0)
+	else
+		healthRaw = UH(Obj.key)-(THA(Obj.key) or 0)+(IH(Obj.key) or 0)
+	end
+	
 	local maxHealth = UHMax(Obj.key)
 	local healthPercent =  (healthRaw / maxHealth) * 100
 	table.insert(Roster, {
