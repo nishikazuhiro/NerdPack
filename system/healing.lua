@@ -74,8 +74,7 @@ NeP.DSL.RegisterConditon('HealInfront', function(args)
 	local total = 0	
 	for i=1, #Roster do
 		local Obj = Roster[i]
-		local distance = NeP.Engine.Distance('player', Obj.key)
-		if Obj.health <= health and distance <= maxDis then
+		if Obj.health <= health and Obj.distance <= maxDis then
 			if NeP.Engine.Infront('player', Obj.key) then
 				total = total + 1
 			end
