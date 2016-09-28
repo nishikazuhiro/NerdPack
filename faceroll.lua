@@ -80,11 +80,11 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function NeP.Engine.UseItem(name, target)
-		NeP.Engine.insertToLog('Item', item, target)
+		NeP.Engine:insertToLog('Item', item, target)
 	end
 
 	function NeP.Engine.UseInvItem(slot)
-		NeP.Engine.insertToLog('Item', item, target)
+		NeP.Engine:insertToLog('Item', item, target)
 	end
 
 	function NeP.Engine.LineOfSight(_, b)
