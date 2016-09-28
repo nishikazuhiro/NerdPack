@@ -9,7 +9,7 @@ Actions['dispelall'] = function()
 		for _,spellID, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
 			local spell = GetSpellInfo(spellID)
 			if dispelType then
-				return NeP.Engine.STRING(spell, Obj.key)
+				return NeP.Engine:STRING(spell, Obj.key)
 			end
 		end
 	end
@@ -23,7 +23,7 @@ Actions['taunt'] = function(args)
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
 		if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
-			return NeP.Engine.STRING(spell, Obj.key)
+			return NeP.Engine:STRING(spell, Obj.key)
 		end
 	end
 end
@@ -41,7 +41,7 @@ Actions['ressdead'] = function(args)
 		local Obj = NeP.OM['DeadUnits'][i]
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 		and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
-			return NeP.Engine.STRING(spell, Obj.key)
+			return NeP.Engine:STRING(spell, Obj.key)
 		end
 	end
 end
@@ -127,7 +127,7 @@ Actions['!'] = function(spell, target)
 	spell = NeP.Engine.Spell(spell:sub(2), target)
 	if spell and spell ~= UnitCastingInfo('player') then
 		SpellStopCasting()
-		return NeP.Engine.STRING(spell, target)
+		return NeP.Engine:STRING(spell, target)
 	end
 end
 			-- Cast this along with current cast
