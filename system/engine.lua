@@ -66,21 +66,21 @@ function Engine.Spell(spell, target)
 	end
 end
 
-function Engine.FUNCTION(spell, conditions)
+function Engine:FUNCTION(spell, conditions)
 	local result = NeP.DSL.Parse(conditions) and spell()
 	if result then return true end
 end
 
-function Engine.TABLE(nest, conditions)
+function Engine:TABLE(nest, conditions)
 	if NeP.DSL.Parse(conditions) then
 		for i=1, #nest do
-			local result = Engine.Parse(unpack(nest[i]))
+			local result = Engine:Parse(unpack(nest[i]))
 			if result then return true end
 		end
 	end
 end
 
-function Engine.STRING(spell, conditions, target)
+function Engine:STRING(spell, conditions, target)
 	local pX = spell:sub(1, 1)
 	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
 		local result = Engine.Actions[pX](spell, target)
@@ -95,10 +95,10 @@ function Engine.STRING(spell, conditions, target)
 	end
 end
 
-function Engine.Parse(spell, conditions, target)
+function Engine:Parse(spell, conditions, target)
 	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
-		local tP = type(spell):upper()
-		local result = Engine[tP] and Engine[tP](spell, conditions, target)
+		local tP = self[type(spell):upper()]
+		local result = tP(self, spell, conditions, target)
 		if result then return true end
 	end
 	-- Reset States
@@ -153,7 +153,7 @@ NeP.Timer.Sync("nep_parser", 0.1, function()
 	local SelectedCR = NeP.Interface.GetSelectedCR()
 	if SelectedCR then
 		local table = SelectedCR[InCombatLockdown()]
-		Engine.Parse(table)
+		Engine:Parse(table)
 	else
 		local MSG = NeP.Core.TA('Engine', 'NoCR')
 		NeP.Core.Message(MSG)
