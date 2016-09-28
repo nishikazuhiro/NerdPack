@@ -88,7 +88,6 @@ function Engine:STRING(spell, target, isGround)
 		spell = self:Spell(spell, target)
 		if spell then
 			if isGround then return self.CastGround, spell end
-			self:insertToLog('Spell', tostring(spell), target)
 			return self.Cast, spell, target
 		end
 	end

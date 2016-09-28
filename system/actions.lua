@@ -17,7 +17,7 @@ end
 
 -- Automated tauting
 Actions['taunt'] = function(args)
-	local spell = NeP.Engine.Spell(args)
+	local spell = NeP.Engine:Spell(args)
 	if not spell then return false end
 	for i=1,#NeP.OM['unitEnemie'] do
 		local Obj = NeP.OM['unitEnemie'][i]
@@ -35,7 +35,7 @@ end
 
 -- Ress all dead
 Actions['ressdead'] = function(args)
-	local spell = NeP.Engine.Spell(args)
+	local spell = NeP.Engine:Spell(args)
 	if not spell then return false end
 	for i=1,#NeP.OM['DeadUnits'] do
 		local Obj = NeP.OM['DeadUnits'][i]
@@ -96,7 +96,6 @@ Actions['#'] = function(item, target)
 		if isUsable then
 			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 			if itemStart == 0 and GetItemCount(item) > 0 then
-				NeP.Engine.insertToLog('Item', item, target)
 				return NeP.Engine.UseItem, item, target
 			end
 		end
@@ -124,7 +123,7 @@ Actions['%'] = function(action, target)
 end
 
 Actions['!'] = function(spell, target)
-	spell = NeP.Engine.Spell(spell:sub(2), target)
+	spell = NeP.Engine:Spell(spell:sub(2), target)
 	if spell and spell ~= UnitCastingInfo('player') then
 		SpellStopCasting()
 		return NeP.Engine:STRING(spell, target)
@@ -132,7 +131,7 @@ Actions['!'] = function(spell, target)
 end
 			-- Cast this along with current cast
 Actions['&'] = function(spell, target)
-	spell = NeP.Engine.Spell(spell:sub(2), target)
+	spell = NeP.Engine:Spell(spell:sub(2), target)
 	if spell then
 		return NeP.Engine.Cast, spell, target
 	end

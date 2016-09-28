@@ -65,11 +65,13 @@ function NeP.Engine.FaceRoll()
 
 	-- cast on ground
 	function NeP.Engine.CastGround(spell, target)
+		NeP.Engine:insertToLog('Spell', spell, target)
 		showActiveSpell(spell, target)
 	end
 
 	-- Cast
 	function NeP.Engine.Cast(spell, target)
+		NeP.Engine:insertToLog('Spell', spell, target)
 		showActiveSpell(spell, target)
 	end
 
@@ -78,9 +80,11 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function NeP.Engine.UseItem(name, target)
+		NeP.Engine.insertToLog('Item', item, target)
 	end
 
 	function NeP.Engine.UseInvItem(slot)
+		NeP.Engine.insertToLog('Item', item, target)
 	end
 
 	function NeP.Engine.LineOfSight(_, b)
