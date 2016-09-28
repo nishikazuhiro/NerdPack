@@ -101,14 +101,12 @@ function Engine:Parse(spell, conditions, target)
 		local result, spell, target = tP(self, spell, target, isGround, conditions)
 		if result and NeP.DSL.Parse(conditions, spell) then
 			if self.ForceTarget then target = self.ForceTarget end
+			self.ForceTarget = nil
 			self.lastCast = spell
 			self.lastTarget = target
 			return result, spell, target
 		end
 	end
-	-- Reset States
-	self.isGroundSpell = false
-	self.ForceTarget = nil
 end
 
 function Engine:ConvertSpell(spell)
