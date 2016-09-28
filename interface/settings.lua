@@ -12,6 +12,10 @@ local config = {
 		{type = 'spinner', text = 'Toggle Padding', key = 'tPad', default = 2, max = 20, step = 1},
 		{type = 'spacer'},
 		{type = 'button', text = 'Apply', callback = function() NeP.Interface.RefreshToggles() end, width = 220, height = 20},
+		
+		{type = 'spacer'},{ type = 'rule' },
+		{type = 'header', text = 'HealEngine Settings:', align = 'center'},
+		{type = 'checkbox', text = 'Ignore incoming heal', key = 'ignoreIH', default = false},
 
 		{type = 'spacer'},{ type = 'rule' },
 		{type = 'header', text = 'ObjectManager Settings:', align = 'center'},
