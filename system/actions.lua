@@ -9,8 +9,7 @@ Actions['dispelall'] = function()
 		for _,spellID, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
 			local spell = GetSpellInfo(spellID)
 			if dispelType then
-				local result = NeP.Engine.STRING(spell, nil, Obj.key)
-				if result then return true end
+				return NeP.Engine.STRING(spell, Obj.key)
 			end
 		end
 	end
@@ -24,8 +23,7 @@ Actions['taunt'] = function(args)
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
 		if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
-			local result = NeP.Engine.STRING(spell, nil, Obj.key)
-			if result then return true end
+			return NeP.Engine.STRING(spell, Obj.key)
 		end
 	end
 end
@@ -43,15 +41,14 @@ Actions['ressdead'] = function(args)
 		local Obj = NeP.OM['DeadUnits'][i]
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 		and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
-			local result = NeP.Engine.STRING(spell, nil, Obj.key)
-			if result then return true end
+			return NeP.Engine.STRING(spell, Obj.key)
 		end
 	end
 end
 
 -- Pause
 Actions['pause'] = function()
-	return true
+	return (function() end)
 end
 
 local invItems = {
@@ -99,9 +96,8 @@ Actions['#'] = function(item, target)
 		if isUsable then
 			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 			if itemStart == 0 and GetItemCount(item) > 0 then
-				NeP.Engine.UseItem(GetItemInfo(item), target)
 				NeP.Engine.insertToLog('Item', item, target)
-				return true
+				return NeP.Engine.UseItem, item, target
 			end
 		end
 	end
@@ -109,14 +105,12 @@ end
 
 -- Lib
 Actions['@'] = function(lib, target)
-	local result = NeP.library.parse(lib:sub(2))
-	if result then return result end
+	return NeP.library.parse, lib:sub(2), target
 end
 
 -- Macro
 Actions['/'] = function(spell, target)
-	NeP.Engine.Macro(spell)
-	return true
+	return NeP.Engine.Macro, spell, target
 end
 
 -- These are special Actions
@@ -124,23 +118,22 @@ Actions['%'] = function(action, target)
 	local arg1, args = action:match('(.+)%((.+)%)')
 	if args then action = arg1 end
 	action = action:lower():sub(2)
-	local result = Actions[action] and Actions[action](args, target)
-	if result then return true end
+	if Actions[action] then
+		return Actions[action](args, target)
+	end
 end
 
 Actions['!'] = function(spell, target)
 	spell = NeP.Engine.Spell(spell:sub(2), target)
 	if spell and spell ~= UnitCastingInfo('player') then
 		SpellStopCasting()
-		local result = NeP.Engine.STRING(spell, nil, target)
-		if result then return true end
+		return NeP.Engine.STRING(spell, target)
 	end
 end
 			-- Cast this along with current cast
 Actions['&'] = function(spell, target)
 	spell = NeP.Engine.Spell(spell:sub(2), target)
 	if spell then
-		NeP.Engine.pCast(spell, target)
-		return true
+		return NeP.Engine.Cast, spell, target
 	end
 end

@@ -52,8 +52,8 @@ end
 
 local SpellSanity = NeP.Helpers.SpellSanity
 
-function Engine.Spell(spell, target)
-	spell = Engine.ConvertSpell(spell)
+function Engine:Spell(spell, target)
+	spell = self:ConvertSpell(spell)
 	if spell and SpellSanity(spell, target) then
 		local skillType = GetSpellBookItemInfo(spell)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
@@ -66,47 +66,52 @@ function Engine.Spell(spell, target)
 	end
 end
 
-function Engine:FUNCTION(spell, conditions)
-	local result = NeP.DSL.Parse(conditions) and spell()
-	if result then return true end
+function Engine:FUNCTION(func)
+	return func
 end
 
-function Engine:TABLE(nest, conditions)
+function Engine:TABLE(nest, _,_, conditions)
 	if NeP.DSL.Parse(conditions) then
 		for i=1, #nest do
-			local result = Engine:Parse(unpack(nest[i]))
-			if result then return true end
+			local func, spell, target = self:Parse(unpack(nest[i]))
+			if func then return func, spell, target end
 		end
 	end
 end
 
-function Engine:STRING(spell, conditions, target)
+function Engine:STRING(spell, target, isGround)
 	local pX = spell:sub(1, 1)
-	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
-		local result = Engine.Actions[pX](spell, target)
-		if result then return true end
+	if self.Actions[pX] then
+		local result, spell = self.Actions[pX](spell, target)
+		if result then return result, spell end
 	elseif (castingTime('player') == 0) then
-		local target, isGround = checkTarget(target)
-		spell = Engine.Spell(spell, target)
-		if spell and NeP.DSL.Parse(conditions, spell) then
-			Engine.pCast(spell, target, isGround)
-			return true
+		spell = self:Spell(spell, target)
+		if spell then
+			if isGround then return self.CastGround, spell end
+			self:insertToLog('Spell', tostring(spell), target)
+			return self.Cast, spell, target
 		end
 	end
 end
 
 function Engine:Parse(spell, conditions, target)
-	if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
-		local tP = self[type(spell):upper()]
-		local result = tP(self, spell, conditions, target)
-		if result then return true end
+	local tP = self[type(spell):upper()]
+	local target, isGround = checkTarget(target)
+	if target then
+		local result, spell, target = tP(self, spell, target, isGround, conditions)
+		if result and NeP.DSL.Parse(conditions, spell) then
+			if self.ForceTarget then target = self.ForceTarget end
+			self.lastCast = spell
+			self.lastTarget = target
+			return result, spell, target
+		end
 	end
 	-- Reset States
-	Engine.isGroundSpell = false
-	Engine.ForceTarget = nil
+	self.isGroundSpell = false
+	self.ForceTarget = nil
 end
 
-function Engine.ConvertSpell(spell)
+function Engine:ConvertSpell(spell)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
 		spell = GetSpellInfo(spell)
@@ -117,7 +122,7 @@ function Engine.ConvertSpell(spell)
 	return spell
 end
 
-function Engine.insertToLog(whatIs, spell, target)
+function Engine:insertToLog(whatIs, spell, target)
 	local targetName = UnitName(target or 'player')
 	local name, icon
 	if whatIs == 'Spell' then
@@ -135,25 +140,14 @@ function Engine.insertToLog(whatIs, spell, target)
 	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
-function Engine.pCast(spell, target, isGround)
-	if Engine.ForceTarget then
-		target = Engine.ForceTarget
-	end
-	if isGround then
-		Engine.CastGround(spell, target)
-	else
-		Engine.Cast(spell, target)
-	end
-	Engine.lastCast = spell
-	Engine.lastTarget = target
-	Engine.insertToLog('Spell', spell, target)
-end
-
 NeP.Timer.Sync("nep_parser", 0.1, function()
 	local SelectedCR = NeP.Interface.GetSelectedCR()
 	if SelectedCR then
-		local table = SelectedCR[InCombatLockdown()]
-		Engine:Parse(table)
+		if not UnitIsDeadOrGhost('player') and IsMountedCheck() then
+			local table = SelectedCR[InCombatLockdown()]
+			local func, spell, target = Engine:Parse(table)
+			if func then func(spell, target) end
+		end
 	else
 		local MSG = NeP.Core.TA('Engine', 'NoCR')
 		NeP.Core.Message(MSG)
