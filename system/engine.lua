@@ -6,6 +6,8 @@ NeP.Engine = {
 	Rotations = {},
 }
 
+local Engine = NeP.Engine
+
 local function checkTarget(target)
 	local isGroundCast = false
 	-- none defined (decide one)
