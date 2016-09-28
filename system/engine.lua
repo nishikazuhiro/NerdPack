@@ -6,8 +6,6 @@ NeP.Engine = {
 	Rotations = {},
 }
 
-local Engine = NeP.Engine
-
 local function checkTarget(target)
 	local isGroundCast = false
 	-- none defined (decide one)
@@ -97,7 +95,7 @@ end
 function Engine:Parse(spell, conditions, target)
 	local tP = self[type(spell):upper()]
 	local target, isGround = checkTarget(target)
-	if target then
+	if tP and target then
 		local result, spell, target = tP(self, spell, target, isGround, conditions)
 		if result and NeP.DSL.Parse(conditions, spell) then
 			if self.ForceTarget then target = self.ForceTarget end
