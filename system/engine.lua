@@ -82,13 +82,11 @@ end
 
 function Engine.STRING(spell, conditions, target)
 	local pX = spell:sub(1, 1)
-	local target, isGround = checkTarget(target)
-	if Engine.Actions[pX] then
-		if NeP.DSL.Parse(conditions) then
-			local result = Engine.Actions[pX](spell, target, isGround)
-			if result then return true end
-		end
-	elseif target and (castingTime('player') == 0) then
+	if Engine.Actions[pX] and NeP.DSL.Parse(conditions) then
+		local result = Engine.Actions[pX](spell, target)
+		if result then return true end
+	elseif (castingTime('player') == 0) then
+		local target, isGround = checkTarget(target)
 		spell = Engine.Spell(spell, target)
 		if spell and NeP.DSL.Parse(conditions, spell) then
 			Engine.pCast(spell, target, isGround)

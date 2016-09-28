@@ -7,24 +7,25 @@ Actions['dispelall'] = function()
 	for i=1,#NeP.OM['unitFriend'] do
 		local Obj = NeP.OM['unitFriend'][i]
 		for _,spellID, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
-			local spellName = GetSpellInfo(spellID)
+			local spell = GetSpellInfo(spellID)
 			if dispelType then
-				NeP.Engine.pCast(spellName, Obj.key, false)
-				return true
+				local result = NeP.Engine.STRING(spell, nil, Obj.key)
+				if result then return true end
 			end
 		end
 	end
 end
 
 -- Automated tauting
-Actions['taunt'] = function(_, _, args)
+Actions['taunt'] = function(args)
 	local spell = NeP.Engine.Spell(args)
+	if not spell then return false end
 	for i=1,#NeP.OM['unitEnemie'] do
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
 		if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
-			NeP.Engine.pCast(spell, Obj.key, false)
-			return true
+			local result = NeP.Engine.STRING(spell, nil, Obj.key)
+			if result then return true end
 		end
 	end
 end
@@ -35,14 +36,15 @@ Actions['adots'] = function()
 end
 
 -- Ress all dead
-Actions['ressdead'] = function(_, _, args)
+Actions['ressdead'] = function(args)
 	local spell = NeP.Engine.Spell(args)
+	if not spell then return false end
 	for i=1,#NeP.OM['DeadUnits'] do
 		local Obj = NeP.OM['DeadUnits'][i]
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 		and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
-			Cast(spell, Obj.key)
-			return true
+			local result = NeP.Engine.STRING(spell, nil, Obj.key)
+			if result then return true end
 		end
 	end
 end
@@ -119,29 +121,26 @@ end
 
 -- These are special Actions
 Actions['%'] = function(action, target)
-	local arg1, arg2 = action:match('(.+)%((.+)%)')
-	if arg2 then action = arg1 end
+	local arg1, args = action:match('(.+)%((.+)%)')
+	if args then action = arg1 end
 	action = action:lower():sub(2)
-	local result = Actions[action] and Actions[action](spell, target, arg2)
+	local result = Actions[action] and Actions[action](args, target)
 	if result then return true end
 end
 
-Actions['!'] = function(spell, target, isGround)
+Actions['!'] = function(spell, target)
 	spell = NeP.Engine.Spell(spell:sub(2), target)
 	if spell and spell ~= UnitCastingInfo('player') then
 		SpellStopCasting()
-		if target and isGround then
-			target = target..'.ground'
-		end
-		NeP.Engine.STRING(spell, nil, target)
-		return true
+		local result = NeP.Engine.STRING(spell, nil, target)
+		if result then return true end
 	end
 end
 			-- Cast this along with current cast
-Actions['&'] = function(spell, target, isGround)
+Actions['&'] = function(spell, target)
 	spell = NeP.Engine.Spell(spell:sub(2), target)
 	if spell then
-		NeP.Engine.pCast(spell, target, isGround)
+		NeP.Engine.pCast(spell, target)
 		return true
 	end
 end
