@@ -4,9 +4,9 @@ local APIs = NeP.APIs
 
 local function rFilter(expires, duration)
 	if expires and expires ~= 0 then
-		local expires = expires - GetTime()
+		local rExpires = duration - (expires - GetTime())
 		-- Break if debuff is gonna end
-		if expires < GetReactionTime() then
+		if rExpires < GetReactionTime() then
 			return false
 		end
 	end
