@@ -34,7 +34,6 @@
 	<Script file="locale\esMX.lua" />
 
 	<!-- Core Files -->
-	<Script file="interface\debug.lua" />
 	<Script file="system\timer.lua" />
 	<Script file="system\listener.lua" />
 	<Script file="system\config.lua" />
@@ -43,8 +42,9 @@
 	<Script file="system\buttons.lua" />
 	<Script file="tables\classindex.lua" />
 	<Script file="tables\Spell_IDs.lua" />
-	<Script file="tables\LoS.lua" />
 	<Script file="tables\castable_mounts.lua" />
+	<Script file="tables\blacklisted_auras.lua" />
+	<Script file="tables\UI_elements.lua" />
 
 	<!-- Interface -->
 	<Script file="interface\actionLog.lua" />
@@ -57,7 +57,6 @@
 	<Script file="system\library.lua" />
 	<Script file="system\APIs.lua" />
 	<Script file="system\dsl.lua" />
-	<Script file="system\dispell.lua" />
 	<Script file="system\conditions\general.lua" />
 	<Script file="system\conditions\units.lua" />
 	<Script file="system\conditions\buffs.lua" />
@@ -66,12 +65,15 @@
 	<Script file="system\conditions\states.lua" />
 	<Script file="system\conditions\deprecated.lua" />
 	<Script file="system\combatTracker.lua" />
+	<Script file="system\helpers.lua" />
 	<Script file="system\engine.lua" />
+	<Script file="system\actions.lua" />
 	<Script file="system\combatRoutines.lua" />
 	<Script file="system\listeners.lua" />
-	<Script file="system\helpers.lua" />
 	<Script file="system\healing.lua" />
+	<Script file="system\fakeUnits.lua" />
 	<Script file="system\ObjectManager.lua" />
+	<Script file="interface\OM.lua" />
 	<Script file="system\commands.lua" />
 	<Script file="system\queue.lua" />
 	<Script file="faceroll.lua" />

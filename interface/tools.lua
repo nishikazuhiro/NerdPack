@@ -44,25 +44,12 @@ DiesalGUI:RegisterObjectConstructor("Rule", function()
 	return self
 end, 1)
 
-local statusBarStylesheet = {
-	['frame-texture'] = {
-		type		= 'texture',
-		layer		= 'BORDER',
-		gradient	= 'VERTICAL',							
-		color		= '000000',			
-		alpha 		= 0.7,
-		alphaEnd	= 0.1,
-		offset		= 0,
-	}
-}
-
-
 DiesalGUI:RegisterObjectConstructor("StatusBar", function()
 	local self  = DiesalGUI:CreateObjectBase(Type)
 	local frame = CreateFrame('StatusBar',nil,UIParent)
 	self.frame  = frame
 
-	self:AddStyleSheet(statusBarStylesheet)
+	self:AddStyleSheet(NeP.statusBarStylesheet)
 
 	frame.Left = frame:CreateFontString()
 	frame.Left:SetFont(SharedMedia:Fetch('font', 'Calibri Bold'), 14)
@@ -100,89 +87,6 @@ DiesalGUI:RegisterObjectConstructor("StatusBar", function()
 	self.type = "Rule"
 	return self
 end, 1)
-
-local buttonStyleSheet = {
-	['frame-color'] = {	
-		type			= 'texture',
-		layer			= 'BACKGROUND',								
-		color			= '2f353b',			
-		offset		= 0,	
-	},
-	['frame-highlight'] = {
-		type			= 'texture',
-		layer			= 'BORDER',
-		gradient	= 'VERTICAL',							
-		color			= 'FFFFFF',			
-		alpha 		= 0,
-		alphaEnd	= .1,
-		offset		= -1,
-	},	
-	['frame-outline'] = {		
-		type			= 'outline',
-		layer			= 'BORDER',								
-		color			= '000000',		
-		offset		= 0,		
-	},	
-	['frame-inline'] = {		
-		type			= 'outline',
-		layer			= 'BORDER',
-		gradient	= 'VERTICAL',
-		color			= 'ffffff',
-		alpha 		= .02,
-		alphaEnd	= .09,
-		offset		= -1,
-	},	
-	['frame-hover'] = {		
-		type			= 'texture',
-		layer			= 'HIGHLIGHT',	
-		color			= 'ffffff',
-		alpha			= .1,
-		offset		= 0,	
-	},
-	['text-color'] = {
-		type			= 'Font',
-		color			= 'b8c2cc',
-	},
-}
-local spinnerStyleSheet = {
-	['bar-background'] = {			
-		type			= 'texture',
-		layer			= 'BORDER',								
-		color			= 'ee2200',			
-	},
-}
-
-local createButtonStyle = {
-	type			= 'texture',
-	texFile		= 'DiesalGUIcons',
-	texCoord		= {1,6,16,256,128},
-	alpha 		= .7,
-	offset		= {-2,nil,-2,nil},
-	width			= 16,
-	height		= 16,
-}
-local deleteButtonStyle = {
-	type			= 'texture',
-	texFile		='DiesalGUIcons',
-	texCoord		= {2,6,16,256,128},
-	alpha 		= .7,
-	offset		= {-2,nil,-2,nil},
-	width			= 16,
-	height		= 16,
-}
-local ButtonNormal = {
-	type			= 'texture',
-	texColor		= 'ffffff',
-	alpha 		= .7,
-}
-local ButtonOver = {
-	type			= 'texture',
-	alpha 		= 1,
-}
-local ButtonClicked = {
-	type			= 'texture',
-	alpha 		= .3,
-}
 
 function buildElements(table, parent)
 
@@ -341,7 +245,7 @@ function buildElements(table, parent)
 			end
 
 			tmp_spin:ApplySettings()
-			tmp_spin:AddStyleSheet(spinnerStyleSheet)
+			tmp_spin:AddStyleSheet(NeP.spinnerStyleSheet)
 
 			tmp_spin:SetEventListener('OnValueChanged', function(this, event, userInput, number)
 				if not userInput then return end
@@ -403,7 +307,7 @@ function buildElements(table, parent)
 			tmp_spin:SetNumber(
 				NeP.Config.Read(table.key..'_'..element.key..'_spin', element.default_spin or 0)
 			)
-			tmp_spin:AddStyleSheet(spinnerStyleSheet)
+			tmp_spin:AddStyleSheet(NeP.spinnerStyleSheet)
 			tmp_spin:ApplySettings()
 
 			tmp_spin:SetEventListener('OnValueChanged', function(this, event, userInput, number)
@@ -511,7 +415,7 @@ function buildElements(table, parent)
 			tmp:SetWidth(element.width)
 			tmp:SetHeight(element.height)
 
-			tmp:AddStyleSheet(buttonStyleSheet)
+			tmp:AddStyleSheet(NeP.buttonStyleSheet)
 
 			tmp:SetEventListener("OnClick", element.callback)
 
@@ -705,7 +609,7 @@ function NeP.Interface.buildGUI(config)
 			height		= 20,
 		}, true)
 		createButton:SetText('')
-		createButton:SetStyle('frame',createButtonStyle)
+		createButton:SetStyle('frame',NeP.createButtonStyle)
 		createButton:SetEventListener('OnClick', function()
 
 			local newWindow = DiesalGUI:Create('Window')
@@ -731,7 +635,7 @@ function NeP.Interface.buildGUI(config)
 			profileButton:SetParent(newWindow.content)
 			profileButton:SetPoint("TOPLEFT", newWindow.content, "TOPLEFT", 5, -30)
 			profileButton:SetPoint("BOTTOMRIGHT", newWindow.content, "TOPRIGHT", -5, -50)
-			profileButton:AddStyleSheet(buttonStyleSheet)
+			profileButton:AddStyleSheet(NeP.buttonStyleSheet)
 			profileButton:SetText("Create New Profile")
 			profileButton:SetEventListener('OnClick', function()
 
@@ -761,16 +665,16 @@ function NeP.Interface.buildGUI(config)
 
 		end)
 		createButton:SetEventListener('OnEnter', function()
-			createButton:SetStyle('frame', ButtonOver)
+			createButton:SetStyle('frame', NeP.ButtonOver)
 		end)
 		createButton:SetEventListener('OnLeave', function()
-			createButton:SetStyle('frame', ButtonNormal)
+			createButton:SetStyle('frame', NeP.ButtonNormal)
 		end)
 		createButton.frame:SetScript('OnMouseDown', function()
-			createButton:SetStyle('frame', ButtonNormal)
+			createButton:SetStyle('frame', NeP.ButtonNormal)
 		end)
 		createButton.frame:SetScript('OnMouseUp', function()
-			createButton:SetStyle('frame', ButtonOver)
+			createButton:SetStyle('frame', NeP.ButtonOver)
 		end)
 
 		local deleteButton = DiesalGUI:Create('Button')
@@ -782,18 +686,18 @@ function NeP.Interface.buildGUI(config)
 			height		= 20,
 		}, true)
 		deleteButton:SetText('')
-		deleteButton:SetStyle('frame',deleteButtonStyle)
+		deleteButton:SetStyle('frame',NeP.deleteButtonStyle)
 		deleteButton:SetEventListener('OnEnter', function()
-			deleteButton:SetStyle('frame', ButtonOver)
+			deleteButton:SetStyle('frame', NeP.ButtonOver)
 		end)
 		deleteButton:SetEventListener('OnLeave', function()
-			deleteButton:SetStyle('frame', ButtonNormal)
+			deleteButton:SetStyle('frame', NeP.ButtonNormal)
 		end)
 		deleteButton.frame:SetScript('OnMouseDown', function()
-			deleteButton:SetStyle('frame', ButtonNormal)
+			deleteButton:SetStyle('frame', NeP.ButtonNormal)
 		end)
 		deleteButton.frame:SetScript('OnMouseUp', function()
-			deleteButton:SetStyle('frame', ButtonOver)
+			deleteButton:SetStyle('frame', NeP.ButtonOver)
 		end)
 		deleteButton:SetEventListener('OnClick', function()
 			local selectedProfile = NeP.Config.Read(config.key_orig..'_profile', 'Default Profile')
@@ -870,7 +774,7 @@ function NeP.Interface.buildGUI(config)
 	if not config.color then config.color = "ee2200" end
 	if type(config.color) == 'function' then config.color = config.color() end
 
-	spinnerStyleSheet['bar-background']['color'] = config.color
+	NeP.spinnerStyleSheet['bar-background']['color'] = config.color
 
 	if config.title then
 		parent:SetTitle("|cff"..config.color..config.title.."|r", config.subtitle)

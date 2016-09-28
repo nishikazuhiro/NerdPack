@@ -4,7 +4,6 @@ NeP.Helpers = {
 	range = true,
 }
 
-local Helpers = NeP.Helpers
 local spellHasFailed = {}
 
 local function addFailedSpell(GUID, spell)
@@ -21,16 +20,16 @@ local UI_Erros = {
 	end,
 	-- infront / LoS
 	[50] = function(GUID, spell)
-		Helpers.infront = false
+		NeP.Helpers.infront = false
 		addFailedSpell(GUID, spell)
 	end,
 	-- SPELL_FAILED_OUT_OF_RANGE
 	[359] = function(GUID, spell)
-		Helpers.range = false
+		NeP.Helpers.range = false
 		addFailedSpell(GUID, spell)
 	end,
 	[SPELL_FAILED_TOO_CLOSE] = function(GUID, spell)
-		Helpers.range = false
+		NeP.Helpers.range = false
 		addFailedSpell(GUID, spell)
 	end
 }
@@ -61,8 +60,8 @@ NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
 end)
 
 C_Timer.NewTicker(1, (function()
-	Helpers.behind = true
-	Helpers.infront = true
-	Helpers.range = true
+	NeP.Helpers.behind = true
+	NeP.Helpers.infront = true
+	NeP.Helpers.range = true
 	wipe(spellHasFailed)
 end), nil)

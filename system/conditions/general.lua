@@ -1,5 +1,4 @@
 local RegisterConditon = NeP.DSL.RegisterConditon
-local rangeCheck = LibStub('LibRangeCheck-2.0')
 
 local function checkChanneling(target)
 	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
@@ -113,7 +112,7 @@ RegisterConditon('spell.charges', function(_, spell)
 	return charges or 0
 end)
 
-RegisterConditon('spell.count', function(target, spell)
+RegisterConditon('spell.count', function(_, spell)
 	return select(1, GetSpellCount(spell))
 end)
 
@@ -121,6 +120,12 @@ RegisterConditon('spell.range', function(target, spell)
 	local spellIndex, spellBook = GetSpellBookIndex(spell)
 	if not spellIndex then return false end
 	return spellIndex and IsSpellInRange(spellIndex, spellBook, target)
+end)
+
+RegisterConditon('spell.casttime', function(_, spell)
+	local CastTime = select(4, GetSpellInfo(spell)) / 1000
+	if CastTime then return CastTime end
+	return 0
 end)
 
 RegisterConditon('combat.time', function(target)
@@ -177,11 +182,19 @@ RegisterConditon('equipped', function(_, item)
 end)
 
 RegisterConditon('gcd', function()
-	local _, GCD = GetSpellCooldown(61304)
-	return GCD
+	local class = select(3,UnitClass("player"))
+	-- Some class's always have GCD = 1
+	if class == 4 or (class == 11 and GetShapeshiftForm()== 2) then
+		return 1
+	end
+	return math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3
 end)
 
 RegisterConditon('UI', function(_, key)
 	local SelectedCR = NeP.Interface.GetSelectedCR().Name
 	return NeP.Interface.fetchKey(SelectedCR, key)
+end)
+
+RegisterConditon('haste', function(unit)
+	return UnitSpellHaste(unit)
 end)

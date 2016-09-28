@@ -30,8 +30,6 @@ local KEYBINDS = {
 }
 
 NeP.DSL.RegisterConditon("keybind", function(_, Arg)
-	if Arg and KEYBINDS[string.lower(Arg)] then
-		return KEYBINDS[string.lower(Arg)]() and not GetCurrentKeyBoardFocus()
-	end
-	return false
+	local Arg = Arg:lower()
+	return KEYBINDS[Arg] and KEYBINDS[Arg]() and not GetCurrentKeyBoardFocus()
 end)

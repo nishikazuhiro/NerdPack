@@ -7,19 +7,18 @@ local log_items = 10
 local abs_height = log_height * log_items + log_height
 local delta = 0
 
-local DiesalTools = LibStub('DiesalTools-1.0')
-local DiesalStyle = LibStub('DiesalStyle-1.0')
 local DiesalGUI = LibStub('DiesalGUI-1.0')
-local DiesalMenu = LibStub('DiesalMenu-1.0')
-local SharedMedia = LibStub('LibSharedMedia-3.0')
 
-PE_ActionLog = DiesalGUI:Create('Window')
-local ActionLog = PE_ActionLog
+NeP_AL = DiesalGUI:Create('Window')
+local ActionLog = NeP_AL
 ActionLog.frame:SetSize(460, abs_height)
 ActionLog.frame:SetClampedToScreen(true)
 ActionLog.frame:SetMinResize(400, abs_height)
 ActionLog.frame:SetMaxResize(700, abs_height)
-PE_ActionLog:Hide()
+ActionLog:SetEventListener('OnDragStop', function(self, event, left, top)
+	NeP.Config.Write('NeP_AL_POS', {left, top})
+end)
+NeP_AL:Hide()
 
 local ActionLogHeader = CreateFrame("Frame", nil, ActionLog.frame)
 ActionLogHeader:SetFrameLevel(92)
@@ -27,17 +26,17 @@ ActionLogHeader:SetHeight(log_height)
 ActionLogHeader:SetPoint("TOPLEFT", ActionLog.frame, "TOPLEFT")
 ActionLogHeader:SetPoint("TOPRIGHT", ActionLog.frame, "TOPRIGHT")
 
-ActionLogHeader.statusTextA = ActionLogHeader:CreateFontString('PE_ActionLogHeaderText')
+ActionLogHeader.statusTextA = ActionLogHeader:CreateFontString('NeP_ALHeaderText')
 ActionLogHeader.statusTextA:SetFont("Fonts\\ARIALN.TTF", log_height-3)
 ActionLogHeader.statusTextA:SetPoint("LEFT", ActionLogHeader, 5, 0)
 ActionLogHeader.statusTextA:SetText("|cfffdcc00Action")
 
-ActionLogHeader.statusTextB = ActionLogHeader:CreateFontString('PE_ActionLogHeaderText')
+ActionLogHeader.statusTextB = ActionLogHeader:CreateFontString('NeP_ALHeaderText')
 ActionLogHeader.statusTextB:SetFont("Fonts\\ARIALN.TTF", log_height-3)
 ActionLogHeader.statusTextB:SetPoint("LEFT", ActionLogHeader, 130, 0)
 ActionLogHeader.statusTextB:SetText("|cfffdcc00Description")
 
-ActionLogHeader.statusTextC = ActionLogHeader:CreateFontString('PE_ActionLogHeaderText')
+ActionLogHeader.statusTextC = ActionLogHeader:CreateFontString('NeP_ALHeaderText')
 ActionLogHeader.statusTextC:SetFont("Fonts\\ARIALN.TTF", log_height-3)
 ActionLogHeader.statusTextC:SetPoint("RIGHT", ActionLogHeader, -25, 0)
 ActionLogHeader.statusTextC:SetText("|cfffdcc00Time")
@@ -159,3 +158,14 @@ C_Timer.NewTicker(0.05, (function()
 		NeP.ActionLog.update()
 	end
 end), nil)
+
+-- Wait until saved vars are loaded
+NeP.Config.WhenLoaded(function()
+	local left, top = unpack(NeP.Config.Read('NeP_AL_POS', {false, false}))
+	if left and top then
+		ActionLog.settings.left = left
+		ActionLog.settings.top = top
+		ActionLog:UpdatePosition()
+		ActionLog.frame:SetSize(460, abs_height)
+	end
+end)

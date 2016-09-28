@@ -4,6 +4,17 @@ NeP.CombatTracker = {
 
 local Data = NeP.CombatTracker.Data
 
+local function addToData(GUID)
+	if not Data[GUID] then
+		Data[GUID] = {
+			dmgTaken = 0,
+			Hits = 0,
+			firstHit = GetTime(),
+			lastHit = 0
+		}
+	end
+end
+
 local logDamage = function(...)
 	local Timestamp, _,_,_,_,_,_, GUID, _, UnitFlag, _,_,_,_, Amount = ...
 	Data[GUID].dmgTaken = Data[GUID].dmgTaken + Amount
@@ -24,9 +35,14 @@ end
 local addAction = function(...)
 	local timestamp, _,_, sourceGUID, sourceName,_,_, destGUID, destName,_,_, spellId, spellName = ...
 	local playerGUID = UnitGUID('player')
-	if spellName and sourceGUID == playerGUID then
-		local icon = select(3, GetSpellInfo(spellName))
-		NeP.ActionLog.insert('Spell Cast Succeed', spellName, icon, destName)
+	if spellName then
+		-- Add to action Log
+		if sourceGUID == playerGUID then
+			local icon = select(3, GetSpellInfo(spellName))
+			NeP.ActionLog.insert('Spell Cast Succeed', spellName, icon, destName)
+		end
+		addToData(sourceGUID)
+		Data[sourceGUID].lastcast = spellName
 	end
 end
 
@@ -42,6 +58,11 @@ local EVENTS = {
 	['UNIT_DIED'] = function(...) Data[select(8, ...)] = nil end,
 	['SPELL_CAST_SUCCESS'] = function(...) addAction(...) end
 }
+
+function NeP.CombatTracker.LastCast(Unit)
+	local GUID = UnitGUID(Unit)
+	return Data[GUID] and Data[GUID].lastcast
+end
 
 function NeP.CombatTracker.getDMG(UNIT)
 	local total, Hits = 0, 0
@@ -81,10 +102,9 @@ function NeP.CombatTracker.TimeToDie(unit)
 end
 
 NeP.DSL.RegisterConditon("incdmg", function(target, args)
-	local args = args or 1
 	if target and UnitExists(target) then
 		local pDMG = NeP.CombatTracker.getDMG(target)
-		return pDMG * (tonumber(args)/1000)
+		return pDMG * tonumber(args or 1)
 	end
 	return 0
 end)
@@ -92,14 +112,7 @@ end)
 NeP.Listener.register('CombatTracker', 'COMBAT_LOG_EVENT_UNFILTERED', function(...)
 	local _, EVENT, _,_,_,_,_, GUID = select(1, ...)
 	-- Add the unit to our data if we dont have it
-	if not Data[GUID] then
-		Data[GUID] = {
-			dmgTaken = 0,
-			Hits = 0,
-			firstHit = GetTime(),
-			lastHit = 0,
-		}
-	end
+	addToData(GUID)
 	-- Update last  hit time
 	Data[GUID].lastHit = GetTime()
 	-- Add the amount of dmg/heak

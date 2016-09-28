@@ -16,7 +16,7 @@ local OPs = {
 	['/'] = function(arg1, arg2) return arg1 / arg2 end,
 	['*'] = function(arg1, arg2) return arg1 * arg2 end,
 	['!'] = function(arg1, arg2) return not DSL.Parse(arg1, arg2) end,
-	['@'] = function(arg1, arg2) return NeP.library.parse(false, arg1, 'target') end,
+	['@'] = function(arg1, arg2) return NeP.library.parse(arg1) end,
 	['true'] = function() return true end,
 	['false'] = function() return false end,
 }
@@ -68,7 +68,16 @@ local function Nest(Strg, Spell)
 	return DSL.Parse(Strg, Spell)
 end
 
-local function ProcessCondition(Strg, Args, Spell)
+local function ProcessCondition(Strg, Spell)
+	-- Process Unit Stuff
+	local unitID, rest = strsplit('.', Strg, 2)
+	local target =  'player' -- default target
+	unitID =  NeP.FakeUnits.Filter(unitID)
+	if unitID and UnitExists(unitID) then
+		target = unitID
+		Strg = rest
+	end
+	-- Condition arguments
 	local Args = Strg:match('%((.+)%)')
 	if Args then 
 		Args = NeP.Locale.Spells(Args) -- Translates the name to the correct locale
@@ -77,28 +86,16 @@ local function ProcessCondition(Strg, Args, Spell)
 		Args = Spell
 	end
 	Strg = Strg:gsub('%s', '')
-	local unitID, rest = strsplit('.', Strg, 2)
-	local target =  'player' -- default target
-	unitID =  NeP.Engine.FilterUnit(unitID)
-	if unitID and UnitExists(unitID) then
-		target = unitID
-		Strg = rest
-	end
+	-- Process the Condition itself
 	local Condition = DSL.Get(Strg)
 	if Condition then return Condition(target, Args) end
-end
-
-local function ProcessString(Strg, Spell)
-	if Strg:find('%a') then
-		return ProcessCondition(Strg, Spell)
-	end
-	return Strg:gsub('%s', '')
 end
 
 local fOps = {['!='] = '~=',['='] = '=='}
 local function Comperatores(Strg, Spell)
 	local OP = ''
-	for Token in Strg:gmatch('[><=!~]') do OP = OP..Token end
+	for Token in Strg:gmatch('[><=~]') do OP = OP..Token end
+	if Strg:find('!=') then OP = '!=' end
 	local arg1, arg2 = unpack(NeP.string_split(Strg, OP))
 	arg1, arg2 = DSL.Parse(arg1, Spell), DSL.Parse(arg2, Spell)
 	return DoMath(arg1, arg2, (fOps[OP] or OP))
@@ -120,10 +117,39 @@ local function ExeFunc(Strg)
 	return _G[Strg](Args)
 end
 
+local function RemoveSpaces(Strg)
+	if Strg:find('^%s') then
+		Strg = Strg:sub(2);
+	end
+	if Strg:find('$%s') then
+		Strg = Strg:sub(-2);
+	end
+	return Strg
+end
+
 -- Routes
 local typesTable = {
 	['function'] = function(dsl, Spell) return dsl() end,
+	['table'] = function(dsl, spell)
+		local r_Tbl = {[1] = true}
+		for i=1, #dsl do
+			local Strg = dsl[i]
+			if Strg == 'or' then
+				r_Tbl[#r_Tbl+1] = true
+			elseif r_Tbl[#r_Tbl] then
+				local eval = DSL.Parse(Strg, spell)
+				r_Tbl[#r_Tbl] = eval or false
+			end
+		end
+		for i = 1, #r_Tbl do
+			if r_Tbl[i] then
+				return true
+			end
+		end
+		return false
+	end,
 	['string'] = function(Strg, Spell)
+		Strg = RemoveSpaces(Strg)
 		local pX = Strg:sub(1, 1)
 		if Strg:find('{(.-)}') then
 			return Nest(Strg, Spell)
@@ -137,14 +163,18 @@ local typesTable = {
 		elseif Strg:find("func=") then
 			Strg = Strg:sub(6);
 			return ExeFunc(Strg)
-		elseif Strg:find('[><=!~]') then
+		elseif Strg:find('[><=~]') then
+			return Comperatores(Strg, Spell)
+		elseif Strg:find('!=') then
 			return Comperatores(Strg, Spell)
 		elseif Strg:find("[%+%-%*%/]") then
 			return StringMath(Strg, Spell)
 		elseif OPs[Strg] then
 			return OPs[Strg](Strg, Spell)
+		elseif Strg:find('%a') then
+			return ProcessCondition(Strg, Spell)
 		else
-			return ProcessString(Strg, Spell)
+			return Strg
 		end
 	end,
 	['nil'] = function(dsl, Spell) return true end,

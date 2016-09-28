@@ -8,29 +8,12 @@ local LibBoss = LibStub("LibBossIDs-1.0")
 --------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------
 ]]
-
-RegisterConditon("modifier.party", function()
-	return IsInGroup()
+RegisterConditon("ingroup", function(target)
+	return UnitInParty(target) or UnitInRaid(target)
 end)
 
-RegisterConditon("modifier.raid", function()
-	return IsInRaid()
-end)
-
-RegisterConditon("party", function(target)
-	return UnitInParty(target)
-end)
-
-RegisterConditon("raid", function(target)
-	return UnitInRaid(target)
-end)
-
-RegisterConditon("modifier.members", function()
+RegisterConditon("group.members", function()
 	return (GetNumGroupMembers() or 0)
-end)
-
-RegisterConditon("modifier.player", function()
-	return UnitIsPlayer("target")
 end)
 
 ------------------------------------------ ANY -------------------------------------------
@@ -108,7 +91,7 @@ RegisterConditon("player", function(target)
 	return UnitIsPlayer(target)
 end)
 
-RegisterConditon("isPlayer", function(target)
+RegisterConditon("isself", function(target)
 	return UnitIsUnit(target, 'player')
 end)
 
@@ -284,9 +267,9 @@ RegisterConditon('swimming', function ()
 	return IsSwimming()
 end)
 
-RegisterConditon("lastcast", function(spell, arg)
-	if arg then spell = arg end
-	return NeP.Engine.lastCast == GetSpellName(spell)
+RegisterConditon("lastcast", function(Unit, Spell)
+	local lastcast = NeP.CombatTracker.LastCast(Unit)
+	return lastcast == GetSpellInfo(Spell)
 end)
 
 RegisterConditon("mounted", function()
@@ -353,21 +336,14 @@ end)
 
 ------------------------------------------ OM CRAP ---------------------------------------
 ------------------------------------------------------------------------------------------
-RegisterConditon("modifier.enemies", function()
-	return #NeP.OM['unitEnemie']
-end)
-
 RegisterConditon("area.enemies", function(unit, distance)
 	local total = 0
-	local distance = tonumber(distance)
-	if UnitExists(unit) then
-		for i=1, #NeP.OM['unitEnemie'] do
-			local Obj = NeP.OM['unitEnemie'][i]
-			if UnitExists(Obj.key) and not UnitIsDeadOrGhost(Obj.key)
-			and (UnitAffectingCombat(Obj.key) or isDummy(Obj.key))
-			and (NeP.Engine.Distance(unit, Obj.key) <= distance) then
-				total = total +1
-			end
+	if not UnitExists(unit) then return total end
+	for i=1, #NeP.OM['unitEnemie'] do
+		local Obj = NeP.OM['unitEnemie'][i]
+		if UnitExists(Obj.key) and (UnitAffectingCombat(Obj.key) or isDummy(Obj.key))
+		and NeP.Engine.Distance(unit, Obj.key) <= tonumber(distance) then
+			total = total +1
 		end
 	end
 	return total
@@ -375,14 +351,11 @@ end)
 
 RegisterConditon("area.friendly", function(unit, distance)
 	local total = 0
-	local distance = tonumber(distance)
-	if UnitExists(unit) then
-		for i=1, #NeP.OM['unitFriend'] do
-			local Obj = NeP.OM['unitFriend'][i]
-			if UnitExists(Obj.key) and not UnitIsDeadOrGhost(Obj.key)
-			and NeP.Engine.Distance(unit, Obj.key) <= distance then
-				total = total +1
-			end
+	if not UnitExists(unit) then return total end
+	for i=1, #NeP.Healing.Units do
+		local Obj = NeP.Healing.Units[i]
+		if UnitExists(Obj.key) and NeP.Engine.Distance(unit, Obj.key) <= tonumber(distance) then
+			total = total +1
 		end
 	end
 	return total
