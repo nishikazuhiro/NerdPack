@@ -45,6 +45,7 @@
 	<Script file="tables\castable_mounts.lua" />
 	<Script file="tables\blacklisted_auras.lua" />
 	<Script file="tables\UI_elements.lua" />
+	<Script file="tables\dummy.lua" />
 
 	<!-- Interface -->
 	<Script file="interface\actionLog.lua" />
