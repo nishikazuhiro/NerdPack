@@ -58,7 +58,7 @@ local matchs = {'dummy', 'training bag'}
 function isDummy(unit)
 	if not UnitExists(unit) then return end
 	if UnitName(unit):lower():find('dummy') then return true end
-	return UnitExists and NeP.Tooltip:Unit(unit, matchs)
+	return NeP.Tooltip:Unit(unit, matchs)
 end
 
 local lastMSG = ''
