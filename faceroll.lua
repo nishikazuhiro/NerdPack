@@ -61,6 +61,14 @@ local _rangeTable = {
 	['ranged'] = 40,
 }
 
+function FallBack_Distance(b)
+	if UnitExists(b) then
+		local minRange, maxRange = rangeCheck:GetRange(b)
+		return maxRange or minRange
+	end
+	return 0
+end
+
 function NeP.Engine.FaceRoll()
 
 	-- cast on ground
@@ -91,17 +99,25 @@ function NeP.Engine.FaceRoll()
 		return NeP.Helpers.infront and UnitExists(b)
 	end
 
-	function NeP.Engine.Distance(_, b)
-		if UnitExists(b) then
-			local minRange, maxRange = rangeCheck:GetRange(b)
-			return maxRange or minRange
+	-- Distance
+	function NeP.Engine.Distance(unit1, unit2)
+		local y1, x1, z1, instance1 = UnitPosition(unit1)
+		local y2, x2, z2, instance2 = UnitPosition(unit2)
+		if y2 and instance1 == instance2 then
+			return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5
 		end
-		return 0
+		return FallBack_Distance(unit2)
 	end
 
-	-- Infront
-	function NeP.Engine.Infront()
-		return NeP.Helpers.infront
+	function NeP.Engine.Infront(a, b)
+		if UnitExists(a) and UnitExists(b) then
+			local aX, aY, aZ = GetPlayerMapPosition(a)
+			local bX, bY, bZ = GetPlayerMapPosition(b)
+			local playerFacing = GetPlayerFacing()
+			local facing = math.atan2(bY - aY, bX - aX) % 6.2831853071796
+			return math.abs(math.deg(math.abs(playerFacing - (facing)))-180) < 90
+		end
+		return false
 	end
 
 	NeP.Engine.UnitCombatRange = NeP.Engine.Distance
