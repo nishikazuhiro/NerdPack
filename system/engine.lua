@@ -98,11 +98,12 @@ function Engine:STRING(eval)
 end
 
 function Engine:Parse(spell, conditions, target)
-	local eval = {}
+	local eval = {
+		spell = spell,
+		target = target,
+		conditions = conditions
+	}
 	eval.type = type(spell):upper()
-	eval.spell = spell
-	eval.target = target
-	eval.conditions = conditions
 	eval = checkTarget(eval)
 	eval = self[eval.type](self, eval)
 	if eval and NeP.DSL.Parse(eval.conditions, eval.spell)  then
