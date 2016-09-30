@@ -15,7 +15,7 @@ local function checkTarget(eval)
 		eval.target = UnitExists('target') and 'target' or 'player'
 	else
 		-- fake units
-		eval.target = NeP.FakeUnits.Filter(target)
+		eval.target = NeP.FakeUnits.Filter(eval.target)
 		if not eval.target then return end
 	end
 	-- is it ground?
