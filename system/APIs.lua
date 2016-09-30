@@ -4,13 +4,8 @@ local APIs = NeP.APIs
 
 local function rFilter(expires, duration)
 	if expires and expires ~= 0 then
-		local rExpires = duration - (expires - GetTime())
-		-- Break if debuff is gonna end
-		if rExpires < GetReactionTime() then
-			return false
-		end
+		return (expires - GetTime()) < GetReactionTime()
 	end
-	return true
 end
 
 local function oFilter(owner, spell, spellID, caster)
@@ -39,7 +34,9 @@ APIs['UnitBuff'] = function(target, spell, owner)
 		name,_,_,count,_,duration,expires,caster = _G['UnitBuff'](target, spell)
 	end
 	-- This adds some random factor
-	if name and rFilter(expires, duration) then
+	print(name)
+	if name and not rFilter(expires, duration) then
+		print('hit')
 		return name, count, expires, caster
 	end
 end
@@ -57,7 +54,7 @@ APIs['UnitDebuff'] = function(target, spell, owner)
 		name,_,_,count,_,duration,expires,caster = _G['UnitDebuff'](target, spell)
 	end
 	-- This adds some random factor
-	if name and rFilter(expires, duration) then
+	if name and not rFilter(expires, duration) then
 		return name, count, expires, caster, power
 	end
 end
