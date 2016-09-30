@@ -47,8 +47,9 @@ Actions['ressdead'] = function(args)
 end
 
 -- Pause
-Actions['pause'] = function()
-	return (function() end)
+Actions['pause'] = function(eval)
+	eval.breaks = true
+	return eval
 end
 
 local invItems = {
@@ -103,39 +104,46 @@ Actions['#'] = function(item, target)
 end
 
 -- Lib
-Actions['@'] = function(lib, _, conditions)
-	if NeP.DSL.Parse(conditions) then
+Actions['@'] = function(eval)
+	eval.conditions = NeP.DSL.Parse(eval.conditions)
+	if eval.conditions then
 		local result = NeP.library.parse(lib:sub(2))
-		if result then return (function() end) end
+		if result then eval.func = (function() end) end
+		return eval
 	end 
 end
 
 -- Macro
-Actions['/'] = function(spell, target)
-	return NeP.Engine.Macro, spell, target
+Actions['/'] = function(eval)
+	eval.func = NeP.Engine.Macro
+	return eval
 end
 
 -- These are special Actions
-Actions['%'] = function(action, target)
-	local arg1, args = action:match('(.+)%((.+)%)')
-	if args then action = arg1 end
-	action = action:lower():sub(2)
-	if Actions[action] then
-		return Actions[action](args, target)
+Actions['%'] = function(eval)
+	eval.spell = eval.spell:lower():sub(2)
+	local arg1, args = eval.spell:match('(.+)%((.+)%)')
+	if args then eval.spell = arg1 end
+	if Actions[eval.spell] then
+		return Actions[eval.spell](eval)
 	end
 end
 
-Actions['!'] = function(spell, target)
-	spell = NeP.Engine:Spell(spell:sub(2), target)
-	if spell and spell ~= UnitCastingInfo('player') then
+-- Interrupt and cast
+Actions['!'] = function(eval)
+	eval.spell = eval.spell:sub(2)
+	eval = NeP.Engine:Spell(eval)
+	if eval.ready and eval.spell ~= UnitCastingInfo('player') then
 		SpellStopCasting()
-		return NeP.Engine:STRING(spell, target)
+		return NeP.Engine:STRING(eval)
 	end
 end
-			-- Cast this along with current cast
-Actions['&'] = function(spell, target)
-	spell = NeP.Engine:Spell(spell:sub(2), target)
-	if spell then
-		return NeP.Engine.Cast, spell, target
+
+-- Cast this along with current cast
+Actions['&'] = function(eval)
+	eval = NeP.Engine:Spell(eval)
+	if eval.ready then
+		eval.func = eval.isGround and self.CastGround or self.Cast
 	end
+	return eval
 end
