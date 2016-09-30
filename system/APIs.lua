@@ -34,9 +34,7 @@ APIs['UnitBuff'] = function(target, spell, owner)
 		name,_,_,count,_,duration,expires,caster = _G['UnitBuff'](target, spell)
 	end
 	-- This adds some random factor
-	print(name)
 	if name and not rFilter(expires, duration) then
-		print('hit')
 		return name, count, expires, caster
 	end
 end
