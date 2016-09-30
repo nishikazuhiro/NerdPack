@@ -110,14 +110,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function NeP.Engine.Infront(a, b)
-		if UnitExists(a) and UnitExists(b) then
-			local aX, aY, aZ = GetPlayerMapPosition(a)
-			local bX, bY, bZ = GetPlayerMapPosition(b)
-			local playerFacing = GetPlayerFacing()
-			local facing = math.atan2(bY - aY, bX - aX) % 6.2831853071796
-			return math.abs(math.deg(math.abs(playerFacing - (facing)))-180) < 90
-		end
-		return false
+		return true
 	end
 
 	NeP.Engine.UnitCombatRange = NeP.Engine.Distance
