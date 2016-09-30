@@ -96,7 +96,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function NeP.Engine.LineOfSight(_, b)
-		return NeP.Helpers.infront and UnitExists(b)
+		return UnitExists(b) and NeP.Helpers.infront(b)
 	end
 
 	-- Distance
