@@ -32,17 +32,17 @@ function Engine.clear_Cast_Queue()
 end
 
 NeP.Timer.Sync("nep_queue", 0.01, function()
-	local Running = NeP.DSL.Get('toggle')(nil, 'mastertoggle')
-	if Running then
-		local time = GetTime()
+	if NeP.DSL.Get('toggle')(nil, 'mastertoggle') then
 		for i=1, #eQueue do
-			if (time - eQueue[i][4]) > 5 then
+			if (GetTime() - eQueue[i][4]) > 5 then
 				table.remove(eQueue, i)
+				break
 			else
 				local func, spell, target = Engine:Parse(unpack(eQueue[i]))
 				if func then
 					func(spell, target)
 					table.remove(eQueue, i)
+					break
 				end
 			end
 		end
