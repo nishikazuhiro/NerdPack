@@ -20,16 +20,9 @@ local Roles = {
 	['NONE'] = 1	 
 }
 
-local function incHeal(Obj)
-	if F('NePSettings', 'ignoreIH', false) then
-		return 0
-	end
-	return (IH(Obj) or 0) --[[+NeP.CombatTracker.IncHeal]]
-end
-
 local function addUnit(Obj)
 	local Role = RolesAssigned(Obj.key) or 'NONE'
-	local healthRaw = UH(Obj.key)-(THA(Obj.key) or 0)+incHeal(Obj.key)
+	local healthRaw = UH(Obj.key)-(THA(Obj.key) or 0)
 	local maxHealth = UHMax(Obj.key)
 	local healthPercent =  (healthRaw / maxHealth) * 100
 	table.insert(Roster, {
@@ -102,4 +95,8 @@ end)
 
 NeP.DSL.RegisterConditon("health.max", function(target)
 	return UHMax(target)
+end)
+
+NeP.DSL.RegisterConditon("phealth", function(unit)
+	return UH(unit)-(THA(unit) or 0)+IH(unit)
 end)
