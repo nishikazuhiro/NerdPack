@@ -3,13 +3,15 @@ local Actions = NeP.Engine.Actions
 local LibDisp = LibStub('LibDispellable-1.0')
 
 -- Dispell all
-Actions['dispelall'] = function()
+Actions['dispelall'] = function(eval, args)
 	for i=1,#NeP.OM['unitFriend'] do
 		local Obj = NeP.OM['unitFriend'][i]
 		for _,spellID, name, _,_,_, dispelType in LibDisp:IterateDispellableAuras(Obj.key) do
 			local spell = GetSpellInfo(spellID)
 			if dispelType then
-				return NeP.Engine:STRING(spell, Obj.key)
+				eval.spell = spell
+				eval.target = Obj.key
+				return NeP.Engine:STRING(eval)
 			end
 		end
 	end
@@ -23,7 +25,9 @@ Actions['taunt'] = function(args)
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
 		if Threat and Threat >= 0 and Threat < 3 and Obj.distance <= 30 then
-			return NeP.Engine:STRING(spell, Obj.key)
+			eval.spell = spell
+			eval.target = Obj.key
+			return NeP.Engine:STRING(eval)
 		end
 	end
 end
@@ -34,14 +38,16 @@ Actions['adots'] = function()
 end
 
 -- Ress all dead
-Actions['ressdead'] = function(args)
+Actions['ressdead'] = function(eval, args)
 	local spell = NeP.Engine:Spell(args)
 	if not spell then return false end
 	for i=1,#NeP.OM['DeadUnits'] do
 		local Obj = NeP.OM['DeadUnits'][i]
 		if spell and Obj.distance < 40 and UnitIsPlayer(Obj.Key)
 		and UnitIsDeadOrGhost(Obj.key) and UnitPlayerOrPetInParty(Obj.key) then
-			return NeP.Engine:STRING(spell, Obj.key)
+			eval.spell = spell
+			eval.target = Obj.key
+			return NeP.Engine:STRING(eval)
 		end
 	end
 end
@@ -108,7 +114,7 @@ Actions['@'] = function(eval)
 	eval.conditions = NeP.DSL.Parse(eval.conditions)
 	if eval.conditions then
 		local result = NeP.library.parse(lib:sub(2))
-		if result then eval.func = (function() end) end
+		if result then eval.breaks = true end
 		return eval
 	end 
 end
@@ -125,7 +131,7 @@ Actions['%'] = function(eval)
 	local arg1, args = eval.spell:match('(.+)%((.+)%)')
 	if args then eval.spell = arg1 end
 	if Actions[eval.spell] then
-		return Actions[eval.spell](eval)
+		return Actions[eval.spell](eval, args)
 	end
 end
 
