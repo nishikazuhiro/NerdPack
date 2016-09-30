@@ -42,3 +42,21 @@ function NeP.Tooltip.Scan_Debuff(target, pattern)
 	end
 	return false
 end
+
+function NeP.Tooltip.Unit(target, pattern)
+	NeP.Tooltip.frame:SetOwner(UIParent, 'ANCHOR_NONE')
+	NeP.Tooltip.frame:SetUnit(target)
+	local tooltipText = _G["NeP_ScanningTooltipTextLeft2"]:GetText()
+	if tooltipText then
+		if type(pattern) == 'string' then
+			local match = tooltipText:lower():match(pattern)
+			if match then return true end
+		elseif type(pattern) == 'table' then
+			for i=1, #pattern do
+				local match = tooltipText:lower():match(pattern[i])
+				if match then return true end
+			end
+		end
+	end
+	return false
+end

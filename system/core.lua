@@ -54,6 +54,11 @@ function NeP.Core.Print(txt)
 	end
 end
 
+function isDummy(Obj)
+	local matchs = {'dummy', 'training bag'}
+	return UnitExists and NeP.Tooltip.Unit(Obj, matchs)
+end
+
 local lastMSG = ''
 function NeP.Core.Message(txt)
 	local text = tostring(txt)
