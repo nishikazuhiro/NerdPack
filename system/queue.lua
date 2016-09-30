@@ -37,13 +37,9 @@ NeP.Timer.Sync("nep_queue", 0.01, function()
 			if (GetTime() - eQueue[i][4]) > 5 then
 				table.remove(eQueue, i)
 				break
-			else
-				local func, spell, target = Engine:Parse(unpack(eQueue[i]))
-				if func then
-					func(spell, target)
-					table.remove(eQueue, i)
-					break
-				end
+			elseif Engine:Parse(unpack(eQueue[i])) then
+				table.remove(eQueue, i)
+				break
 			end
 		end
 	end
