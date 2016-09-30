@@ -75,9 +75,8 @@ end
 function Engine:TABLE(eval)
 	if NeP.DSL.Parse(eval.conditions) then
 		for i=1, #eval.spell do
-			print('index;', i)
 			local sB = Engine:Parse(unpack(eval.spell[i]))
-			if sB then print(sB) 
+			if sB then
 				eval.breaks = true
 				return eval
 			end
@@ -112,6 +111,7 @@ function Engine:Parse(spell, conditions, target)
 	eval = checkTarget(eval)
 	eval = self[eval.type](self, eval)
 	if eval and NeP.DSL.Parse(eval.conditions, eval.spell)  then
+		if eval.si then SpellStopCasting() end
 		if eval.breaks then
 			return true
 		elseif eval.func then
@@ -120,7 +120,7 @@ function Engine:Parse(spell, conditions, target)
 			self.lastCast = spell
 			self.lastTarget = target
 			eval.func(eval.spell, eval.target)
-			return true
+			return eval
 		end
 	end
 end

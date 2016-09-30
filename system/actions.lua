@@ -140,7 +140,7 @@ Actions['!'] = function(eval)
 	eval.spell = eval.spell:sub(2)
 	eval = NeP.Engine:Spell(eval)
 	if eval.ready and eval.spell ~= UnitCastingInfo('player') then
-		SpellStopCasting()
+		eval.si = true
 		return NeP.Engine:STRING(eval)
 	end
 end
