@@ -93,6 +93,7 @@ function Engine:STRING(eval)
 		if not eval then return end
 		eval = self:Spell(eval)
 		if eval.ready then
+			eval.icon = select(3, GetSpellInfo(spell))
 			eval.func = eval.isGround and self.CastGround or self.Cast
 		end
 	end
@@ -116,6 +117,7 @@ function Engine:Parse(spell, conditions, target)
 			self.ForceTarget = nil
 			self.lastCast = spell
 			self.lastTarget = target
+			NeP.ActionLog.insert('Engine_Parser', tostring(eval.spell), eval.icon, eval.target)
 			eval.func(eval.spell, eval.target)
 			return eval
 		end
@@ -131,24 +133,6 @@ function Engine:ConvertSpell(spell)
 	-- locale spells
 	spell = NeP.Locale.Spells(spell)
 	return spell
-end
-
-function Engine:insertToLog(whatIs, spell, target)
-	local targetName = UnitName(target or 'player')
-	local name, icon
-	if whatIs == 'Spell' then
-		local spellIndex, spellBook = GetSpellBookIndex(spell)
-		if spellBook then
-			local spellID = select(2, GetSpellBookItemInfo(spellIndex, spellBook))
-			name, _, icon = GetSpellInfo(spellIndex, spellBook)
-		else
-			name, _, icon = GetSpellInfo(spellIndex)
-		end
-	elseif whatIs == 'Item' then
-		name, _,_,_,_,_,_,_,_, icon = GetItemInfo(spell)
-	end
-	NeP.Interface.UpdateToggleIcon('mastertoggle', icon)
-	NeP.ActionLog.insert('Engine_'..whatIs, name, icon, targetName)
 end
 
 NeP.Timer.Sync("nep_parser", 0.1, function()
