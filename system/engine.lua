@@ -79,10 +79,10 @@ function Engine:TABLE(nest, _,_, conditions)
 	end
 end
 
-function Engine:STRING(spell, target, isGround)
+function Engine:STRING(spell, target, isGround, conditions)
 	local pX = spell:sub(1, 1)
 	if self.Actions[pX] then
-		local result, spell = self.Actions[pX](spell, target)
+		local result, spell = self.Actions[pX](spell, target, conditions)
 		if result then return result, spell end
 	elseif (castingTime('player') == 0) then
 		spell = self:Spell(spell, target)

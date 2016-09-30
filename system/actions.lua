@@ -103,7 +103,7 @@ Actions['#'] = function(item, target)
 end
 
 -- Lib
-Actions['@'] = function(lib, _,_, conditions)
+Actions['@'] = function(lib, _, conditions)
 	if NeP.DSL.Parse(conditions) then
 		local result = NeP.library.parse(lib:sub(2))
 		if result then return (function() end) end
