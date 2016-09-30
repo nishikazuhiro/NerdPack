@@ -2,37 +2,7 @@ local LibDispellable = LibStub('LibDispellable-1.0')
 local RegisterConditon = NeP.DSL.RegisterConditon
 local tlp = NeP.Tooltip
 
---[[
-	state.purge
-	state.charm
-	state.disarm
-	state.disorient
-	state.dot
-	state.fear
-	state.incapacitate
-	state.misc
-	state.root
-	state.silence
-	state.sleep
-	state.snare
-	state.stun
-	immune.all
-	immune.charm
-	immune.disorient
-	immune.fear
-	immune.incapacitate
-	immune.melee
-	immune.misc
-	immune.silence
-	immune.polly
-	immune.sleep
-	immune.snare
-	immune.spell
-	immune.stun
-]]--
-
-local states = {}
-states.status = {
+local States = {
 	charm = 		{'^charmed'},
 	disarm = 		{'disarmed'},
 	disorient = 	{'^disoriented'},
@@ -46,7 +16,8 @@ states.status = {
 	sleep = 		{'^asleep'},
 	snare = 		{'^movement.*slowed', 'movement speed reduced', '^slowed by', '^dazed', '^reduces movement speed'}
 }
-states.immune = {
+
+local Immune = {
 	all = 			{'dematerialize', 'deterrence', 'divine shield', 'ice block'},
 	charm = 		{'bladestorm', 'desecrated ground', 'grounding totem effect', 'lichborne'},
 	disorient = 	{'bladestorm', 'desecrated ground'},
@@ -67,102 +38,12 @@ RegisterConditon('state.purge', function(target, spell)
 	return LibDispellable:CanDispelWith(target, spell) 
 end)
 
-RegisterConditon('state.charm', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.charm)
+RegisterConditon('state', function(target, arg)
+	local match = States[tostring(arg)]
+	return match and tlp:Scan_Debuff(target, match)
 end)
 
-RegisterConditon('state.disarm', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.disarm)
-end)
-
-RegisterConditon('state.disorient', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.disorient)
-end)
-
-RegisterConditon('state.dot', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.dot)
-end)
-
-RegisterConditon('state.fear', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.fear)
-end)
-
-RegisterConditon('state.incapacitate', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.incapacitate)
-end)
-
-RegisterConditon('state.misc', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.misc)
-end)
-
-RegisterConditon('state.root', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.root)
-end)
-
-RegisterConditon('state.silence', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.silence)
-end)
-
-RegisterConditon('state.sleep', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.sleep)
-end)
-
-RegisterConditon('state.snare', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.snare)
-end)
-
-RegisterConditon('state.stun', function(target, spell)
-	return tlp.Scan_Debuff(target, states.status.stun)
-end)
-
-RegisterConditon('immune.all', function(target, spell)
-	return tlp.Scan_Buff(target, states.all)
-end)
-
-RegisterConditon('immune.charm', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.charm)
-end)
-
-RegisterConditon('immune.disorient', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.disorient)
-end)
-
-RegisterConditon('immune.fear', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.fear)
-end)
-
-RegisterConditon('immune.incapacitate', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.incapacitate)
-end)
-
-RegisterConditon('immune.melee', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.melee)
-end)
-
-RegisterConditon('immune.misc', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.misc)
-end)
-
-RegisterConditon('immune.silence', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.silence)
-end)
-
-RegisterConditon('immune.poly', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.polly)
-end)
-
-RegisterConditon('immune.sleep', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.sleep)
-end)
-
-RegisterConditon('immune.snare', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.snare)
-end)
-
-RegisterConditon('immune.spell', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.spell)
-end)
-
-RegisterConditon('immune.stun', function(target, spell)
-	return tlp.Scan_Buff(target, states.immune.stun)
+RegisterConditon('immune', function(target, spell)
+	local match = Immune[tostring(arg)]
+	return match and tlp:Scan_Debuff(target, match)
 end)

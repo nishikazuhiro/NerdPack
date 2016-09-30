@@ -56,7 +56,7 @@ end
 
 function isDummy(Obj)
 	local matchs = {'dummy', 'training bag'}
-	return UnitExists and NeP.Tooltip.Unit(Obj, matchs)
+	return UnitExists and NeP.Tooltip:Unit(Obj, matchs)
 end
 
 local lastMSG = ''
