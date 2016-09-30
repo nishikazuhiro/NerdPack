@@ -138,18 +138,14 @@ end
 -- Interrupt and cast
 Actions['!'] = function(eval)
 	eval.spell = eval.spell:sub(2)
-	eval = NeP.Engine:Spell(eval)
-	if eval.ready and eval.spell ~= UnitCastingInfo('player') then
-		eval.si = true
-		return NeP.Engine:STRING(eval)
-	end
+	eval.bypass = true
+	eval.si = eval.spell ~= UnitCastingInfo('player')
+	return NeP.Engine:STRING(eval)
 end
 
 -- Cast this along with current cast
 Actions['&'] = function(eval)
-	eval = NeP.Engine:Spell(eval)
-	if eval.ready then
-		eval.func = eval.isGround and self.CastGround or self.Cast
-	end
-	return eval
+	eval.spell = eval.spell:sub(2)
+	eval.bypass = true
+	return NeP.Engine:STRING(eval)
 end

@@ -88,7 +88,7 @@ function Engine:STRING(eval)
 	local pX = eval.spell:sub(1, 1)
 	if self.Actions[pX] then
 		eval = self.Actions[pX](eval)
-	elseif (castingTime('player') == 0) then
+	elseif (castingTime('player') == 0) or eval.bypass then
 		eval = self:Spell(eval)
 		if eval.ready then
 			eval.func = eval.isGround and self.CastGround or self.Cast
