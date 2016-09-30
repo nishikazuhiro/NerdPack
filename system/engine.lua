@@ -88,7 +88,9 @@ function Engine:STRING(eval)
 	local pX = eval.spell:sub(1, 1)
 	if self.Actions[pX] then
 		eval = self.Actions[pX](eval)
-	elseif (castingTime('player') == 0) or eval.bypass then
+	elseif eval.bypass or (castingTime('player') == 0) then
+		eval = checkTarget(eval)
+		if not eval then return end
 		eval = self:Spell(eval)
 		if eval.ready then
 			eval.func = eval.isGround and self.CastGround or self.Cast
@@ -104,7 +106,6 @@ function Engine:Parse(spell, conditions, target)
 		conditions = conditions
 	}
 	eval.type = type(spell):upper()
-	eval = checkTarget(eval)
 	eval = self[eval.type](self, eval)
 	if eval and NeP.DSL.Parse(eval.conditions, eval.spell)  then
 		if eval.si then SpellStopCasting() end
