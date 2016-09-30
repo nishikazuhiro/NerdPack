@@ -104,8 +104,7 @@ end
 
 -- Lib
 Actions['@'] = function(lib, target)
-	local result = NeP.library.parse(lib:sub(2))
-	if result then return (function() end) end
+	return NeP.library.parse, lib:sub(2), target
 end
 
 -- Macro
