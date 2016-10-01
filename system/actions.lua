@@ -32,20 +32,6 @@ Actions['taunt'] = function(eval, args)
 	end
 end
 
--- dots all units
-Actions['adots'] = function(eval, args)
-	local spell = NeP.Engine:Spell(args)
-	if not spell then return end
-	for i=1,#NeP.OM['unitEnemie'] do
-		local Obj = NeP.OM['unitEnemie'][i]
-		if not UnitDebuff(Obj.key, spell) then
-			eval.spell = spell
-			eval.target = Obj.key
-			return NeP.Engine:STRING(eval)
-		end
-	end
-end
-
 -- Ress all dead
 Actions['ressdead'] = function(eval, args)
 	local spell = NeP.Engine:Spell(args)
