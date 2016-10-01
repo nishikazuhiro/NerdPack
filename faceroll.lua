@@ -83,16 +83,19 @@ function NeP.Engine.FaceRoll()
 
 	-- Macro
 	function NeP.Engine.Macro(text)
+		NeP.Core.Print('[RUN MACRO]: '..text)
 	end
 
 	function NeP.Engine.UseItem(name, target)
+		NeP.Core.Print('[USE ITEM]: '..name)
 	end
 
 	function NeP.Engine.UseInvItem(name)
+		NeP.Core.Print('[USE ITEM]: '..name)
 	end
 
 	function NeP.Engine.LineOfSight(_, b)
-		return UnitExists(b) and NeP.Helpers.infront(b)
+		return NeP.Helpers.infront(b)
 	end
 
 	-- Distance
@@ -106,7 +109,7 @@ function NeP.Engine.FaceRoll()
 	end
 
 	function NeP.Engine.Infront(a, b)
-		return true
+		return NeP.Helpers.infront(b)
 	end
 
 	NeP.Engine.UnitCombatRange = NeP.Engine.Distance

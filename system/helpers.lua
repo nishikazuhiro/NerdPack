@@ -2,38 +2,43 @@ NeP.Helpers = {}
 
 local spellHasFailed = {}
 
-local function addFailedSpell(GUID, spell)
-	if spellHasFailed[GUID] == nil then
+local function addToData(GUID)
+	if not spellHasFailed[GUID] then
 		spellHasFailed[GUID] = {}
 	end
-	spellHasFailed[GUID][spell] = true
 end
 
 local UI_Erros = {
-	[SPELL_FAILED_NOT_BEHIND] = function(GUID, spell)
-		addFailedSpell(GUID, spell)
-		spellHasFailed[GUID].behind = false
-	end,
+	--[SPELL_FAILED_NOT_BEHIND] = function(GUID, spell)
+	--	addToData(GUID)
+	--	spellHasFailed[GUID].behind = true
+	--end,
+	--[SPELL_FAILED_TOO_CLOSE] = function(GUID, spell)
+	--	addToData(GUID)
+	--	spellHasFailed[GUID][spell] = true
+	--end
 	-- infront / LoS
 	[50] = function(GUID, spell)
-		addFailedSpell(GUID, spell)
-		spellHasFailed[GUID].infront = false
+		addToData(GUID)
+		spellHasFailed[GUID].infront = true
 	end,
 	-- SPELL_FAILED_OUT_OF_RANGE
 	[359] = function(GUID, spell)
-		addFailedSpell(GUID, spell)
+		addToData(GUID)
+		spellHasFailed[GUID][spell] = true
 	end,
-	[SPELL_FAILED_TOO_CLOSE] = function(GUID, spell)
-		addFailedSpell(GUID, spell)
+	-- Cant while moving
+	[220] = function(GUID, spell)
+		addToData(GUID)
+		spellHasFailed[GUID][spell] = true
 	end
 }
 
 function NeP.Helpers.infront(target)
-	if target then
-		local GUID = UnitGUID(target)
-		if GUID and spellHasFailed[GUID] then
-			return spellHasFailed[GUID].infront
-		end
+	if not target then return end
+	local GUID = UnitGUID(target)
+	if GUID and spellHasFailed[GUID] then
+		return (spellHasFailed[GUID].infront ~= true)
 	end
 	return true
 end
@@ -49,16 +54,13 @@ function NeP.Helpers.SpellSanity(spell, target)
 end
 
 NeP.Listener.register("UI_ERROR_MESSAGE", function(error)
-	if UI_Erros[error] then
-		-- Get the target from the engine
-		local unit = NeP.Engine.lastTarget
-		local spell = NeP.Engine.lastCast
-		if unit and spell then
-			local GUID = UnitGUID(unit)
-			if GUID then
-				UI_Erros[error](GUID, spell)
-				UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
-			end
+	if not UI_Erros[error] then return end
+	local unit, spell = NeP.Engine.lastTarget, NeP.Engine.lastCast
+	if unit and spell then
+		local GUID = UnitGUID(unit)
+		if GUID then
+			UI_Erros[error](GUID, spell)
+			UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
 		end
 	end
 end)
