@@ -108,7 +108,7 @@ end
 Actions['@'] = function(eval)
 	eval.conditions = NeP.DSL.Parse(eval.conditions)
 	if eval.conditions then
-		local result = NeP.library.parse(lib:sub(2))
+		local result = NeP.library.parse(eval.spell:sub(2))
 		if result then
 			eval.breaks = true
 			return eval
