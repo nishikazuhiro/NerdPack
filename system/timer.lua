@@ -11,7 +11,7 @@ C_Timer.NewTicker(0.01, (function()
 		for i=1, #timers do
 			local timer = timers[i]
 			if timer.lastCall < time then
-				timer.callback()
+				pcall(timer.callback)
 				timer.lastCall = (time + timer.time)
 			end
 		end
