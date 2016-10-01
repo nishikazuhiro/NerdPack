@@ -18,9 +18,9 @@ Actions['dispelall'] = function(eval, args)
 end
 
 -- Automated tauting
-Actions['taunt'] = function(args)
+Actions['taunt'] = function(eval, args)
 	local spell = NeP.Engine:Spell(args)
-	if not spell then return false end
+	if not spell then return end
 	for i=1,#NeP.OM['unitEnemie'] do
 		local Obj = NeP.OM['unitEnemie'][i]
 		local Threat = UnitThreatSituation("player", Obj.key)
@@ -33,8 +33,17 @@ Actions['taunt'] = function(args)
 end
 
 -- dots all units
-Actions['adots'] = function()
-	--FIXME: TODO
+Actions['adots'] = function(eval, args)
+	local spell = NeP.Engine:Spell(args)
+	if not spell then return end
+	for i=1,#NeP.OM['unitEnemie'] do
+		local Obj = NeP.OM['unitEnemie'][i]
+		if not UnitDebuff(Obj.key, spell) then
+			eval.spell = spell
+			eval.target = Obj.key
+			return NeP.Engine:STRING(eval)
+		end
+	end
 end
 
 -- Ress all dead
@@ -114,8 +123,10 @@ Actions['@'] = function(eval)
 	eval.conditions = NeP.DSL.Parse(eval.conditions)
 	if eval.conditions then
 		local result = NeP.library.parse(lib:sub(2))
-		if result then eval.breaks = true end
-		return eval
+		if result then
+			eval.breaks = true
+			return eval
+		end
 	end 
 end
 
