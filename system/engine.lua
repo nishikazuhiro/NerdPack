@@ -53,7 +53,8 @@ end
 local SpellSanity = NeP.Helpers.SpellSanity
 
 function Engine:Spell(eval)
-	spell = self:ConvertSpell(eval.spell)
+	local spell = eval.spell
+	eval.spell = self:ConvertSpell(spell)
 	if spell and SpellSanity(spell, eval.target) then
 		local skillType = GetSpellBookItemInfo(spell)
 		local isUsable, notEnoughMana = IsUsableSpell(spell)
@@ -93,7 +94,7 @@ function Engine:STRING(eval)
 		if not eval then return end
 		eval = self:Spell(eval)
 		if eval.ready then
-			eval.icon = select(3, GetSpellInfo(spell))
+			eval.icon = select(3, GetSpellInfo(eval.spell))
 			eval.func = eval.isGround and self.CastGround or self.Cast
 		end
 	end
@@ -109,7 +110,7 @@ function Engine:Parse(spell, conditions, target)
 	eval.type = self[type(spell):upper()]
 	if not eval.type then return end
 	eval = eval.type(self, eval)
-	if eval and NeP.DSL.Parse(eval.conditions, eval.spell)  then
+	if eval and NeP.DSL.Parse(eval.conditions, eval.spell) then
 		if eval.si then SpellStopCasting() end
 		if eval.breaks then
 			return true
@@ -120,7 +121,7 @@ function Engine:Parse(spell, conditions, target)
 			self.lastTarget = target
 			NeP.ActionLog.insert('Engine_Parser', tostring(eval.spell), eval.icon, eval.target)
 			eval.func(eval.spell, eval.target)
-			return eval
+			return true
 		end
 	end
 end
@@ -129,7 +130,6 @@ function Engine:ConvertSpell(spell)
 	-- Convert Ids to Names
 	if spell and spell:find('%d') then
 		spell = GetSpellInfo(spell)
-		if not spell then return end
 	end
 	-- locale spells
 	spell = NeP.Locale.Spells(spell)
