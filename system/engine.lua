@@ -120,6 +120,7 @@ function Engine:Parse(spell, conditions, target)
 			self.lastCast = spell
 			self.lastTarget = target
 			NeP.ActionLog.insert('Engine_Parser', tostring(eval.spell), eval.icon, eval.target)
+			NeP.Interface.UpdateToggleIcon('mastertoggle', eval.icon)
 			eval.func(eval.spell, eval.target)
 			return true
 		end
