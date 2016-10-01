@@ -4,7 +4,7 @@ local timer = NeP.Timer
 local debug = NeP.Core.Debug
 local timers = {}
 
-C_Timer.NewTicker(0.01, (function()
+C_Timer.NewTicker(0.1, (function()
 	if NeP.DSL.Get('toggle')(nil, 'mastertoggle')
 	and not NeP.Engine.forcePause then
 		local time = GetTime()
