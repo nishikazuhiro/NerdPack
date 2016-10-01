@@ -95,13 +95,12 @@ Actions['#'] = function(eval)
 	if invItems[item] then
 		local invItem = GetInventorySlotInfo(invItems[item])
 		item = GetInventoryItemID("player", invItem)
-	else
-		item = GetItemID(item)
 	end
 	if item and GetItemSpell(item) then
+		local name, _,_,_,_,_,_,_,_, icon = GetItemInfo(item)
 		local isUsable, notEnoughMana = IsUsableItem(item)
-		if isUsable and (GetItemCooldown(item) == 0) and (GetItemCount(item) > 0) then
-			local name, _,_,_,_,_,_,_,_, icon = GetItemInfo(item)
+		local ready = select(2, GetItemCooldown(item)) == 0
+		if isUsable and ready and (GetItemCount(item) > 0) then
 			eval.spell = name
 			eval.icon = icon
 			eval.func = NeP.Engine.UseItem
