@@ -90,8 +90,8 @@ local invItems = {
 }
 
 -- Items
-Actions['#'] = function(item, target)
-	item = item:sub(2)
+Actions['#'] = function(eval)
+	item = eval.spell:sub(2)
 	if invItems[item] then
 		local invItem = GetInventorySlotInfo(invItems[item])
 		item = GetInventoryItemID("player", invItem)
@@ -103,7 +103,9 @@ Actions['#'] = function(item, target)
 		if isUsable then
 			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
 			if itemStart == 0 and GetItemCount(item) > 0 then
-				return NeP.Engine.UseItem, item, target
+				eval.spell = item
+				eval.func = NeP.Engine.UseItem
+				return eval
 			end
 		end
 	end
