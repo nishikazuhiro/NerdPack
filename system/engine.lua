@@ -9,7 +9,7 @@ NeP.Engine = {
 local Engine = NeP.Engine
 
 local function checkTarget(eval)
-	eval.isGroundCast = false
+	eval.isGround = false
 	-- none defined (decide one)
 	if not eval.target then
 		eval.target = UnitExists('target') and 'target' or 'player'
@@ -20,11 +20,11 @@ local function checkTarget(eval)
 	end
 	-- is it ground?
 	if eval.target:sub(-7) == '.ground' then
-		eval.isGroundCast = true
+		eval.isGround = true
 		eval.target = eval.target:sub(0,-8)
 	end
 	-- Sanity checks
-	if isGroundCast and eval.target == 'mouseover'
+	if eval.isGround and eval.target == 'mouseover'
 	or UnitExists(eval.target) and UnitIsVisible(eval.target)
 	and Engine.LineOfSight('player', eval.target) then
 		return eval
