@@ -100,13 +100,11 @@ Actions['#'] = function(eval)
 	end
 	if item and GetItemSpell(item) then
 		local isUsable, notEnoughMana = IsUsableItem(item)
-		if isUsable then
-			local itemStart, itemDuration, itemEnable = GetItemCooldown(item)
-			if itemStart == 0 and GetItemCount(item) > 0 then
-				eval.spell = item
-				eval.func = NeP.Engine.UseItem
-				return eval
-			end
+		if isUsable and (GetItemCooldown(item) == 0) and (GetItemCount(item) > 0) then
+			eval.spell = item
+			eval.icon = select(10, GetItemInfo(item)) 
+			eval.func = NeP.Engine.UseItem
+			return eval
 		end
 	end
 end
