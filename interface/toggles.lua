@@ -19,6 +19,8 @@ local function SetTexture(parent, icon)
 end
 
 local function OnClick(self, func, button)
+	self.actv = not self.actv
+	NeP.Config:Write('TOGGLE_STATES', self.key, self.actv)
 	func(self, button)
 	self.actv = self:GetChecked()
 end
@@ -37,12 +39,13 @@ local function CreateToggle(eval)
 	local pos = (ButtonsSize*tcount)+(tcount*ButtonsPadding)-(ButtonsSize+ButtonsPadding)
 	Toggles[eval.key] = CreateFrame("CheckButton", eval.key, mainframe.content)
 	local temp = Toggles[eval.key]
+	temp.key = eval.key
 	temp:SetPoint("LEFT", mainframe.content, pos, 0)
 	temp:SetSize(ButtonsSize, ButtonsSize)
 	temp:SetFrameLevel(1)
 	temp:SetNormalFontObject("GameFontNormal")
 	temp.texture = SetTexture(temp, eval.icon)
-	temp.actv = false
+	temp.actv = NeP.Config:Read('TOGGLE_STATES', eval.key, false)
 	temp:SetChecked(temp.actv)
 	temp.Checked_texture = SetTexture(temp)
 	temp:SetCheckedTexture(temp.Checked_texture)
