@@ -47,15 +47,7 @@ function DSL:Parse(Strg, Spell)
 	return false
 end
 
-local Deprecated_Warn = {}
-local function Deprecated(Strg)
-	if Deprecated_Warn[Strg] then
-		NeP.Core.Print(Strg..' Was deprecated, use: '..Deprecated_Warn[Strg].replace..'instead.')
-		Deprecated_Warn[Strg] = nil
-	end
-end
-
-function DSL.Get(Strg)
+function DSL:Get(Strg)
 	Strg = Strg:lower()
 	if DSL.Conditions[Strg] then
 		Deprecated(Strg)
@@ -63,18 +55,9 @@ function DSL.Get(Strg)
 	end
 end
 
-function DSL.RegisterConditon(name, condition, overwrite)
+function DSL:RegisterConditon(name, condition, overwrite)
 	local name = name:lower()
 	if not DSL.Conditions[name] or overwrite then
 		DSL.Conditions[name] = condition
-	end
-end
-
-function DSL.RegisterConditon_Deprecated(name, replace, condition, overwrite)
-	name = name:lower()
-	DSL.RegisterConditon(name, condition, overwrite)
-	if not Deprecated_Warn[name] then
-		Deprecated_Warn[name] = {}
-		Deprecated_Warn[name].replace = replace
 	end
 end
