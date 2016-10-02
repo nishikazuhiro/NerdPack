@@ -74,7 +74,7 @@ function Engine:FUNCTION(eval)
 end
 
 function Engine:TABLE(eval)
-	if NeP.DSL.Parse(eval.conditions) then
+	if NeP.DSL:Parse(eval.conditions) then
 		for i=1, #eval.spell do
 			local eval = Engine:Parse(unpack(eval.spell[i]))
 			if eval then return eval end
@@ -106,7 +106,7 @@ function Engine:Parse(spell, conditions, target)
 	}
 	local path = self[type(spell):upper()]
 	eval = path and path(self, eval)
-	if eval and NeP.DSL.Parse(eval.conditions, eval.spell) then
+	if eval and NeP.DSL:Parse(eval.conditions, eval.spell) then
 		if eval.si then SpellStopCasting() end
 		if eval.breaks then
 			return eval
