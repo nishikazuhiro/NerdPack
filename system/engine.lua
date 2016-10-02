@@ -109,7 +109,9 @@ function Engine:Parse(spell, conditions, target)
 	}
 	local path = self[type(spell):upper()]
 	eval = path and path(self, eval)
-	if eval and NeP.DSL.Parse(eval.conditions, eval.spell) then
+	if not eval then return end
+	eval.conditions = NeP.DSL.Parse(eval.conditions, eval.spell)
+	if eval.conditions then
 		if eval.si then SpellStopCasting() end
 		if eval.breaks then
 			return eval
