@@ -1,5 +1,4 @@
 local LibDispellable = LibStub('LibDispellable-1.0')
-local RegisterConditon = NeP.DSL.RegisterConditon
 local tlp = NeP.Tooltip
 
 local States = {
@@ -33,17 +32,17 @@ local Immune = {
 	stun = 			{'bestial wrath', 'bladestorm', 'desecrated ground', 'icebound fortitude','grounding totem', 'nimble brew'}
 }
 
-RegisterConditon('state.purge', function(target, spell)
+NeP.DSL:RegisterConditon('state.purge', function(target, spell)
 	local spell = GetSpellID(GetSpellName(spell))
 	return LibDispellable:CanDispelWith(target, spell) 
 end)
 
-RegisterConditon('state', function(target, arg)
+NeP.DSL:RegisterConditon('state', function(target, arg)
 	local match = States[tostring(arg)]
 	return match and tlp:Scan_Debuff(target, match)
 end)
 
-RegisterConditon('immune', function(target, spell)
+NeP.DSL:RegisterConditon('immune', function(target, spell)
 	local match = Immune[tostring(arg)]
 	return match and tlp:Scan_Debuff(target, match)
 end)

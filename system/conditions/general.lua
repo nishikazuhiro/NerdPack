@@ -1,5 +1,3 @@
-local RegisterConditon = NeP.DSL.RegisterConditon
-
 local function checkChanneling(target)
 	local name, _, _, _, startTime, endTime, _, notInterruptible = UnitChannelInfo(target)
 	if name then return name, startTime, endTime, notInterruptible end
@@ -12,19 +10,19 @@ local function checkCasting(target)
 	if name then return name, startTime, endTime, notInterruptible end
 end
 
-RegisterConditon('timetomax', function(target, spell)
+NeP.DSL:RegisterConditon('timetomax', function(target, spell)
 	local max = UnitPowerMax(target)
 	local curr = UnitPower(target)
 	local regen = select(2, GetPowerRegen(target))
 	return (max - curr) * (1.0 / regen)
 end)
 
-RegisterConditon('toggle', function(toggle, toggle)
+NeP.DSL:RegisterConditon('toggle', function(toggle, toggle)
 	local toggle = string.lower(toggle)
 	return NeP.Config.Read('bStates_'..tostring(toggle), false)
 end)
 
-RegisterConditon('casting.percent', function(target, spell)
+NeP.DSL:RegisterConditon('casting.percent', function(target, spell)
 	local name, startTime, endTime, notInterruptible = checkCasting(target)
 	if name and not notInterruptible then
 		local castLength = (endTime - startTime) / 1000
@@ -34,7 +32,7 @@ RegisterConditon('casting.percent', function(target, spell)
 	return 0
 end)
 
-RegisterConditon('casting.delta', function(target, spell)		
+NeP.DSL:RegisterConditon('casting.delta', function(target, spell)		
 	local name, startTime, endTime, notInterruptible = checkCasting(target)
 	if name and not notInterruptible then	
 		local castLength = (endTime - startTime) / 1000
@@ -44,7 +42,7 @@ RegisterConditon('casting.delta', function(target, spell)
 	return 0
  end)
 
-RegisterConditon('channeling', function (target, spell)
+NeP.DSL:RegisterConditon('channeling', function (target, spell)
 	local name, startTime, endTime, notInterruptible = checkChanneling(target)
 	local spell = GetSpellName(spell)
 	if spell and (name == spell) then
@@ -53,7 +51,7 @@ RegisterConditon('channeling', function (target, spell)
 	return false
 end)
 
-RegisterConditon('casting', function(target, spell)
+NeP.DSL:RegisterConditon('casting', function(target, spell)
 	local name, startTime, endTime, notInterruptible = checkCasting(target)
 	local spell = GetSpellName(spell)
 	if spell and (name == spell) then
@@ -62,7 +60,7 @@ RegisterConditon('casting', function(target, spell)
 	return false
 end)
 
-RegisterConditon('interruptAt', function (target, spell)
+NeP.DSL:RegisterConditon('interruptAt', function (target, spell)
 	if UnitIsUnit('player', target) then return false end
 	if spell and NeP.DSL.Conditions['toggle'](nil, 'Interrupts') then
 		local stopAt = tonumber(spell) or 35
@@ -75,7 +73,7 @@ RegisterConditon('interruptAt', function (target, spell)
 	return false
 end)
 
-RegisterConditon('spell.cooldown', function(_, spell)
+NeP.DSL:RegisterConditon('spell.cooldown', function(_, spell)
 	local start, duration, enabled = GetSpellCooldown(spell)
 	if not start then return 0 end
 	if start ~= 0 then
@@ -84,7 +82,7 @@ RegisterConditon('spell.cooldown', function(_, spell)
 	return 0
 end)
 
-RegisterConditon('spell.recharge', function(_, spell)
+NeP.DSL:RegisterConditon('spell.recharge', function(_, spell)
 	local charges, maxCharges, start, duration = GetSpellCharges(spell)
 	if not start then return false end
 	if start ~= 0 then
@@ -93,18 +91,18 @@ RegisterConditon('spell.recharge', function(_, spell)
 	return 0
 end)
 
-RegisterConditon('spell.usable', function(_, spell)
+NeP.DSL:RegisterConditon('spell.usable', function(_, spell)
 	return (IsUsableSpell(spell) ~= nil)
 end)
 
-RegisterConditon('spell.exists', function(_, spell)
+NeP.DSL:RegisterConditon('spell.exists', function(_, spell)
 	if GetSpellBookIndex(spell) then
 		return true
 	end
 	return false
 end)
 
-RegisterConditon('spell.charges', function(_, spell)
+NeP.DSL:RegisterConditon('spell.charges', function(_, spell)
 	local charges, maxCharges, start, duration = GetSpellCharges(spell)
 	if duration and charges ~= maxCharges then
 		charges = charges + ((GetTime() - start) / duration)
@@ -112,27 +110,27 @@ RegisterConditon('spell.charges', function(_, spell)
 	return charges or 0
 end)
 
-RegisterConditon('spell.count', function(_, spell)
+NeP.DSL:RegisterConditon('spell.count', function(_, spell)
 	return select(1, GetSpellCount(spell))
 end)
 
-RegisterConditon('spell.range', function(target, spell)
+NeP.DSL:RegisterConditon('spell.range', function(target, spell)
 	local spellIndex, spellBook = GetSpellBookIndex(spell)
 	if not spellIndex then return false end
 	return spellIndex and IsSpellInRange(spellIndex, spellBook, target)
 end)
 
-RegisterConditon('spell.casttime', function(_, spell)
+NeP.DSL:RegisterConditon('spell.casttime', function(_, spell)
 	local CastTime = select(4, GetSpellInfo(spell)) / 1000
 	if CastTime then return CastTime end
 	return 0
 end)
 
-RegisterConditon('combat.time', function(target)
+NeP.DSL:RegisterConditon('combat.time', function(target)
 	return NeP.CombatTracker.CombatTime(target)
 end)
 
-RegisterConditon('timeout', function(target, args)
+NeP.DSL:RegisterConditon('timeout', function(target, args)
 	local name, time = strsplit(',', args, 2)
 	local time = tonumber(time)
 	if time then
@@ -144,7 +142,7 @@ RegisterConditon('timeout', function(target, args)
 end)
 
 local waitTable = {}
-RegisterConditon('waitfor', function(target, args)
+NeP.DSL:RegisterConditon('waitfor', function(target, args)
 	local name, time = strsplit(',', args, 2)
 	if time then
 		local time = tonumber(time)
@@ -162,7 +160,7 @@ RegisterConditon('waitfor', function(target, args)
 	return false
 end)
 
-RegisterConditon('IsNear', function(target, args)
+NeP.DSL:RegisterConditon('IsNear', function(target, args)
 	local targetID, distance = strsplit(',', args, 2)
 	local targetID = tonumber(targetID) or 0
 	local distance = tonumber(distance) or 60
@@ -177,11 +175,11 @@ RegisterConditon('IsNear', function(target, args)
 	return false
 end)
 
-RegisterConditon('equipped', function(_, item)
+NeP.DSL:RegisterConditon('equipped', function(_, item)
 	return IsEquippedItem(item)
 end)
 
-RegisterConditon('gcd', function()
+NeP.DSL:RegisterConditon('gcd', function()
 	local class = select(3,UnitClass("player"))
 	-- Some class's always have GCD = 1
 	if class == 4 or (class == 11 and GetShapeshiftForm()== 2) then
@@ -190,11 +188,11 @@ RegisterConditon('gcd', function()
 	return math.floor((1.5 / ((GetHaste() / 100) + 1)) * 10^3 ) / 10^3
 end)
 
-RegisterConditon('UI', function(_, key)
+NeP.DSL:RegisterConditon('UI', function(_, key)
 	local SelectedCR = NeP.Interface.GetSelectedCR().Name
 	return NeP.Interface.fetchKey(SelectedCR, key)
 end)
 
-RegisterConditon('haste', function(unit)
+NeP.DSL:RegisterConditon('haste', function(unit)
 	return UnitSpellHaste(unit)
 end)

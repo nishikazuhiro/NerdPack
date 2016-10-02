@@ -29,7 +29,7 @@ local KEYBINDS = {
 	['mouse5'] = function() return IsMouseButtonDown(5) end,
 }
 
-NeP.DSL.RegisterConditon("keybind", function(_, Arg)
+NeP.DSL:RegisterConditon("keybind", function(_, Arg)
 	local Arg = Arg:lower()
 	return KEYBINDS[Arg] and KEYBINDS[Arg]() and not GetCurrentKeyBoardFocus()
 end)
