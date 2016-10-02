@@ -1,8 +1,7 @@
-NeP.DSL = {
-	Conditions = {}
-}
+NeP.DSL = {}
 
 local DSL = NeP.DSL
+local conditions = {}
 
 local tokens = {
 	{ 'string', { '^\'.-\'', '^".-"' } },
@@ -49,15 +48,15 @@ end
 
 function DSL:Get(Strg)
 	Strg = Strg:lower()
-	if DSL.Conditions[Strg] then
+	if conditions[Strg] then
 		Deprecated(Strg)
-		return DSL.Conditions[Strg]
+		return conditions[Strg]
 	end
 end
 
 function DSL:RegisterConditon(name, condition, overwrite)
 	local name = name:lower()
-	if not DSL.Conditions[name] or overwrite then
-		DSL.Conditions[name] = condition
+	if not conditions[name] or overwrite then
+		conditions[name] = condition
 	end
 end
