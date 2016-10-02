@@ -101,14 +101,15 @@ function Engine:STRING(eval)
 	return eval
 end
 
+function Engine:NIL()
+end
+
 function Engine:Parse(spell, conditions, target)
-	local eval = {
+	local eval = self[type(spell):upper()](self, {
 		spell = spell,
 		target = target,
 		conditions = conditions
-	}
-	local path = self[type(spell):upper()]
-	eval = path and path(self, eval)
+	})
 	if not eval then return end
 	eval.conditions = NeP.DSL.Parse(eval.conditions, eval.spell)
 	if eval.conditions then
