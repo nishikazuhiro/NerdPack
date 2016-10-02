@@ -35,7 +35,7 @@ local function castingTime()
 	local time = GetTime()
 	local a_endTime = select(6,UnitCastingInfo("player"))
 	if a_endTime then return (a_endTime/1000 )-time end
-	local b_endTime = select(6,UnitCastingInfo("player"))
+	local b_endTime = select(6,UnitChannelInfo("player"))
 	if b_endTime then return (b_endTime/1000)-time end
 	return 0
 end
