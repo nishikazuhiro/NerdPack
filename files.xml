@@ -2,79 +2,23 @@
 ..\FrameXML\UI.xsd">
 
 	<!-- external libs -->
-	<Script file="external\LibStub.lua" />
-	<Script file="external\dkjson.lua" />
-	<Script file="external\LibBossIDs-1.0\LibBossIDs-1.0.lua" />
-	<Include file="external\CallbackHandler-1.0\CallbackHandler-1.0.xml" />
-	<Script file="external\LibRangeCheck-2.0\LibRangeCheck-2.0.lua" />
-	<Script file="external\AceAddon-3.0\AceAddon-3.0.lua" />	
-	<Script file="external\LibNameplateRegistry-1.0\LibNameplateRegistry-1.0.lua" />
-	<Script file="external\LibDispellable-1.0\LibDispellable-1.0.lua" />
-	<Script file="external\LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
-	<Include file="external\DiesalComm-1.0\DiesalComm-1.0.xml" />
-	<Script file="external\DiesalTools-1.0\DiesalTools-1.0.lua" />
-	<Script file="external\DiesalStyle-1.0\DiesalStyle-1.0.lua" />
-	<Include file="external\DiesalGUI-1.0\DiesalGUI-1.0.xml" />
-	<Include file="external\DiesalMenu-1.0\DiesalMenu-1.0.xml" />
-
+	<Script file="Libs\LibStub.lua" />
+	
 	<!-- Core -->
-	<Script file="system\core.lua" />
+	<Script file="NerdPack.lua" />
 
-	<!-- Locale -->
-	<Script file="locale\enUS.lua" />
-	<Script file="locale\ptBR.lua" />
-	<Script file="locale\frFR.lua" />
-	<Script file="locale\enGB.lua" />
-	<Script file="locale\itIT.lua" />
-	<Script file="locale\koKR.lua" />
-	<Script file="locale\zhCN.lua" />
-	<Script file="locale\zhTW.lua" />
-	<Script file="locale\ruRU.lua" />
-	<Script file="locale\esES.lua" />
-	<Script file="locale\esMX.lua" />
+	<Script file="Tables\class.lua" />
+	<Script file="Tables\spells.lua" />
+	<Script file="Tables\castable_mounts.lua" />
+	<Script file="Tables\blacklisted_auras.lua" />
 
-	<!-- Core Files -->
-	<Script file="system\timer.lua" />
-	<Script file="system\listener.lua" />
-	<Script file="system\config.lua" />
-	<Script file="system\timeout.lua" />
-	<Script file="system\tooltip.lua" />
-	<Script file="system\buttons.lua" />
-	<Script file="tables\classindex.lua" />
-	<Script file="tables\Spell_IDs.lua" />
-	<Script file="tables\castable_mounts.lua" />
-	<Script file="tables\blacklisted_auras.lua" />
-	<Script file="tables\UI_elements.lua" />
+	<Script file="Interface\tools.lua" />
+	<Script file="Interface\mainframe.lua" />
+	<Script file="Interface\toggles.lua" />
+	<Script file="Interface\default_toggles.lua" />
 
-	<!-- Interface -->
-	<Script file="interface\actionLog.lua" />
-	<Script file="interface\tools.lua" />
-	<Script file="interface\mainframe.lua" />
-	<Script file="interface\toggles.lua" />
-	<Script file="interface\settings.lua" />
-
-	<!-- System -->
-	<Script file="system\library.lua" />
-	<Script file="system\APIs.lua" />
-	<Script file="system\dsl.lua" />
-	<Script file="system\conditions\general.lua" />
-	<Script file="system\conditions\units.lua" />
-	<Script file="system\conditions\buffs.lua" />
-	<Script file="system\conditions\keybinds.lua" />
-	<Script file="system\conditions\class.lua" />
-	<Script file="system\conditions\states.lua" />
-	<Script file="system\conditions\deprecated.lua" />
-	<Script file="system\combatTracker.lua" />
-	<Script file="system\helpers.lua" />
-	<Script file="system\engine.lua" />
-	<Script file="system\actions.lua" />
-	<Script file="system\combatRoutines.lua" />
-	<Script file="system\listeners.lua" />
-	<Script file="system\healing.lua" />
-	<Script file="system\fakeUnits.lua" />
-	<Script file="system\ObjectManager.lua" />
-	<Script file="interface\OM.lua" />
-	<Script file="system\commands.lua" />
-	<Script file="system\queue.lua" />
-	<Script file="faceroll.lua" />
+	<Script file="System\dsl.lua" />
+	<Script file="System\parser.lua" />
+	<Script file="System\config.lua" />
+	
 </Ui>
