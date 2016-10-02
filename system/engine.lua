@@ -77,7 +77,10 @@ function Engine:TABLE(eval)
 	if NeP.DSL.Parse(eval.conditions) then
 		for i=1, #eval.spell do
 			local eval = Engine:Parse(unpack(eval.spell[i]))
-			if eval then return eval end
+			if eval then
+				eval.breaks = true
+				return eval
+			end
 		end
 	end
 end
@@ -117,6 +120,7 @@ function Engine:Parse(spell, conditions, target)
 			self.lastTarget = target
 			NeP.ActionLog.insert('Engine_Parser', tostring(eval.spell), eval.icon, eval.target)
 			NeP.Interface.UpdateToggleIcon('mastertoggle', eval.icon)
+			print(eval.spell)
 			eval.func(eval.spell, eval.target)
 			return eval
 		end
