@@ -2,7 +2,7 @@ NeP.Config = {}
 
 local Data = {}
 
-NeP.Listener:register("NeP_Config", "ADDON_LOADED", function(addon)
+NeP.Listener:Add("NeP_Config", "ADDON_LOADED", function(addon)
 	if addon:lower() == NeP.Name:lower() then
 		if NePDATA == nil then
 			NePDATA = {}
