@@ -28,14 +28,14 @@ local function OnEnter(self, name, text)
 	GameTooltip:SetOwner(self, "ANCHOR_TOP")
 	GameTooltip:AddDoubleLine(name, OnOff)
 	if text then
-		GameTooltip:AddLine(text)
+		GameTooltip:AddLine('|cffFFFFFF'..text)
 	end
 	GameTooltip:Show()
 end
 
 local function CreateToggle(eval)
 	local pos = (ButtonsSize*tcount)+(tcount*ButtonsPadding)-(ButtonsSize+ButtonsPadding)
-	Toggles[eval.key] = CreateFrame("CheckButton", key, mainframe.content)
+	Toggles[eval.key] = CreateFrame("CheckButton", eval.key, mainframe.content)
 	local temp = Toggles[eval.key]
 	temp:SetPoint("LEFT", mainframe.content, pos, 0)
 	temp:SetSize(ButtonsSize, ButtonsSize)
@@ -64,7 +64,5 @@ end
 
 function NeP.Interface:RefreshToggles()
 	local Width = tcount*(ButtonsSize+ButtonsPadding)-ButtonsPadding
-	mainframe:SetSize(Width, ButtonsSize)
-	mainframe.drag:SetSize(Width-ButtonsSize, ButtonsSize)
-	mainframe.content:SetSize(Width, ButtonsSize)
+	mainframe:SetSize(Width, ButtonsSize+20)
 end

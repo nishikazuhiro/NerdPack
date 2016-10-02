@@ -9,7 +9,7 @@ local dToggles = {
 				if IsControlKeyDown() then
 					NeP.Interface.MainFrame.drag:Show()
 				else
-					print('DropDown')
+					NeP.Interface:DropMenu()
 				end
 			else
 				print('test')
