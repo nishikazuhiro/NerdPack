@@ -76,11 +76,8 @@ end
 function Engine:TABLE(eval)
 	if NeP.DSL.Parse(eval.conditions) then
 		for i=1, #eval.spell do
-			local eval = Engine:Parse(unpack(eval.spell[i]))
-			if eval then
-				eval.breaks = true
-				return eval
-			end
+			local rS = Engine:Parse(unpack(eval.spell[i]))
+			if rS then return true end
 		end
 	end
 end
@@ -110,12 +107,12 @@ function Engine:Parse(spell, conditions, target)
 		target = target,
 		conditions = conditions
 	})
-	if not eval then return end
-	eval.conditions = NeP.DSL.Parse(eval.conditions, eval.spell)
-	if eval.conditions then
-		if eval.si then SpellStopCasting() end
+	if eval and NeP.DSL.Parse(eval.conditions, eval.spell) then
+		if eval.si then
+			SpellStopCasting()
+		end
 		if eval.breaks then
-			return eval
+			return true
 		elseif eval.func then
 			if self.ForceTarget then target = self.ForceTarget end
 			self.ForceTarget = nil
@@ -124,7 +121,7 @@ function Engine:Parse(spell, conditions, target)
 			NeP.ActionLog.insert('Engine_Parser', tostring(eval.spell), eval.icon, eval.target)
 			NeP.Interface.UpdateToggleIcon('mastertoggle', eval.icon)
 			eval.func(eval.spell, eval.target)
-			return eval
+			return true
 		end
 	end
 end
