@@ -4,7 +4,17 @@ local dToggles = {
 		name = 'MasterToggle',
 		text = 'TEST',
 		icon = 'Interface\\ICONS\\Ability_repair.png',
-		func = function(self) print('test') end
+		func = function(self, button)
+			if button == "RightButton" then
+				if IsControlKeyDown() then
+					NeP.Interface.MainFrame.drag:Show()
+				else
+					print('DropDown')
+				end
+			else
+				print('test')
+			end
+		end
 	},
 	{
 		key = 'interrupts',

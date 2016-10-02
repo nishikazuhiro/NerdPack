@@ -18,8 +18,8 @@ local function SetTexture(parent, icon)
 	return temp
 end
 
-local function OnClick(self, func)
-	func(self)
+local function OnClick(self, func, button)
+	func(self, button)
 	self.actv = self:GetChecked()
 end
 
@@ -46,7 +46,8 @@ local function CreateToggle(eval)
 	temp:SetChecked(temp.actv)
 	temp.Checked_texture = SetTexture(temp)
 	temp:SetCheckedTexture(temp.Checked_texture)
-	temp:SetScript("OnClick", function(self) OnClick(self, eval.func) end)
+	temp:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	temp:SetScript("OnClick", function(self, button) OnClick(self, eval.func, button) end)
 	temp:SetScript("OnEnter", function(self) OnEnter(self, eval.name, eval.text) end)
 	temp:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 end
