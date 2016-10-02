@@ -6,6 +6,33 @@ local ButtonsPadding = 2
 local Toggles = {}
 local tcount = 0
 
+local function SetTexture(parent, icon)
+	temp = parent:CreateTexture()
+	if icon then
+		temp:SetTexture(icon)
+	else
+		temp:SetColorTexture(1,1,1,0.7)
+	end
+	temp:SetAllPoints(parent)
+	temp:SetTexCoord(.08, .92, .08, .92)
+	return temp
+end
+
+local function OnClick(self, func)
+	func(self)
+	self.actv = self:GetChecked()
+end
+
+local function OnEnter(self, name, text)
+	local OnOff = self.actv and 'ON' or 'OFF'
+	GameTooltip:SetOwner(self, "ANCHOR_TOP")
+	GameTooltip:AddDoubleLine(name, OnOff)
+	if text then
+		GameTooltip:AddLine(text)
+	end
+	GameTooltip:Show()
+end
+
 local function CreateToggle(eval)
 	local pos = (ButtonsSize*tcount)+(tcount*ButtonsPadding)-(ButtonsSize+ButtonsPadding)
 	Toggles[eval.key] = CreateFrame("CheckButton", key, mainframe.content)
@@ -14,21 +41,13 @@ local function CreateToggle(eval)
 	temp:SetSize(ButtonsSize, ButtonsSize)
 	temp:SetFrameLevel(1)
 	temp:SetNormalFontObject("GameFontNormal")
-	temp.texture = temp:CreateTexture()
-	temp.texture:SetTexture(eval.icon)
-	temp.texture:SetAllPoints()
-	temp.texture:SetTexCoord(.08, .92, .08, .92)
+	temp.texture = SetTexture(temp, eval.icon)
 	temp.actv = false
 	temp:SetChecked(temp.actv)
-	temp:SetScript("OnClick", function(self) eval.func(self) end)
-	temp:SetScript("OnEnter", function(self)
-		GameTooltip:SetOwner(self, "ANCHOR_TOP")
-		GameTooltip:AddLine(eval.name..'\n'..eval.text)
-		if tooltip then
-			GameTooltip:AddLine(tooltip)
-		end
-		GameTooltip:Show()
-	end)
+	temp.Checked_texture = SetTexture(temp)
+	temp:SetCheckedTexture(temp.Checked_texture)
+	temp:SetScript("OnClick", function(self) OnClick(self, eval.func) end)
+	temp:SetScript("OnEnter", function(self) OnEnter(self, eval.name, eval.text) end)
 	temp:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 end
 
