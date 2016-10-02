@@ -20,7 +20,7 @@ local UI_Erros = {
 	-- infront / LoS
 	[50] = function(GUID, spell)
 		addToData(GUID)
-		spellHasFailed[GUID].infront = true
+		spellHasFailed[GUID].infront = false
 	end,
 	-- SPELL_FAILED_OUT_OF_RANGE
 	[359] = function(GUID, spell)
@@ -38,7 +38,7 @@ function NeP.Helpers.infront(target)
 	if not target then return end
 	local GUID = UnitGUID(target)
 	if GUID and spellHasFailed[GUID] then
-		return (spellHasFailed[GUID].infront ~= true)
+		return (spellHasFailed[GUID].infront)
 	end
 	return true
 end

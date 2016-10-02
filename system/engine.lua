@@ -111,13 +111,15 @@ function Engine:Parse(spell, conditions, target)
 		if eval.si then
 			SpellStopCasting()
 		end
+		if self.ForceTarget then
+			eval.target = self.ForceTarget
+		end
 		if eval.breaks then
 			return true
 		elseif eval.func then
-			if self.ForceTarget then target = self.ForceTarget end
 			self.ForceTarget = nil
-			self.lastCast = spell
-			self.lastTarget = target
+			self.lastCast = eval.spell
+			self.lastTarget = eval.target
 			NeP.ActionLog.insert('Engine_Parser', tostring(eval.spell), eval.icon, eval.target)
 			NeP.Interface.UpdateToggleIcon('mastertoggle', eval.icon)
 			eval.func(eval.spell, eval.target)
