@@ -1,7 +1,6 @@
 NeP = {
 	Name = 'NerdPack',
 	Version = 2.0,
-	Color = "|cff0070DE"
+	Color = "|cff0070DE",
+	Media = "Interface\\AddOns\\NerdPack\\Media\\",
 }
-
-NeP.Media = string.format("Interface\\AddOns\\%s\\Media\\",NeP.Name)
