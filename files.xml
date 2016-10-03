@@ -12,6 +12,7 @@
 	<Script file="Tables\castable_mounts.lua" />
 	<Script file="Tables\blacklisted_auras.lua" />
 
+	<Script file="System\core.lua" />
 	<Script file="System\CRs.lua" />
 	<Script file="System\listener.lua" />
 	<Script file="System\config.lua" />
