@@ -7,7 +7,7 @@ NeP.Listener:Add("NeP_Config", "ADDON_LOADED", function(addon)
 		if NePDATA == nil then
 			NePDATA = {}
 		end
-		Data = NePDATA
+		Data = setmetatable({}, {__index=NePDATA})
 	end
 end)
 
