@@ -15,7 +15,7 @@ local function BuildMenu()
 	table.insert(result, {text = logo..'['..NeP.Name..' |rv:'..NeP.Version..']', isTitle = 1, notCheckable = 1})
 	local CrList = NeP.CombatRoutines:GetList()
 	local Spec = GetSpecializationInfo(GetSpecialization())
-	local last = NeP.Config:Read('SELECTED', Spec)
+	local last = NeP.Config:Read('SELECTED', Spec, 'NONE')
 	for Name, CR in pairs (CrList) do
 		local temp = {
 			text = Name,

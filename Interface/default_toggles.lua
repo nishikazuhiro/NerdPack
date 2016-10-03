@@ -21,21 +21,18 @@ local dToggles = {
 		name = 'Interrupts',
 		text = 'TEST',
 		icon = 'Interface\\ICONS\\Ability_Kick.png',
-		func = function(self) print('test') end
 	},
 	{
 		key = 'cooldowns',
 		name = 'Cooldowns',
 		text = 'TEST',
 		icon = 'Interface\\ICONS\\Achievement_BG_winAB_underXminutes.png',
-		func = function(self) print('test') end
 	},
 	{
 		key = 'aoe',
 		name = 'Multitarget',
 		text = 'TEST',
 		icon = 'Interface\\ICONS\\Ability_Druid_Starfall.png',
-		func = function(self) print('test') end
 	}
 }
 

@@ -13,7 +13,7 @@ function NeP.CombatRoutines:Add(SpecID, Name, InCombat, OutCombat, ExeOnLoad)
 			CRs[SpecID] = {}
 		end
 		CRs[SpecID][Name] = {}
-		CRs[SpecID][Name]['Exe'] = ExeOnLoad
+		CRs[SpecID][Name].Exe = ExeOnLoad
 		CRs[SpecID][Name]['true'] = smt({}, {__index=InCombat})
 		CRs[SpecID][Name]['false'] = smt({}, {__index=OutCombat})
 	end
@@ -21,6 +21,9 @@ end
 
 function NeP.CombatRoutines:Set(CR)
 	self.CR = CR
+	if CR.Exe then
+		CR.Exe()
+	end
 end
 
 function NeP.CombatRoutines:GetList()

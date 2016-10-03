@@ -21,7 +21,9 @@ end
 local function OnClick(self, func, button)
 	self.actv = not self.actv
 	NeP.Config:Write('TOGGLE_STATES', self.key, self.actv)
-	func(self, button)
+	if func then
+		func(self, button)
+	end
 	self.actv = self:GetChecked()
 end
 
