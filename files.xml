@@ -14,6 +14,7 @@
 
 	<Script file="System\core.lua" />
 	<Script file="System\lexer.lua" />
+	<Script file="System\conditions.lua" />
 	<Script file="System\CRs.lua" />
 	<Script file="System\lib.lua" />
 	<Script file="System\listener.lua" />
@@ -22,6 +23,15 @@
 	<Script file="Interface\mainframe.lua" />
 	<Script file="Interface\toggles.lua" />
 	<Script file="Interface\default_toggles.lua" />
+
+	<Script file="Conditions\general.lua" />
+	<Script file="Conditions\units.lua" />
+	<Script file="Conditions\buffs.lua" />
+	<Script file="Conditions\keybinds.lua" />
+	<Script file="Conditions\class.lua" />
+	<Script file="Conditions\states.lua" />
+	<Script file="Conditions\deprecated.lua" />
+
 	<Script file="System\parser.lua" />
 
 	<Script file="listeners.lua" />
