@@ -1,4 +1,6 @@
 NeP.Listener:Add("NeP_Config", "PLAYER_LOGIN", function(addon)
 	local Spec = GetSpecializationInfo(GetSpecialization())
-	NeP.CombatRoutines:Add(Spec, 'NONE', {}, {}, function() print('callback') end)
+	NeP.CombatRoutines:Add(Spec, 'NONE', {}, {})
+	local last = NeP.Config:Read('SELECTED', Spec, 'NONE')
+	NeP.CombatRoutines:Set(Spec, last)
 end)
