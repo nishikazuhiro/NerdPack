@@ -14,6 +14,7 @@
 
 	<Script file="System\core.lua" />
 	<Script file="System\CRs.lua" />
+	<Script file="System\lib.lua" />
 	<Script file="System\listener.lua" />
 	<Script file="System\config.lua" />
 	<Script file="Interface\tools.lua" />
