@@ -238,19 +238,19 @@ NeP.DSL:RegisterConditon("class", function (target, expectedClass)
 	end
 end)
 
-NeP.DSL.NeP.DSL:RegisterConditon("inMelee", function(target)
+NeP.DSL:RegisterConditon("inMelee", function(target)
 	return NeP.Engine.UnitAttackRange('player', target, 'melee')
 end)
 
-NeP.DSL.NeP.DSL:RegisterConditon("inRanged", function(target)
+NeP.DSL:RegisterConditon("inRanged", function(target)
 	return NeP.Engine.UnitAttackRange('player', target, 'ranged')
 end)
 
-NeP.DSL.NeP.DSL:RegisterConditon("power.regen", function(target)
+NeP.DSL:RegisterConditon("power.regen", function(target)
 	return select(2, GetPowerRegen(target))
 end)
 
-NeP.DSL.NeP.DSL:RegisterConditon("casttime", function(target, spell)
+NeP.DSL:RegisterConditon("casttime", function(target, spell)
 	local name, rank, icon, cast_time, min_range, max_range = GetSpellInfo(spell)
 	return cast_time
 end)
@@ -325,11 +325,11 @@ NeP.DSL:RegisterConditon("glyph", function()
 	return false
 end)
 
-NeP.DSL.NeP.DSL:RegisterConditon('twohand', function(target)
+NeP.DSL:RegisterConditon('twohand', function(target)
 	return IsEquippedItemType("Two-Hand")
 end)
 
-NeP.DSL.NeP.DSL:RegisterConditon('onehand', function(target)
+NeP.DSL:RegisterConditon('onehand', function(target)
 	return IsEquippedItemType("One-Hand")
 end)
 
