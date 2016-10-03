@@ -13,6 +13,7 @@
 	<Script file="Tables\blacklisted_auras.lua" />
 
 	<Script file="System\core.lua" />
+	<Script file="System\lexer.lua" />
 	<Script file="System\CRs.lua" />
 	<Script file="System\lib.lua" />
 	<Script file="System\listener.lua" />
@@ -21,8 +22,6 @@
 	<Script file="Interface\mainframe.lua" />
 	<Script file="Interface\toggles.lua" />
 	<Script file="Interface\default_toggles.lua" />
-
-	<Script file="System\dsl.lua" />
 	<Script file="System\parser.lua" />
 
 	<Script file="listeners.lua" />

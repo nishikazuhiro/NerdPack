@@ -2,10 +2,14 @@ NeP.CombatRoutines = {
 	CR = {}
 }
 
-
 local CRs = {}
-local smt = setmetatable
 local UnitClass = UnitClass
+
+
+
+function NeP.CombatRoutines:Compile(eval)
+
+end
 
 function NeP.CombatRoutines:Add(SpecID, Name, InCombat, OutCombat, ExeOnLoad)
 	local classIndex = select(3, UnitClass('player'))
@@ -15,8 +19,8 @@ function NeP.CombatRoutines:Add(SpecID, Name, InCombat, OutCombat, ExeOnLoad)
 		end
 		CRs[SpecID][Name] = {}
 		CRs[SpecID][Name].Exe = ExeOnLoad
-		CRs[SpecID][Name]['true'] = smt({}, {__index=InCombat})
-		CRs[SpecID][Name]['false'] = smt({}, {__index=OutCombat})
+		CRs[SpecID][Name][true] = NeP.Lexer:Lex(InCombat)
+		CRs[SpecID][Name][false] = NeP.Lexer:Lex(OutCombat)
 	end
 end
 

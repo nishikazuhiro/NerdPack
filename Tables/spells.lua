@@ -1,4 +1,3 @@
---[[Insert the spell name here and its matching ID]]
 local SpellID = {
 	{
 		["Anger Management"] = 152278,
@@ -2268,36 +2267,34 @@ local SpellID = {
 	}
 }
 
+NeP.Spells = {}
 local GetLocale = GetLocale
 local GetSpellInfo = GetSpellInfo
 local UnitClass = UnitClass
 
 local SpellsTable = {}
-local function FilterSpells()
+function NeP.Spells:Filter()
 	local _, _, class_id = UnitClass("player")
-	
-	local locale = GetLocale()
-	if locale ~= "enUS" then
+	if GetLocale() ~= "enUS" then
 		for spell_name_enus, spell_id in pairs(SpellID[class_id]) do
 			local localized_spell = GetSpellInfo(spell_id)
 			if localized_spell then
-				SpellsTable[spell_name_enus] = localized_spell
+				SpellsTable[spell_name_enus] = spell_id
 			end
 		end
 	else
 		SpellsTable = nil
 	end
-
-	wipe(SpellID)
+	SpellID = nil
 end
 
---NeP.Listener.register("Spell_IDS", "PLAYER_LOGIN", function(...)
---	FilterSpells()
---end)
-
-function NeP.FilterSpell(spell)
+function NeP.Spells:ConvertSpell(spell)
+	if not spell then return end
+	if spell:find('%d') then
+		spell = GetSpellInfo(spell)
+	end
 	if SpellsTable and SpellsTable[spell] then
-		return SpellsTable[spell]
+		spell = SpellsTable[spell]
 	end
 	return spell
 end

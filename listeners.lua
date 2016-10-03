@@ -4,3 +4,7 @@ NeP.Listener:Add("NeP_Config", "PLAYER_LOGIN", function(addon)
 	local last = NeP.Config:Read('SELECTED', Spec, 'NONE')
 	NeP.CombatRoutines:Set(Spec, last)
 end)
+
+NeP.Listener:Add("NeP_Spells", "PLAYER_LOGIN", function(...)
+	 NeP.Spells:Filter()
+end)
