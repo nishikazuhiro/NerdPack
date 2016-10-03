@@ -19,12 +19,14 @@ local function SetTexture(parent, icon)
 end
 
 local function OnClick(self, func, button)
-	self.actv = not self.actv
-	NeP.Config:Write('TOGGLE_STATES', self.key, self.actv)
+	if button == 'LeftButton' then
+		self.actv = not self.actv
+		NeP.Config:Write('TOGGLE_STATES', self.key, self.actv)
+	end
 	if func then
 		func(self, button)
 	end
-	self.actv = self:GetChecked()
+	self:SetChecked(self.actv)
 end
 
 local function OnEnter(self, name, text)
