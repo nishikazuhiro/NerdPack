@@ -10,12 +10,29 @@ local menuFrame = CreateFrame("Frame", "ExampleMenuFrame", NeP.Interface.MainFra
 menuFrame:SetPoint("BOTTOMLEFT", NeP.Interface.MainFrame, "BOTTOMLEFT", 0, 0)
 menuFrame:Hide()
 
-local DropMenu = {
-	 { text = "TEST", isTitle = true},
-}
+local function BuildMenu()
+	local result = {}
+	table.insert(result, {text = logo..'['..NeP.Name..' |rv:'..NeP.Version..']', isTitle = 1, notCheckable = 1})
+	local CrList = NeP.CombatRoutines:GetList()
+	local Spec = GetSpecializationInfo(GetSpecialization())
+	local last = NeP.Config:Read('SELECTED', Spec)
+	for Name, CR in pairs (CrList) do
+		local temp = {
+			text = Name,
+			checked = (last == Name),
+			func = function()
+				NeP.Core:Print('Loaded: '..Name)
+				NeP.CombatRoutines:Set(CR)
+				NeP.Config:Write('SELECTED', Spec, Name)
+			end
+		}
+		table.insert(result, temp)
+	end
+	return result
+end
 
 function NeP.Interface:DropMenu()
-	EasyMenu(DropMenu, menuFrame, menuFrame, 0, 0, "MENU")
+	EasyMenu(BuildMenu(), menuFrame, menuFrame, 0, 0, "MENU")
 end
 
 --mainframe.drag:Hide()

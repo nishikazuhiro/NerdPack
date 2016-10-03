@@ -1,10 +1,10 @@
 NeP.CombatRoutines = {
-	CRs = {}
+	CR = {}
 }
 
+local CRs = {}
 local smt = setmetatable
 local UnitClass = UnitClass
-local CRs = smt({}, {__index=NeP.CombatRoutines.CRs})
 
 function NeP.CombatRoutines:Add(SpecID, Name, InCombat, OutCombat, ExeOnLoad)
 	local classIndex = select(3, UnitClass('player'))
@@ -19,23 +19,16 @@ function NeP.CombatRoutines:Add(SpecID, Name, InCombat, OutCombat, ExeOnLoad)
 	end
 end
 
-function NeP.CombatRoutines:GetCR(SpecID, Name)
-	return CRs[SpecID] and CRs[SpecID][Name]
+function NeP.CombatRoutines:Set(CR)
+	self.CR = CR
 end
 
 function NeP.CombatRoutines:GetList()
 	local result = {}
 	local Spec = GetSpecializationInfo(GetSpecialization())
-	local Class = select(3, UnitClass('player'))
 	if CRs[Spec] then
 		for k,v in pairs(CRs[Spec]) do
-			print(k)
-			result[#result+1] = k
-		end
-	end
-	if CRs[Class] then
-		for k,v in pairs(CRs[Class]) do
-			result[#result+1] = k
+			result[k] = CRs[Spec][k]
 		end
 	end
 	return result
